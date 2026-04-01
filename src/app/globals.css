@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 217 50% 16%; /* Dark Slate */
+    
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-bb-gold/30 selection:text-bb-navy;
+    font-family: var(--font-inter), sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sora), sans-serif;
+  }
+}
+
+@layer utilities {
+  .section-shell {
+    @apply container py-16 md:py-24 mx-auto px-4;
+  }
+  
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-bb-gold;
+  }
+  
+  /* The subtle dotted worldmap grid */
+  .grid-overlay {
+    background-image:
+      linear-gradient(rgba(8, 24, 51, 0.05) 1px, transparent 1px),
+      linear-gradient(to right, rgba(8, 24, 51, 0.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+  }
+  
+  .grid-overlay-dark {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 34px 34px;
+  }
+  
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-glass;
+  }
+  
+  .glass-panel-dark {
+    @apply bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
+  }
+  
+  /* Utility for flight path SVG lines (dashed & animated) */
+  .flight-line {
+    stroke-dasharray: 20 10;
+    @apply animate-flight-path stroke-bb-sky/40 stroke-2 fill-none;
+  }
+}
