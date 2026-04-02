@@ -14,7 +14,7 @@ export default function BusinessExportPage() {
         eyebrow="Business & Export Facilitation" 
         title={service.title} 
         description="End-to-end export compliance, buyer connection, and market entry strategy for Ghanaian businesses going global."
-        image="/images/page-hero/services.png"
+        image="/images/page-hero/services.webp"
       />
       <ServiceDetailSection
         title={service.title}

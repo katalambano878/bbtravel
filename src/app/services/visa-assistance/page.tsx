@@ -14,7 +14,7 @@ export default function VisaAssistancePage() {
         eyebrow="Visa Assistance" 
         title={service.title} 
         description="Embassy-aligned strategies that eliminate guesswork and maximize your approval probability across 30+ countries."
-        image="/images/page-hero/about.png"
+        image="/images/page-hero/about.webp"
       />
       <ServiceDetailSection
         title={service.title}

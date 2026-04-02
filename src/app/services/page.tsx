@@ -28,7 +28,7 @@ export default function ServicesHubPage() {
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-bb-navy overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/page-hero/services.png"
+            src="/images/page-hero/services.webp"
             alt="B.B. Travel Consult Services"
             fill
             priority
@@ -61,7 +61,7 @@ export default function ServicesHubPage() {
                 <Link
                   key={service.slug}
                   href={`/services/${service.slug}`}
-                  className="group bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-premium transition-all duration-300 flex flex-col relative overflow-hidden"
+                  className="group bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-500 ease-out flex flex-col relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[100px] -z-10 group-hover:bg-bb-gold/5 transition-colors duration-500" />
 

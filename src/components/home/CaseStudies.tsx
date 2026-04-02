@@ -14,7 +14,7 @@ export function CaseStudies() {
     <Section className="relative border-y border-slate-200/50 py-24 overflow-hidden">
       {/* Background Image with Parallax */}
       <div 
-        className="absolute inset-0 bg-[url('/images/page-hero/services.png')] bg-cover bg-center bg-scroll md:bg-fixed"
+        className="absolute inset-0 bg-[url('/images/page-hero/services.webp')] bg-cover bg-center bg-scroll md:bg-fixed"
       />
       {/* 40% Dark Overlay */}
       <div className="absolute inset-0 bg-bb-navy/40" />
@@ -41,7 +41,7 @@ export function CaseStudies() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="bg-white rounded-3xl p-6 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-500 flex flex-col group relative overflow-hidden"
+              className="bg-white rounded-3xl p-6 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 transition-all duration-700 ease-out flex flex-col group relative overflow-hidden"
             >
               <div className="mb-4">
                 <svg className="w-6 h-6 text-bb-gold/60" fill="currentColor" viewBox="0 0 32 32">

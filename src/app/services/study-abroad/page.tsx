@@ -14,7 +14,7 @@ export default function StudyAbroadPage() {
         eyebrow="Study Abroad" 
         title={service.title} 
         description="From university selection to visa approval — a structured pathway to world-class education for ambitious Ghanaian students."
-        image="/images/page-hero/about.png"
+        image="/images/page-hero/about.webp"
       />
       <ServiceDetailSection
         title={service.title}

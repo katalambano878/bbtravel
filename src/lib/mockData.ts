@@ -9,7 +9,7 @@ export const services = [
     processTime: "2 – 6 weeks",
     priceRange: "GH₵ 1,500+",
     icon: "Passport",
-    image: "/images/services/visa.png",
+    image: "/images/services/visa.webp",
     benefits: ["Embassy-specific document auditing", "DS-160 & UK form mastery", "Prior refusal analysis & overturn strategy"],
     timeline: ["Profile Assessment", "Document Audit", "Application Mastery", "Interview Prep", "Submission & Tracking"]
   },
@@ -23,7 +23,7 @@ export const services = [
     processTime: "4 – 12 weeks",
     priceRange: "GH₵ 2,000+",
     icon: "Briefcase",
-    image: "/images/services/jobs.png",
+    image: "/images/services/jobs.webp",
     benefits: ["Verified employer network only", "Full credential verification & NMC support", "Contract review & visa processing"],
     timeline: ["Professional Profiling", "Credential Verification", "Opportunity Matching", "Interview Coaching", "Placement & Relocation"]
   },
@@ -37,7 +37,7 @@ export const services = [
     processTime: "6 – 16 weeks",
     priceRange: "GH₵ 1,800+",
     icon: "GraduationCap",
-    image: "/images/services/study.png",
+    image: "/images/services/study.webp",
     benefits: ["Data-driven university shortlisting", "Professional SOP & essay review", "Scholarship sourcing & visa processing"],
     timeline: ["Academic Assessment", "Strategic Shortlisting", "Application Crafting", "Scholarship & Visa", "Pre-Departure"]
   },
@@ -51,7 +51,7 @@ export const services = [
     processTime: "2 – 4 weeks",
     priceRange: "GH₵ 3,000+",
     icon: "Globe",
-    image: "/images/services/tours.png",
+    image: "/images/services/tours.webp",
     benefits: ["All-inclusive logistics & booking", "Visa documentation included", "24/7 on-ground concierge support"],
     timeline: ["Preference Mapping", "Itinerary Design", "Booking & Documentation", "Pre-Departure Brief", "Concierge Support"]
   },
@@ -65,7 +65,7 @@ export const services = [
     processTime: "8 – 20 weeks",
     priceRange: "GH₵ 2,500+",
     icon: "Building",
-    image: "/images/services/export.png",
+    image: "/images/services/export.webp",
     benefits: ["GEPA & FDA export support", "International partner vetting", "Trade mission coordination"],
     timeline: ["Market Readiness Review", "Target Market Analysis", "Documentation & Compliance", "Partner Matchmaking", "Launch & Advisory"]
   }
@@ -102,7 +102,7 @@ export const featuredTours = [
     destination: "Paris, France",
     durationDays: 5,
     priceRange: "$1,800 - $2,500",
-    image: "/images/tours/paris.png",
+    image: "/images/tours/paris.webp",
     highlights: ["Eiffel Tower Dinner", "Louvre Fast-track", "Seine River Cruise"],
     shortDescription: "Discover the magic of Paris with expertly curated romantic experiences, central accommodations, and seamless logistics."
   },
@@ -185,7 +185,7 @@ export const blogPosts = [
     date: "2026-03-15",
     category: "Visa Advice",
     readTime: "5 min read",
-    image: "/images/blog/visa.png"
+    image: "/images/blog/visa.webp"
   },
   {
     id: "nurse-uk-guide",
@@ -195,7 +195,7 @@ export const blogPosts = [
     date: "2026-03-02",
     category: "Recruitment",
     readTime: "8 min read",
-    image: "/images/blog/nurse.png"
+    image: "/images/blog/nurse.webp"
   },
   {
     id: "study-canada-funds",
@@ -205,7 +205,7 @@ export const blogPosts = [
     date: "2026-02-18",
     category: "Study Abroad",
     readTime: "6 min read",
-    image: "/images/blog/funds.png"
+    image: "/images/blog/funds.webp"
   },
   {
     id: "top-10-destinations",
@@ -215,7 +215,7 @@ export const blogPosts = [
     date: "2026-01-30",
     category: "Tour Packages",
     readTime: "4 min read",
-    image: "/images/blog/destinations.png"
+    image: "/images/blog/destinations.webp"
   }
 ];
 

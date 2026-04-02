@@ -14,7 +14,7 @@ export default function TourPackagesPage() {
         eyebrow="Tour Packages" 
         title={service.title} 
         description="Fully managed travel experiences with curated itineraries, premium accommodation, and seamless logistics worldwide."
-        image="/images/page-hero/tours.png"
+        image="/images/page-hero/tours.webp"
       />
       <ServiceDetailSection
         title={service.title}

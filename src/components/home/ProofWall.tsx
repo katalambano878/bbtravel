@@ -38,7 +38,7 @@ export function ProofWall() {
           >
             <div className="absolute inset-0 bg-slate-900/10 z-10 transition-opacity group-hover:opacity-0" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent z-10" />
-            <div className="absolute inset-0 bg-[url('/images/founder.png')] bg-cover bg-top transition-transform duration-1000 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-[url('/images/founder.webp')] bg-cover bg-top transition-transform duration-1000 group-hover:scale-105" />
             
             <div className="relative z-20 mt-auto">
               <div className="bg-bb-gold/90 backdrop-blur-md w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
@@ -133,8 +133,8 @@ export function ProofWall() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="rounded-[2rem] border border-slate-200 bg-slate-50 p-8 flex flex-col items-center justify-center text-center group transition-colors hover:bg-white hover:shadow-sm"
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="bg-white rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center text-center border border-slate-200 shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 transition-all duration-700 ease-out group"
           >
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 group-hover:border-bb-gold transition-colors">
               <Building2 className="w-6 h-6 text-slate-400 group-hover:text-bb-gold" />

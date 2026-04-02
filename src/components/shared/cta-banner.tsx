@@ -13,7 +13,7 @@ export function CtaBanner() {
       <div className="absolute inset-0 z-0">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/page-hero/services.png')` }}
+          style={{ backgroundImage: `url('/images/page-hero/services.webp')` }}
         />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-bb-navy via-bb-navy/80 to-transparent" />

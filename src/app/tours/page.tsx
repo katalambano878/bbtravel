@@ -36,7 +36,7 @@ export default function ToursHubPage() {
             {featuredTours.map((tour) => (
               <div
                 key={tour.id}
-                className="group relative bg-bb-navy rounded-[2rem] overflow-hidden flex flex-col justify-end shadow-sm hover:shadow-premium transition-all duration-500 h-[480px]"
+                className="group relative bg-bb-navy rounded-[2rem] overflow-hidden flex flex-col justify-end shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.25)] hover:-translate-y-1.5 transition-all duration-700 ease-out h-[480px]"
               >
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105 opacity-80"

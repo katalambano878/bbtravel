@@ -28,7 +28,7 @@ export default function SuccessPage() {
       <Section variant="navy" className="pt-32 pb-20 md:pt-48 md:pb-32 relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/page-hero/services.png"
+            src="/images/page-hero/services.webp"
             alt="B.B. Travel Consult Success Stories"
             fill
             priority
@@ -148,7 +148,7 @@ export default function SuccessPage() {
       <Section variant="navy" className="relative py-20 md:py-28 text-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/page-hero/about.png"
+            src="/images/page-hero/about.webp"
             alt="Start your journey with B.B. Travel Consult"
             fill
             className="object-cover object-center"

@@ -19,7 +19,7 @@ export default function AboutPage() {
       <Section variant="navy" className="pt-32 pb-20 md:pt-48 md:pb-32 relative overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/page-hero/about.png"
+            src="/images/page-hero/about.webp"
             alt="About B.B. Travel Consult"
             fill
             priority

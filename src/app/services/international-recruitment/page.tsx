@@ -14,7 +14,7 @@ export default function InternationalRecruitmentPage() {
         eyebrow="International Recruitment" 
         title={service.title} 
         description="Verified employer placements across the UK, Canada, Gulf States, and Europe — with full documentation and relocation support."
-        image="/images/page-hero/contact.png"
+        image="/images/page-hero/contact.webp"
       />
       <ServiceDetailSection
         title={service.title}
