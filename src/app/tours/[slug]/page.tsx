@@ -13,8 +13,9 @@ export function generateStaticParams() {
   return featuredTours.map((t) => ({ slug: t.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const tour = featuredTours.find((t) => t.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const tour = featuredTours.find((t) => t.slug === resolvedParams.slug);
   if (!tour) return { title: "Tour Not Found" };
   return {
     title: `${tour.title} | Premium Packages`,
@@ -22,8 +23,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function TourPage({ params }: { params: { slug: string } }) {
-  const tour = featuredTours.find((t) => t.slug === params.slug);
+export default async function TourPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const tour = featuredTours.find((t) => t.slug === resolvedParams.slug);
   
   if (!tour) notFound();
 
