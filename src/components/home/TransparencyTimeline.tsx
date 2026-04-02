@@ -21,7 +21,7 @@ export function TransparencyTimeline() {
     <Section className="relative border-y border-slate-200/50 overflow-hidden py-24">
       {/* Background Image with Parallax */}
       <div 
-        className="absolute inset-0 bg-[url('/images/page-hero/about.png')] bg-cover bg-center bg-fixed"
+        className="absolute inset-0 bg-[url('/images/page-hero/about.png')] bg-cover bg-center bg-scroll md:bg-fixed"
       />
       {/* 40% Overlay */}
       <div className="absolute inset-0 bg-bb-navy/40" />

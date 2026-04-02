@@ -14,7 +14,7 @@ export function CaseStudies() {
     <Section className="relative border-y border-slate-200/50 py-24 overflow-hidden">
       {/* Background Image with Parallax */}
       <div 
-        className="absolute inset-0 bg-[url('/images/page-hero/services.png')] bg-cover bg-center bg-fixed"
+        className="absolute inset-0 bg-[url('/images/page-hero/services.png')] bg-cover bg-center bg-scroll md:bg-fixed"
       />
       {/* 40% Dark Overlay */}
       <div className="absolute inset-0 bg-bb-navy/40" />
