@@ -64,7 +64,7 @@ export function HomeHero() {
         >
           <h1 className="text-6xl font-medium tracking-tight text-white md:text-8xl lg:text-[7rem] leading-[1.05]">
             Global mobility, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40">engineered.</span>
+            <span className="text-white/80">engineered.</span>
           </h1>
         </motion.div>
 

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FileText, Briefcase, GraduationCap, Globe, Building } from "lucide-react";
+import Image from "next/image";
 
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
@@ -24,7 +25,19 @@ export default function ServicesHubPage() {
   return (
     <>
       {/* Services Hero */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-bb-navy overflow-hidden">
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-bb-navy overflow-hidden border-b border-white/10">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/page-hero/services.png"
+            alt="B.B. Travel Consult Services"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bb-navy via-transparent to-transparent opacity-90" />
+        </div>
+
         <FlightPathBackground />
         <Container className="relative z-10 text-center">
           <span className="eyebrow mb-6 inline-block">Core Expertise</span>

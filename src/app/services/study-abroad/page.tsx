@@ -10,7 +10,12 @@ export default function StudyAbroadPage() {
 
   return (
     <>
-      <PageHero eyebrow="Study Abroad" title={service.title} description={service.overview} />
+      <PageHero 
+        eyebrow="Study Abroad" 
+        title={service.title} 
+        description="From university selection to visa approval — a structured pathway to world-class education for ambitious Ghanaian students."
+        image="/images/page-hero/about.png"
+      />
       <ServiceDetailSection
         title={service.title}
         overview={service.overview}

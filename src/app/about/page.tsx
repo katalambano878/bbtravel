@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { ShieldCheck, Target, Award, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
@@ -15,8 +16,22 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <Section variant="navy" className="pt-32 pb-20 md:pt-48 md:pb-32 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-bb-gold/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
+      <Section variant="navy" className="pt-32 pb-20 md:pt-48 md:pb-32 relative overflow-hidden border-b border-white/10">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/page-hero/about.png"
+            alt="About B.B. Travel Consult"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+          {/* 35% dark overlay plus gradient for text readability */}
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bb-navy via-transparent to-transparent opacity-90" />
+        </div>
+        
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-bb-gold/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3 z-0" />
+        
         <Container className="relative z-10 text-center">
           <span className="eyebrow mb-6 inline-block text-bb-gold">Our Philosophy</span>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">

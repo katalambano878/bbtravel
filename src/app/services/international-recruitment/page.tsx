@@ -10,7 +10,12 @@ export default function InternationalRecruitmentPage() {
 
   return (
     <>
-      <PageHero eyebrow="International Recruitment" title={service.title} description={service.overview} />
+      <PageHero 
+        eyebrow="International Recruitment" 
+        title={service.title} 
+        description="Verified employer placements across the UK, Canada, Gulf States, and Europe — with full documentation and relocation support."
+        image="/images/page-hero/contact.png"
+      />
       <ServiceDetailSection
         title={service.title}
         overview={service.overview}

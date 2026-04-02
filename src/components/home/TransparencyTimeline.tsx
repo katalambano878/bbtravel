@@ -18,20 +18,25 @@ const timelineSteps = [
 
 export function TransparencyTimeline() {
   return (
-    <Section variant="neutral" className="relative border-y border-slate-200/50 overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1606857521015-7f9fcf423740?auto=format&fit=crop&w=2000&q=80')] opacity-[0.02] bg-cover bg-center grayscale" />
+    <Section className="relative border-y border-slate-200/50 overflow-hidden py-24">
+      {/* Background Image with Parallax */}
+      <div 
+        className="absolute inset-0 bg-[url('/images/page-hero/about.png')] bg-cover bg-center bg-fixed"
+      />
+      {/* 40% Overlay */}
+      <div className="absolute inset-0 bg-bb-navy/40" />
 
       <Container className="relative z-10 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center">
           
           {/* Left Column: Context & Trust */}
           <div className="max-w-xl text-center lg:text-left mx-auto lg:mx-0">
-            <span className="eyebrow mb-4 inline-block">The Transparency Framework</span>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-bb-navy leading-[1.1]">
+            <span className="eyebrow mb-4 inline-block text-bb-gold/90">The Transparency Framework</span>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.1]">
               You'll always know your <br />
               <span className="text-bb-gold">exact next step.</span>
             </h2>
-            <p className="mt-6 text-slate-500 text-lg font-light leading-relaxed max-w-md mx-auto lg:mx-0">
+            <p className="mt-6 text-white/80 text-lg font-light leading-relaxed max-w-md mx-auto lg:mx-0">
               The immigration system thrives on ambiguity. We eliminate it entirely. Our process is a straight line from consultation to departure.
             </p>
 
@@ -41,22 +46,22 @@ export function TransparencyTimeline() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-12 bg-white rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 shadow-glass border border-slate-200/60 max-w-lg mx-auto lg:mx-0"
+              className="mt-12 bg-white/10 backdrop-blur-md rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 shadow-glass border border-white/20 max-w-lg mx-auto lg:mx-0"
             >
               <div className="flex -space-x-3 shrink-0">
-                <div className="w-12 h-12 rounded-full border-2 border-white bg-slate-100 overflow-hidden shadow-sm">
+                <div className="w-12 h-12 rounded-full border-2 border-bb-navy/50 bg-slate-100 overflow-hidden shadow-sm">
                   <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80" alt="Client" className="w-full h-full object-cover" />
                 </div>
-                <div className="w-12 h-12 rounded-full border-2 border-white bg-slate-100 overflow-hidden shadow-sm">
+                <div className="w-12 h-12 rounded-full border-2 border-bb-navy/50 bg-slate-100 overflow-hidden shadow-sm">
                   <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80" alt="Client" className="w-full h-full object-cover" />
                 </div>
-                <div className="w-12 h-12 rounded-full border-2 border-white bg-bb-navy flex items-center justify-center text-xs font-bold text-white shadow-sm z-10">
+                <div className="w-12 h-12 rounded-full border-2 border-bb-navy/50 bg-bb-gold flex items-center justify-center text-xs font-bold text-white shadow-sm z-10">
                   500+
                 </div>
               </div>
-              <p className="text-slate-600 text-sm font-medium text-center sm:text-left leading-relaxed">
+              <p className="text-white text-sm font-medium text-center sm:text-left leading-relaxed">
                 Successful placements globally.<br />
-                <span className="text-slate-400 font-light">No guesswork, just results.</span>
+                <span className="text-white/70 font-light">No guesswork, just results.</span>
               </p>
             </motion.div>
           </div>
@@ -64,7 +69,7 @@ export function TransparencyTimeline() {
           {/* Right Column: Compact Vertical Timeline */}
           <div className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto">
             {/* Decorative offset background */}
-            <div className="absolute -inset-4 md:-inset-6 bg-bb-gold/5 rounded-[2.5rem] transform rotate-3" />
+            <div className="absolute -inset-4 md:-inset-6 bg-bb-gold/10 rounded-[2.5rem] transform rotate-3" />
             
             <div className="bg-white rounded-[2rem] p-6 md:p-10 shadow-premium border border-slate-100 relative z-10">
               {timelineSteps.map((step, idx) => (

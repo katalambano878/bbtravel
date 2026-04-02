@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ArrowRight, MapPin, Phone, Mail, MessageCircle, Clock } from "lucide-react";
+import Image from "next/image";
 
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
@@ -14,7 +15,19 @@ export const metadata: Metadata = {
 export default function ContactHubPage() {
   return (
     <>
-      <Section variant="navy" className="pt-32 pb-20 md:pt-48 md:pb-32 relative overflow-hidden">
+      <Section variant="navy" className="pt-32 pb-20 md:pt-48 md:pb-32 relative overflow-hidden border-b border-white/10">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/page-hero/contact.png"
+            alt="Contact B.B. Travel Consult"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bb-navy via-transparent to-transparent opacity-90" />
+        </div>
+
         <Container className="relative z-10 text-center">
           <span className="eyebrow mb-6 inline-block text-bb-gold">Direct Access</span>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">

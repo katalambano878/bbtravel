@@ -1,216 +1,348 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, MessageCircle, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, Phone, ArrowRight } from "lucide-react";
 
 import { brand, services } from "@/lib/mockData";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
-import { Container } from "./Container";
+
+const navLinks = [
+  { label: "About", href: "/about" },
+  { label: "Tours", href: "/tours" },
+  { label: "Success", href: "/success" },
+];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenuOpen]);
+
+  const handleDropdownEnter = () => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    setServicesOpen(true);
+  };
+
+  const handleDropdownLeave = () => {
+    dropdownTimeout.current = setTimeout(() => setServicesOpen(false), 150);
+  };
 
   return (
     <>
       <header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          isScrolled 
-            ? "bg-white/90 backdrop-blur-xl border-b border-slate-200/50 shadow-sm py-3" 
+          isScrolled
+            ? "bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] py-3"
             : "bg-transparent py-5"
         )}
       >
-        <Container>
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
           <div className="flex items-center justify-between">
-            {/* Logo area */}
-            <Link href="/" className="flex flex-col group relative z-50">
-              <span className={cn(
-                "text-xl md:text-2xl font-bold tracking-tight transition-colors",
-                isScrolled ? "text-bb-navy" : "text-white"
+
+            {/* ── Logo ── */}
+            <Link href="/" className="relative z-50 flex items-center gap-3 group">
+              {/* Icon mark */}
+              <div className={cn(
+                "w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300",
+                isScrolled
+                  ? "bg-bb-navy text-white"
+                  : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
               )}>
-                {brand.name}
-              </span>
-              <span className={cn(
-                "text-[10px] md:text-xs font-medium tracking-widest uppercase opacity-80 transition-colors",
-                isScrolled ? "text-slate-500" : "text-slate-300"
-              )}>
-                {brand.tagline}
-              </span>
+                BB
+              </div>
+              <div className="flex flex-col">
+                <span className={cn(
+                  "text-[15px] font-semibold tracking-tight leading-tight transition-colors duration-300",
+                  isScrolled ? "text-bb-navy" : "text-white"
+                )}>
+                  B.B. Travel Consult
+                </span>
+                <span className={cn(
+                  "text-[10px] font-medium tracking-[0.15em] uppercase leading-tight transition-colors duration-300",
+                  isScrolled ? "text-slate-400" : "text-white/60"
+                )}>
+                  Global Opportunities
+                </span>
+              </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
-              <Link 
-                href="/about" 
+            {/* ── Desktop Navigation ── */}
+            <nav className="hidden lg:flex items-center gap-1">
+              <Link
+                href="/about"
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-bb-gold",
-                  isScrolled ? "text-slate-600" : "text-slate-200"
+                  "px-4 py-2 text-[13px] font-medium rounded-lg transition-all duration-200",
+                  isScrolled
+                    ? "text-slate-600 hover:text-bb-navy hover:bg-slate-50"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
                 )}
               >
                 About
               </Link>
 
-              {/* Mega Menu Trigger */}
-              <div 
-                className="relative group"
-                onMouseEnter={() => setServicesOpen(true)}
-                onMouseLeave={() => setServicesOpen(false)}
+              {/* Services Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={handleDropdownEnter}
+                onMouseLeave={handleDropdownLeave}
               >
-                <button className={cn(
-                  "flex items-center gap-1 text-sm font-medium transition-colors hover:text-bb-gold py-2",
-                  isScrolled ? "text-slate-600" : "text-slate-200"
-                )}>
+                <button
+                  className={cn(
+                    "flex items-center gap-1 px-4 py-2 text-[13px] font-medium rounded-lg transition-all duration-200",
+                    isScrolled
+                      ? "text-slate-600 hover:text-bb-navy hover:bg-slate-50"
+                      : "text-white/80 hover:text-white hover:bg-white/10",
+                    servicesOpen && (isScrolled ? "bg-slate-50 text-bb-navy" : "bg-white/10 text-white")
+                  )}
+                >
                   Services
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className={cn(
+                    "w-3.5 h-3.5 transition-transform duration-200",
+                    servicesOpen && "rotate-180"
+                  )} />
                 </button>
 
-                {/* Mega Menu Dropdown */}
                 <AnimatePresence>
                   {servicesOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 w-[600px] pt-4"
+                      initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      className="absolute top-full left-0 w-[320px] pt-2"
                     >
-                      <div className="bg-white rounded-2xl shadow-premium border border-slate-100 p-6 grid grid-cols-2 gap-x-8 gap-y-6">
-                        {services.map((service) => (
-                          <Link 
-                            key={service.slug} 
+                      <div className="bg-white rounded-xl shadow-lg border border-slate-100/80 py-2 overflow-hidden">
+                        {services.map((service, i) => (
+                          <Link
+                            key={service.slug}
                             href={`/services/${service.slug}`}
-                            className="group flex flex-col gap-1"
+                            className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
                           >
-                            <span className="text-sm font-semibold text-bb-navy group-hover:text-bb-gold transition-colors flex items-center gap-2">
-                              {service.title}
+                            <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-bb-navy/5 flex items-center justify-center text-bb-navy text-xs font-bold mt-0.5">
+                              {String(i + 1).padStart(2, "0")}
                             </span>
-                            <span className="text-xs text-slate-500 leading-snug">
-                              {service.shortDescription}
-                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-sm font-medium text-slate-800 group-hover:text-bb-navy transition-colors truncate">
+                                {service.title}
+                              </span>
+                              <span className="text-xs text-slate-400 leading-snug line-clamp-1">
+                                {service.shortDescription}
+                              </span>
+                            </div>
                           </Link>
                         ))}
+
+                        <div className="border-t border-slate-100 mt-1 pt-1">
+                          <Link
+                            href="/services"
+                            className="flex items-center gap-2 px-4 py-3 text-xs font-medium text-bb-gold hover:bg-bb-gold/5 transition-colors"
+                          >
+                            View all services
+                            <ArrowRight className="w-3 h-3" />
+                          </Link>
+                        </div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
 
-              <Link 
-                href="/tours" 
+              <Link
+                href="/tours"
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-bb-gold",
-                  isScrolled ? "text-slate-600" : "text-slate-200"
+                  "px-4 py-2 text-[13px] font-medium rounded-lg transition-all duration-200",
+                  isScrolled
+                    ? "text-slate-600 hover:text-bb-navy hover:bg-slate-50"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
                 )}
               >
                 Tours
               </Link>
-              <Link 
-                href="/success" 
+
+              <Link
+                href="/success"
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-bb-gold",
-                  isScrolled ? "text-slate-600" : "text-slate-200"
+                  "px-4 py-2 text-[13px] font-medium rounded-lg transition-all duration-200",
+                  isScrolled
+                    ? "text-slate-600 hover:text-bb-navy hover:bg-slate-50"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
                 )}
               >
                 Success
               </Link>
             </nav>
 
-            {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-4 relative z-50">
-              <a 
-                href={`https://wa.me/${brand.whatsapp.replace(/\\D/g, "")}`} 
-                target="_blank" 
-                rel="noreferrer"
+            {/* ── Desktop Actions ── */}
+            <div className="hidden lg:flex items-center gap-3 relative z-50">
+              <a
+                href={`tel:${brand.phone}`}
                 className={cn(
-                  "flex items-center justify-center w-10 h-10 rounded-full border transition-colors hover:bg-bb-gold hover:text-white hover:border-bb-gold",
-                  isScrolled ? "border-slate-200 text-slate-600" : "border-white/20 text-white"
+                  "flex items-center gap-2 px-3 py-2 text-[13px] font-medium rounded-lg transition-all duration-200",
+                  isScrolled
+                    ? "text-slate-500 hover:text-bb-navy hover:bg-slate-50"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
                 )}
-                aria-label="Contact via WhatsApp"
               >
-                <MessageCircle className="w-5 h-5" />
+                <Phone className="w-3.5 h-3.5" />
+                <span className="hidden xl:inline">{brand.phone}</span>
               </a>
-              <Button asChild className="bg-bb-gold text-white hover:bg-[#b08f43] rounded-full px-6 shadow-[0_0_20px_rgba(200,164,93,0.3)]">
-                <Link href="/start">
-                  Start Application
-                </Link>
-              </Button>
+
+              <Link
+                href="/start"
+                className="flex items-center gap-2 px-5 py-2.5 bg-bb-gold text-white text-[13px] font-semibold rounded-lg hover:bg-[#b08f43] transition-all duration-200 shadow-sm"
+              >
+                Get Started
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
-            {/* Mobile Toggle */}
+            {/* ── Mobile Toggle ── */}
             <button
               className={cn(
-                "lg:hidden p-2 -mr-2 relative z-50 transition-colors",
-                isScrolled ? "text-bb-navy" : "text-white"
+                "lg:hidden relative z-50 p-2 -mr-2 rounded-lg transition-colors",
+                mobileMenuOpen
+                  ? "text-slate-800"
+                  : isScrolled ? "text-bb-navy" : "text-white"
               )}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6 text-bb-navy" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
-        </Container>
+        </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* ── Mobile Menu ── */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-40 bg-white"
-          >
-            <div className="flex flex-col h-full pt-24 pb-8 px-6">
-              <nav className="flex flex-col gap-6 flex-1 overflow-y-auto">
-                <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-bold text-bb-navy">About Us</Link>
-                
-                <div className="flex flex-col gap-4">
-                  <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Services</span>
-                  {services.map((service) => (
-                    <Link 
-                      key={service.slug} 
-                      href={`/services/${service.slug}`}
-                      onClick={() => setMobileMenuOpen(false)} 
-                      className="text-lg font-medium text-slate-700 pl-4 border-l-2 border-slate-100"
-                    >
-                      {service.title}
-                    </Link>
-                  ))}
-                </div>
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
 
-                <Link href="/tours" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-bold text-bb-navy mt-4">Tours</Link>
-                <Link href="/success" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-bold text-bb-navy">Success Stories</Link>
-                <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-bold text-bb-navy">Insights & FAQ</Link>
-              </nav>
-
-              <div className="pt-8 flex flex-col gap-4 border-t border-slate-100 mt-auto">
-                <Button asChild className="w-full h-14 text-lg bg-bb-navy text-white rounded-xl">
-                  <Link href="/start" onClick={() => setMobileMenuOpen(false)}>
-                    Start Application <ArrowRight className="w-5 h-5 ml-2" />
+            {/* Panel */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed top-0 right-0 bottom-0 z-40 w-[85%] max-w-sm bg-white shadow-2xl lg:hidden"
+            >
+              <div className="flex flex-col h-full pt-20 pb-6 px-6">
+                {/* Nav Links */}
+                <nav className="flex flex-col gap-1 flex-1 overflow-y-auto">
+                  <Link
+                    href="/about"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center px-4 py-3 text-[15px] font-medium text-slate-700 hover:text-bb-navy hover:bg-slate-50 rounded-lg transition-colors"
+                  >
+                    About Us
                   </Link>
-                </Button>
-                <Button variant="secondary" asChild className="w-full h-14 text-lg border-slate-200 text-slate-600 rounded-xl">
-                  <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                    <MessageCircle className="w-5 h-5 mr-2 text-bb-gold" /> Chat on WhatsApp
+
+                  {/* Services Accordion */}
+                  <div>
+                    <button
+                      onClick={() => setServicesOpen(!servicesOpen)}
+                      className="flex items-center justify-between w-full px-4 py-3 text-[15px] font-medium text-slate-700 hover:text-bb-navy hover:bg-slate-50 rounded-lg transition-colors"
+                    >
+                      Services
+                      <ChevronDown className={cn(
+                        "w-4 h-4 text-slate-400 transition-transform duration-200",
+                        servicesOpen && "rotate-180"
+                      )} />
+                    </button>
+
+                    <AnimatePresence>
+                      {servicesOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pl-4 py-1 space-y-0.5">
+                            {services.map((service) => (
+                              <Link
+                                key={service.slug}
+                                href={`/services/${service.slug}`}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block px-4 py-2.5 text-sm text-slate-500 hover:text-bb-navy hover:bg-slate-50 rounded-lg transition-colors"
+                              >
+                                {service.title}
+                              </Link>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <Link
+                    href="/tours"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center px-4 py-3 text-[15px] font-medium text-slate-700 hover:text-bb-navy hover:bg-slate-50 rounded-lg transition-colors"
+                  >
+                    Tours
+                  </Link>
+                  <Link
+                    href="/success"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center px-4 py-3 text-[15px] font-medium text-slate-700 hover:text-bb-navy hover:bg-slate-50 rounded-lg transition-colors"
+                  >
+                    Success Stories
+                  </Link>
+                  <Link
+                    href="/blog"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center px-4 py-3 text-[15px] font-medium text-slate-700 hover:text-bb-navy hover:bg-slate-50 rounded-lg transition-colors"
+                  >
+                    Insights & FAQ
+                  </Link>
+                </nav>
+
+                {/* Mobile CTA */}
+                <div className="pt-6 flex flex-col gap-3 border-t border-slate-100 mt-auto">
+                  <a
+                    href={`tel:${brand.phone}`}
+                    className="flex items-center justify-center gap-2 w-full py-3 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    <Phone className="w-4 h-4" />
+                    {brand.phone}
                   </a>
-                </Button>
+                  <Link
+                    href="/start"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-white bg-bb-gold rounded-lg hover:bg-[#b08f43] transition-colors"
+                  >
+                    Get Started
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

@@ -10,7 +10,12 @@ export default function TourPackagesPage() {
 
   return (
     <>
-      <PageHero eyebrow="Tour Packages" title={service.title} description={service.overview} />
+      <PageHero 
+        eyebrow="Tour Packages" 
+        title={service.title} 
+        description="Fully managed travel experiences with curated itineraries, premium accommodation, and seamless logistics worldwide."
+        image="/images/page-hero/tours.png"
+      />
       <ServiceDetailSection
         title={service.title}
         overview={service.overview}

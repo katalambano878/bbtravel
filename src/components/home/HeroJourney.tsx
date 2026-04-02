@@ -59,25 +59,13 @@ export function HeroJourney() {
           
           {/* Main Content */}
           <div className="space-y-8 flex flex-col items-center text-center w-full">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-wrap items-center justify-center gap-3"
-            >
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-bb-sky/10 border border-bb-sky/20 text-bb-sky text-xs font-semibold uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5" /> License #12345
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-bb-gold/10 border border-bb-gold/20 text-bb-gold text-xs font-semibold uppercase tracking-wider">
-                Transparent Process
-              </span>
-            </motion.div>
+
 
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[1.1]"
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1]"
             >
               Where Your <br className="hidden md:block" />
               <span className="text-bb-gold">
@@ -90,7 +78,7 @@ export function HeroJourney() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg md:text-2xl text-slate-300 font-light leading-relaxed max-w-2xl mx-auto"
+              className="text-lg md:text-xl text-slate-300 font-light leading-relaxed max-w-2xl mx-auto"
             >
               Visa support • Jobs abroad • Study abroad • Tours — guided ethically, legally, and transparently.
             </motion.p>

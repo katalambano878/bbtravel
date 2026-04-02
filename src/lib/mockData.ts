@@ -1,59 +1,60 @@
 export const services = [
   {
     id: "visa-assistance",
-    title: "Visa Assistance",
+    title: "Strategic Visa Advisory",
     slug: "visa-assistance",
-    shortDescription: "Strategic review and compilation of documents for high-probability visa applications.",
-    description: "We eliminate guesswork from your visa application. From tourist to work visas, we provide structured guidance on documentation, interview prep, and submission protocols tailored to your specific destination.",
+    shortDescription: "Embassy-aligned application strategy, document auditing, and refusal overturn expertise for 30+ countries.",
+    description: "We reverse-engineer embassy decision criteria to build visa applications that withstand scrutiny. From Schengen to US B1/B2 and Canadian TRVs — including prior refusal overturns — our structured framework eliminates the guesswork that costs applicants time and money.",
     icon: "Passport",
     image: "/images/services/visa.png",
-    benefits: ["Detailed document auditing", "Embassy interview preparation", "Profile strengthening"],
-    timeline: ["Assessment", "Strategy", "Documentation", "Submission", "Decision"]
+    benefits: ["Embassy-specific document auditing", "DS-160 & UK form mastery", "Prior refusal analysis & overturn strategy"],
+    timeline: ["Profile Assessment", "Document Audit", "Application Mastery", "Interview Prep", "Submission & Tracking"]
   },
   {
     id: "international-recruitment",
-    title: "Jobs Abroad",
+    title: "International Recruitment",
     slug: "international-recruitment",
-    shortDescription: "Connecting skilled Ghanaian professionals with verified international employers.",
-    description: "Navigate global career opportunities safely. We connect qualified talent with vetted international roles, managing the compliance, documentation, and transition process transparently.",
+    shortDescription: "Ethical placement of nurses, engineers, and skilled professionals with verified NHS trusts and global employers.",
+    description: "We connect pre-vetted Ghanaian professionals directly with licensed employers — NHS trusts, CQC-registered care providers, and verified international companies. Every placement goes through rigorous compliance checks. If the opportunity doesn't meet our ethical standards, we don't present it.",
     icon: "Briefcase",
     image: "/images/services/jobs.png",
-    benefits: ["Vetted employer network", "Contract review & negotiation", "Relocation support"],
-    timeline: ["Skill Assessment", "Profile Matching", "Interviews", "Offer & Contracts", "Relocation"]
+    benefits: ["Verified employer network only", "Full credential verification & NMC support", "Contract review & visa processing"],
+    timeline: ["Professional Profiling", "Credential Verification", "Opportunity Matching", "Interview Coaching", "Placement & Relocation"]
   },
   {
     id: "study-abroad",
-    title: "Study Abroad",
+    title: "Study Abroad Placement",
     slug: "study-abroad",
-    shortDescription: "End-to-end admission and student visa guidance for top global universities.",
-    description: "Turn your academic ambitions into reality. We guide you through university selection, application essays, scholarship sourcing, and the final student visa process.",
+    shortDescription: "Strategic university selection, SOP crafting, scholarship sourcing, and student visa processing for top global programs.",
+    description: "Getting into an international university isn't just about grades — it's about presenting a compelling narrative. We guide students through strategic school selection, application crafting with professional SOP review, scholarship identification, and end-to-end student visa processing.",
     icon: "GraduationCap",
     image: "/images/services/study.png",
-    benefits: ["University placement", "Scholarship guidance", "Student visa processing"],
-    timeline: ["Consultation", "University Selection", "Applications", "Acceptance", "Visa Prep"]
+    benefits: ["Data-driven university shortlisting", "Professional SOP & essay review", "Scholarship sourcing & visa processing"],
+    timeline: ["Academic Assessment", "Strategic Shortlisting", "Application Crafting", "Scholarship & Visa", "Pre-Departure"]
   },
   {
     id: "tour-packages",
-    title: "Tour Packages",
+    title: "Premium Tour Packages",
     slug: "tour-packages",
-    shortDescription: "Curated premium itineraries designed for groups, couples, and corporate retreats.",
-    description: "Experience the world without the logistical stress. Our expertly curated tours include flights, premium stays, guided excursions, and comprehensive support from departure to return.",
+    shortDescription: "Bespoke itineraries with end-to-end concierge management — flights, hotels, excursions, and 24/7 on-ground support.",
+    description: "Our tour packages handle everything — visa documentation, flight bookings, premium accommodations, guided excursions, airport transfers, and 24/7 concierge support. From honeymoons in Paris to corporate retreats in Dubai, you show up and enjoy. We handle everything else.",
     icon: "Globe",
     image: "/images/services/tours.png",
-    benefits: ["All-inclusive logistics", "Expert local guides", "Premium accommodations"],
-    timeline: ["Destination Choice", "Itinerary Customization", "Booking", "Pre-departure Brief", "Travel"]
+    benefits: ["All-inclusive logistics & booking", "Visa documentation included", "24/7 on-ground concierge support"],
+    timeline: ["Preference Mapping", "Itinerary Design", "Booking & Documentation", "Pre-Departure Brief", "Concierge Support"]
   },
   {
     id: "business-export-facilitation",
-    title: "Business & Export",
+    title: "Business & Export Advisory",
     slug: "business-export-facilitation",
-    shortDescription: "Navigating international trade logistics, compliance, and market entry.",
-    description: "Expand your business footprint globally. We facilitate cross-border trade, helping Ghanaian businesses navigate export compliance, documentation, and international market entry.",
+    shortDescription: "GEPA registration, export compliance, market-entry strategy, and international trade facilitation for Ghanaian businesses.",
+    description: "We help Ghanaian businesses navigate the full export pipeline — from GEPA registration and FDA export certification to international partner vetting, trade mission coordination, and market-entry strategy. Whether you're shipping shea butter to Europe or attending a trade exhibition, we provide the process infrastructure.",
     icon: "Building",
-    benefits: ["Trade compliance", "Export documentation", "Market entry strategy"],
-    timeline: ["Market Assessment", "Regulatory Review", "Documentation", "Logistics Setup", "Execution"]
+    benefits: ["GEPA & FDA export support", "International partner vetting", "Trade mission coordination"],
+    timeline: ["Market Readiness Review", "Target Market Analysis", "Documentation & Compliance", "Partner Matchmaking", "Launch & Advisory"]
   }
 ];
+
 
 export const featuredTours = [
   {
@@ -239,3 +240,55 @@ export const brand = {
   social: "@bbtravelconsult",
   address: "Spintex, Accra, Ghana"
 };
+
+export const caseStudies = [
+  {
+    id: "cs-uk-nurse",
+    client: "Adwoa M. — Registered Nurse",
+    goal: "UK Skilled Worker Visa (NHS Placement)",
+    challenges: "Adwoa had passed her CBT but struggled for over a year with unresponsive recruitment agencies that collected fees and delivered nothing. Her NMC registration was stalling due to incorrect document submissions from a previous agent. She was on the verge of giving up on her UK nursing career entirely.",
+    howWeHelped: "We took over her case from scratch. First, we rectified the NMC registration errors and fast-tracked her pin activation. We then connected her directly with a verified NHS trust in Birmingham through our licensed healthcare recruitment partners — bypassing the middlemen entirely. We prepared her OSCE documentation, structured her Skilled Worker visa application with payslip evidence from her current role, and coordinated her COS assignment with the employer.",
+    outcome: "NMC pin activated within 6 weeks. Certificate of Sponsorship issued in 3 weeks. Skilled Worker Visa approved on first attempt. Adwoa is currently a Band 5 Staff Nurse at a Birmingham NHS hospital with full relocation support including flight and initial accommodation covered by her employer."
+  },
+  {
+    id: "cs-canada-study",
+    client: "Kwame D. — MSc Applicant",
+    goal: "Canadian Study Permit & University Admission",
+    challenges: "Kwame had a second-class lower degree from a Ghanaian university and a 3-year work gap after graduation. His initial study permit application was refused on the grounds of 'purpose of visit not consistent with a temporary stay.' He came to us demoralized, believing Canada was no longer an option.",
+    howWeHelped: "We obtained his GCMS notes and identified the exact refusal grounds — the officer questioned why he would study abroad after years of not pursuing education. We rebuilt his narrative entirely: his SOP was restructured to directly link his work experience to his proposed program, demonstrating career progression logic. We identified three target universities with strong admission records for non-traditional students, secured admission at two of them, and rebuilt his financial documentation with a GIC and clear sponsorship structure that addressed every IRCC concern.",
+    outcome: "Admission secured at the University of Windsor with a partial graduate assistantship. Study Permit approved on second attempt — 4 months after his initial refusal. Kwame is currently completing his Master's in Engineering Management and has since received a co-op placement."
+  },
+  {
+    id: "cs-schengen-family",
+    client: "The Osei-Bonsu Family (4 Travelers)",
+    goal: "Schengen Visa (France — Family Holiday)",
+    challenges: "The family had no prior international travel history, which made their Schengen application high-risk — first-time applicants from Ghana face elevated scrutiny. Additionally, the primary sponsor's bank statements showed irregular deposits that could appear suspicious to a visa officer.",
+    howWeHelped: "We structured a 10-day detailed itinerary covering Paris and Nice with confirmed hotel bookings and activity reservations that demonstrated legitimate tourism intent. For the financial documentation, we prepared a comprehensive narrative explaining the sponsor's business income patterns, supplemented with tax returns and business registration documents. Each family member received an individualized cover letter addressing their specific ties to Ghana. We conducted a full mock interview session covering the most common Schengen interview questions.",
+    outcome: "All four Schengen visas approved on first attempt with a 90-day multiple entry validity — exceeding the 10 days they had applied for. The family completed their France holiday and have since returned for a second trip to Italy using our services."
+  },
+  {
+    id: "cs-dubai-corporate",
+    client: "GoldStar Trading Ltd (25 Travelers)",
+    goal: "Corporate Incentive Trip — Dubai",
+    challenges: "The company needed to coordinate a premium 6-day Dubai trip for 25 employees and partners within a 5-week window. Challenges included varying passport validities across the group, 4 travelers requiring UAE visas, dietary requirements, and the CEO's request for an exclusive desert experience that wasn't available through standard tour operators.",
+    howWeHelped: "We assigned a dedicated tour coordinator who managed the entire operation. We flagged and expedited 3 passport renewals, processed all 4 UAE visa applications simultaneously, negotiated group rates that saved the company over $8,000 compared to individual bookings, and sourced a private luxury desert camp experience through our UAE partner network. Every traveler received a personalized trip pack with itinerary, emergency contacts, and cultural guidelines.",
+    outcome: "All 25 travelers departed and returned without a single logistical issue. The company reported it as their most successful corporate event to date and has since booked two additional group trips through us — a Cape Town retreat and a London conference package."
+  },
+  {
+    id: "cs-us-refusal",
+    client: "Nana K. — Business Owner",
+    goal: "US B1/B2 Visa (Prior Refusal Overturn)",
+    challenges: "Nana's B1/B2 visa was refused twice under Section 214(b) — the officer determined he had not demonstrated sufficient ties to Ghana and questioned his intent to return. His previous applications were self-prepared with minimal supporting documentation. He was convinced a third attempt would be futile.",
+    howWeHelped: "We conducted a thorough profile reconstruction. We compiled a comprehensive evidence package showing his business ownership (including GRA tax returns, company registration, and employee documentation), property ownership in Accra, his children's school enrollment, and his wife's established medical practice. His DS-160 was meticulously reviewed to eliminate any inconsistencies with his supporting documents. We ran two intensive mock interview sessions focused specifically on the 214(b) concerns from his previous refusals.",
+    outcome: "B1/B2 visa approved on the third attempt — a 10-year multiple entry visa. Nana successfully attended a trade conference in Atlanta and has since used the visa for three additional business trips. His case remains one of our most referenced refusal-overturn successes."
+  },
+  {
+    id: "cs-shea-export",
+    client: "Aseda Naturals (SME — Shea Products)",
+    goal: "Export Market Entry — European Union",
+    challenges: "Aseda Naturals produced high-quality shea butter and body care products but had zero export experience. They lacked GEPA registration, had no EU-compliant product labeling, didn't understand CPNP (Cosmetic Products Notification Portal) requirements, and had no connections to potential European distributors.",
+    howWeHelped: "We managed their end-to-end export readiness: GEPA registration and export license acquisition, FDA export certification for cosmetic products, EU CPNP notification guidance, product labeling compliance review (ingredients listing, batch coding, EU responsible person requirements), and connection with three pre-vetted UK-based African product distributors. We also coordinated their participation in a GEPA-sponsored trade exhibition in London where they met buyers directly.",
+    outcome: "First export shipment (1,200 units) dispatched to a UK distributor within 5 months of engagement. Aseda Naturals is now exporting to 2 UK retailers and exploring a German market entry. Revenue from exports now accounts for 40% of their total business."
+  }
+];
+

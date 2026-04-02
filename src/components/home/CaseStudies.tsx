@@ -11,17 +11,24 @@ import { testimonials } from "@/lib/mockData";
 
 export function CaseStudies() {
   return (
-    <Section variant="neutral" className="relative border-y border-slate-200/50">
-      <Container>
+    <Section className="relative border-y border-slate-200/50 py-24 overflow-hidden">
+      {/* Background Image with Parallax */}
+      <div 
+        className="absolute inset-0 bg-[url('/images/page-hero/services.png')] bg-cover bg-center bg-fixed"
+      />
+      {/* 40% Dark Overlay */}
+      <div className="absolute inset-0 bg-bb-navy/40" />
+
+      <Container className="relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 md:mb-20">
           <div className="max-w-xl">
-            <span className="eyebrow mb-4 inline-block">Client Success</span>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-bb-navy leading-[1.1]">
+            <span className="eyebrow mb-4 inline-block text-bb-gold/90">Client Success</span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white leading-[1.1]">
               Real challenges. <br />
               <span className="text-bb-gold">Strategic execution.</span>
             </h2>
           </div>
-          <p className="text-slate-500 font-light max-w-sm text-lg leading-relaxed pb-2">
+          <p className="text-white/80 font-light max-w-sm text-lg leading-relaxed pb-2">
             We don't sell hope. Here's exactly what our clients have to say about the results we deliver.
           </p>
         </div>
@@ -34,7 +41,7 @@ export function CaseStudies() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-premium transition-all duration-500 flex flex-col group relative overflow-hidden"
+              className="bg-white rounded-3xl p-6 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-500 flex flex-col group relative overflow-hidden"
             >
               <div className="mb-4">
                 <svg className="w-6 h-6 text-bb-gold/60" fill="currentColor" viewBox="0 0 32 32">
@@ -60,8 +67,8 @@ export function CaseStudies() {
         </div>
 
         <div className="mt-16 text-center">
-          <Button variant="secondary" asChild className="rounded-xl border-slate-200 text-slate-600 h-14 px-8 text-base">
-            <Link href="/success">Read more success stories <ArrowRight className="w-4 h-4 ml-2" /></Link>
+          <Button variant="secondary" asChild className="rounded-xl border-white/20 bg-white/10 hover:bg-white text-white hover:text-bb-navy backdrop-blur-md transition-all h-14 px-8 text-base shadow-glass group">
+            <Link href="/success">Read more success stories <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" /></Link>
           </Button>
         </div>
       </Container>

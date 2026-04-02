@@ -10,7 +10,12 @@ export default function BusinessExportPage() {
 
   return (
     <>
-      <PageHero eyebrow="Business & Export Facilitation" title={service.title} description={service.overview} />
+      <PageHero 
+        eyebrow="Business & Export Facilitation" 
+        title={service.title} 
+        description="End-to-end export compliance, buyer connection, and market entry strategy for Ghanaian businesses going global."
+        image="/images/page-hero/services.png"
+      />
       <ServiceDetailSection
         title={service.title}
         overview={service.overview}
