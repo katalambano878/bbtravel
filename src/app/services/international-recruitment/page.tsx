@@ -23,6 +23,7 @@ export default function InternationalRecruitmentPage() {
         checklistPreview={service.checklistPreview}
         faqs={service.faqs}
         serviceType={service.type}
+        backgroundImage="/images/services/jobs.webp"
       />
       <CtaBanner />
     </>

@@ -16,10 +16,11 @@ interface ServiceDetailProps {
   checklistPreview: string[];
   faqs: { question: string; answer: string }[];
   serviceType: ServiceType;
+  backgroundImage?: string;
 }
 
 export function ServiceDetailSection(props: ServiceDetailProps) {
-  const { title, overview, whoFor, checklistPreview, faqs, serviceType } = props;
+  const { title, overview, whoFor, checklistPreview, faqs, serviceType, backgroundImage = "/images/page-hero/services.webp" } = props;
   const workflow = serviceWorkflows[serviceType];
 
   return (
@@ -158,10 +159,11 @@ export function ServiceDetailSection(props: ServiceDetailProps) {
       </section>
 
       {/* ━━━ Section 4: How It Works (Execution Strategy) ━━━ */}
-      <section className="bg-bb-navy py-20 md:py-28 relative overflow-hidden">
-        {/* Decorative background */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-bb-gold/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-bb-sky/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3" />
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed" style={{ backgroundImage: `url(${backgroundImage})` }} />
+        {/* 35% Dark Overlay */}
+        <div className="absolute inset-0 bg-bb-navy/[0.65]" />
 
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
           <motion.div
@@ -267,8 +269,12 @@ export function ServiceDetailSection(props: ServiceDetailProps) {
       </section>
 
       {/* ━━━ Section 6: Micro-CTA Band ━━━ */}
-      <section className="bg-bb-navy border-y border-white/10 py-12 md:py-14">
-        <div className="container mx-auto px-6 max-w-5xl">
+      <section className="py-12 md:py-14 relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed" style={{ backgroundImage: `url(${backgroundImage})` }} />
+        {/* 35% Dark Overlay */}
+        <div className="absolute inset-0 bg-bb-navy/[0.65]" />
+        <div className="container mx-auto px-6 max-w-5xl relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div>
               <h3 className="text-xl md:text-2xl font-bold text-white mb-1">Ready to get started?</h3>
@@ -343,8 +349,11 @@ export function ServiceDetailSection(props: ServiceDetailProps) {
       </section>
 
       {/* ━━━ Section 8: FAQs ━━━ */}
-      <section className="bg-bb-navy py-20 md:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(201,164,77,0.05)_0%,transparent_50%)]" />
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed" style={{ backgroundImage: `url(${backgroundImage})` }} />
+        {/* 35% Dark Overlay */}
+        <div className="absolute inset-0 bg-bb-navy/[0.65]" />
         <div className="container mx-auto px-6 max-w-3xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

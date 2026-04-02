@@ -23,6 +23,7 @@ export default function TourPackagesPage() {
         checklistPreview={service.checklistPreview}
         faqs={service.faqs}
         serviceType={service.type}
+        backgroundImage="/images/services/tours.webp"
       />
       <CtaBanner />
     </>

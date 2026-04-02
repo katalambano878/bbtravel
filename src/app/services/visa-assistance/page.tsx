@@ -23,6 +23,7 @@ export default function VisaAssistancePage() {
         checklistPreview={service.checklistPreview}
         faqs={service.faqs}
         serviceType={service.type}
+        backgroundImage="/images/services/visa.webp"
       />
       <CtaBanner />
     </>

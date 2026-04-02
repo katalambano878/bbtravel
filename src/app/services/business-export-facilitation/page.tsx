@@ -23,6 +23,7 @@ export default function BusinessExportPage() {
         checklistPreview={service.checklistPreview}
         faqs={service.faqs}
         serviceType={service.type}
+        backgroundImage="/images/page-hero/services.webp"
       />
       <CtaBanner />
     </>

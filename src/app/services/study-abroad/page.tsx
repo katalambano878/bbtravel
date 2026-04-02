@@ -23,6 +23,7 @@ export default function StudyAbroadPage() {
         checklistPreview={service.checklistPreview}
         faqs={service.faqs}
         serviceType={service.type}
+        backgroundImage="/images/services/study.webp"
       />
       <CtaBanner />
     </>
