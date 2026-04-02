@@ -148,7 +148,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                     <p className="text-xs text-slate-400 font-light mb-4">
                       Timelines are estimated based on standard embassy or corporate processing speeds and are subject to change.
                     </p>
-                    <Button variant="outline" asChild className="w-full h-12 bg-transparent border-white/20 text-white hover:bg-white hover:text-bb-navy rounded-xl">
+                    <Button variant="secondary" asChild className="w-full h-12 bg-transparent border border-white/20 text-white hover:bg-white hover:text-bb-navy rounded-xl">
                       <Link href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
                         Discuss timelines with our team
                       </Link>

@@ -127,7 +127,7 @@ export function ServiceDetailSection(props: ServiceDetailProps) {
                 Before we begin, here's what you'll need. Don't worry if you're missing items — during your assessment, we'll identify gaps and guide you on how to source or substitute every document.
               </p>
               <div className="pt-2">
-                <Button asChild variant="outline" className="h-12 px-6 text-sm border-bb-navy/20 text-bb-navy hover:bg-bb-navy hover:text-white rounded-xl font-semibold transition-all">
+                <Button asChild variant="secondary" className="h-12 px-6 text-sm border border-bb-navy/20 text-bb-navy hover:bg-bb-navy hover:text-white rounded-xl font-semibold transition-all">
                   <Link href="/start">
                     <FileCheck className="w-4 h-4 mr-2" /> Get Your Personalized Checklist
                   </Link>
