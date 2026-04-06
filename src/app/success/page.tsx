@@ -12,7 +12,22 @@ import { brand } from "@/lib/data/brand";
 export const metadata: Metadata = {
   title: "Client Results & Case Studies | B.B. Travel Consult",
   description:
-    "Explore detailed case studies of successfully executed visa applications, international recruitments, study placements, tour coordination, and hotel booking support by B.B. Travel Consult."
+    "Explore detailed case studies of successfully executed visa applications, international recruitments, study placements, tour coordination, and hotel booking support by B.B. Travel Consult.",
+  alternates: { canonical: "/success" },
+  openGraph: {
+    title: "Client Results & Case Studies | B.B. Travel Consult",
+    description:
+      "Explore detailed case studies of successfully executed visa applications, international recruitments, study placements, tour coordination, and hotel booking support by B.B. Travel Consult.",
+    url: "/success",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Client Results & Case Studies | B.B. Travel Consult",
+    description:
+      "Explore detailed case studies of successfully executed visa applications, international recruitments, study placements, tour coordination, and hotel booking support by B.B. Travel Consult.",
+    images: ["/seo/og-image.png"]
+  }
 };
 
 const stats = [
@@ -170,7 +185,7 @@ export default function SuccessPage() {
               <Link href="/start">Begin Your Assessment <ArrowRight className="w-5 h-5 ml-2" /></Link>
             </Button>
             <Button variant="secondary" asChild className="h-14 px-8 bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 text-base rounded-xl font-semibold">
-              <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+              <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} target="_blank" rel="noreferrer">
                 Speak to an Expert
               </a>
             </Button>

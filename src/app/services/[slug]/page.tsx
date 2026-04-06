@@ -18,7 +18,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!service) return { title: "Service Not Found" };
   return {
     title: service.title,
-    description: service.shortDescription
+    description: service.shortDescription,
+    alternates: {
+      canonical: `/services/${resolvedParams.slug}`
+    },
+    openGraph: {
+      title: `${service.title} | B.B. Travel Consult`,
+      description: service.shortDescription,
+      url: `/services/${resolvedParams.slug}`,
+      images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${service.title} | B.B. Travel Consult`,
+      description: service.shortDescription,
+      images: ["/seo/og-image.png"]
+    }
   };
 }
 
@@ -151,7 +166,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                       Timelines are estimated based on standard embassy or corporate processing speeds and are subject to change.
                     </p>
                     <Button variant="secondary" asChild className="w-full h-12 bg-transparent border border-white/20 text-white hover:bg-white hover:text-bb-navy rounded-xl">
-                      <Link href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+                      <Link href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} target="_blank" rel="noreferrer">
                         Discuss timelines with our team
                       </Link>
                     </Button>

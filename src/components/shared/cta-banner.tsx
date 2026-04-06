@@ -52,7 +52,7 @@ export function CtaBanner() {
             </Button>
             
             <Button variant="secondary" size="lg" className="h-14 px-8 text-base bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 text-white font-semibold transition-all duration-500 hover:scale-105 rounded-2xl w-full sm:w-auto hover:border-white/30" asChild>
-              <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+              <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} target="_blank" rel="noreferrer">
                 <MessageCircle className="mr-3 h-5 w-5 text-bb-gold" />
                 Speak to our Experts
               </a>

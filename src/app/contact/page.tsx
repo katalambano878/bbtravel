@@ -9,7 +9,20 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Contact Concierge | Reach the Experts",
-  description: "Schedule your strategic consultation with our elite travel and recruitment advisors."
+  description: "Schedule your strategic consultation with our elite travel and recruitment advisors.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact Concierge | Reach the Experts",
+    description: "Schedule your strategic consultation with our elite travel and recruitment advisors.",
+    url: "/contact",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Concierge | Reach the Experts",
+    description: "Schedule your strategic consultation with our elite travel and recruitment advisors.",
+    images: ["/seo/og-image.png"]
+  }
 };
 
 export default function ContactHubPage() {
@@ -55,7 +68,7 @@ export default function ContactHubPage() {
 
               <div className="space-y-6">
                 <a 
-                  href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} 
+                  href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} 
                   target="_blank" 
                   rel="noreferrer"
                   className="flex items-center gap-6 p-6 rounded-3xl border border-slate-200 bg-white shadow-sm hover:shadow-premium hover:border-bb-gold transition-all duration-300 group"
@@ -119,7 +132,7 @@ export default function ContactHubPage() {
                 </div>
 
                 <Button asChild className="h-14 px-8 bg-bb-navy hover:bg-bb-gold text-white text-base rounded-xl font-bold self-start shadow-sm">
-                  <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}?text=Hi,%20I%20would%20like%20to%20schedule%20an%20in-person%20consultation.`} target="_blank" rel="noreferrer">
+                  <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}?text=Hi,%20I%20would%20like%20to%20schedule%20an%20in-person%20consultation.`} target="_blank" rel="noreferrer">
                     Request Appointment <ArrowRight className="w-5 h-5 ml-2" />
                   </a>
                 </Button>

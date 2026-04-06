@@ -1,7 +1,17 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/shared/page-hero";
 import { Button } from "@/components/ui/button";
 import { checklistTemplates } from "@/lib/data/content";
+
+export const metadata: Metadata = {
+  title: "Application Submitted",
+  description: "Your onboarding was submitted successfully. Check your readiness score and next steps.",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default async function StartApplicationSuccessPage({
   searchParams

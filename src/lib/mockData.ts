@@ -355,12 +355,12 @@ export const brand = {
   name: "B.B. Travel Consult",
   founder: "Bright Nana Brown",
   tagline: "Global Opportunities, Made Simple.",
-  phone: "+233 30 398 1171",
+  phone: "030 398 1171",
   secondaryPhone: "0507328772",
-  whatsapp: "+233 24 448 9285",
+  whatsapp: "0244489285",
   email: "b.btravelconsult@gmail.com",
   social: "@bbtravelconsult",
-  address: "Spintex, Accra, Ghana",
+  address: "Teshie First Junction, CBG Bank Building, First Floor, Accra",
   digitalAddress: "GZ-018-0598"
 };
 

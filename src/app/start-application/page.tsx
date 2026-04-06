@@ -1,7 +1,26 @@
+import { Metadata } from "next";
 import { PageHero } from "@/components/shared/page-hero";
 import { StartApplicationForm } from "@/components/forms/start-application-form";
 import { submitWizardAction } from "@/app/actions";
 import { Card, CardContent } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Start Application",
+  description: "Begin your structured onboarding for visa, recruitment, study, tours, flights, or hotel booking support.",
+  alternates: { canonical: "/start-application" },
+  openGraph: {
+    title: "Start Application | B.B. Travel Consult",
+    description: "Begin your structured onboarding for visa, recruitment, study, tours, flights, or hotel booking support.",
+    url: "/start-application",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Start Application | B.B. Travel Consult",
+    description: "Begin your structured onboarding for visa, recruitment, study, tours, flights, or hotel booking support.",
+    images: ["/seo/og-image.png"]
+  }
+};
 
 export default function StartApplicationPage() {
   return (

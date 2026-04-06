@@ -19,7 +19,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!tour) return { title: "Tour Not Found" };
   return {
     title: `${tour.title} | Premium Packages`,
-    description: tour.shortDescription
+    description: tour.shortDescription,
+    alternates: {
+      canonical: `/tours/${resolvedParams.slug}`
+    },
+    openGraph: {
+      title: `${tour.title} | Premium Packages`,
+      description: tour.shortDescription,
+      url: `/tours/${resolvedParams.slug}`,
+      images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${tour.title} | Premium Packages`,
+      description: tour.shortDescription,
+      images: ["/seo/og-image.png"]
+    }
   };
 }
 
@@ -186,7 +201,7 @@ export default async function TourPage({ params }: { params: Promise<{ slug: str
                     
                     <p className="text-center text-xs text-slate-500 font-light">
                       Or contact our travel desk directly at <br />
-                      <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} className="hover:text-bb-gold transition-colors underline underline-offset-4 decoration-white/20 mt-1 inline-block">WhatsApp Us</a>
+                      <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} className="hover:text-bb-gold transition-colors underline underline-offset-4 decoration-white/20 mt-1 inline-block">WhatsApp Us</a>
                     </p>
                   </div>
                 </div>

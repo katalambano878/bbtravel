@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import Image from "next/image";
 
 import { getPublicTours } from "@/lib/data/public-content";
@@ -8,6 +9,36 @@ import { CtaBanner } from "@/components/shared/cta-banner";
 export async function generateStaticParams() {
   const tours = await getPublicTours();
   return tours.map((tour) => ({ slug: tour.slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const tours = await getPublicTours();
+  const tour = tours.find((item) => item.slug === slug);
+
+  if (!tour) {
+    return { title: "Tour Not Found" };
+  }
+
+  return {
+    title: `${tour.title} | Travel Deals`,
+    description: tour.summary,
+    alternates: {
+      canonical: `/travel-deals/${slug}`
+    },
+    openGraph: {
+      title: `${tour.title} | Travel Deals`,
+      description: tour.summary,
+      url: `/travel-deals/${slug}`,
+      images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${tour.title} | Travel Deals`,
+      description: tour.summary,
+      images: ["/seo/og-image.png"]
+    }
+  };
 }
 
 export default async function TravelDealDetailPage({ params }: { params: Promise<{ slug: string }> }) {

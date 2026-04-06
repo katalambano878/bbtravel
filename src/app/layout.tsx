@@ -8,24 +8,65 @@ import { brand } from "@/lib/mockData";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
+const siteUrl = process.env.APP_BASE_URL || "https://bbtravelconsult.vercel.app";
+const ogImagePath = "/seo/og-image.png";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bbtravelconsult.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "B.B. Travel Consult | Global Opportunities, Made Simple",
     template: "%s | B.B. Travel Consult"
   },
   description:
     "Premium Ghanaian travel and recruitment consultancy for visa assistance, study abroad, international jobs, tours, and hotel booking services.",
+  keywords: [
+    "B.B. Travel Consult",
+    "Travel agency Ghana",
+    "Visa assistance Ghana",
+    "Study abroad Ghana",
+    "International recruitment Ghana",
+    "Tour packages Ghana",
+    "Flight reservation Ghana",
+    "Hotel booking Ghana",
+    "Travel consultant Accra"
+  ],
+  creator: "B.B. Travel Consult",
+  publisher: "B.B. Travel Consult",
+  category: "Travel",
+  applicationName: "B.B. Travel Consult",
   openGraph: {
-    title: "B.B. Travel Consult",
+    title: "B.B. Travel Consult | Global Opportunities, Made Simple",
     description: brand.tagline,
     type: "website",
+    url: "/",
     locale: "en_GH",
-    siteName: "B.B. Travel Consult"
+    siteName: "B.B. Travel Consult",
+    images: [
+      {
+        url: ogImagePath,
+        width: 1024,
+        height: 1024,
+        alt: "B.B. Travel Consult official brand mark"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "B.B. Travel Consult | Global Opportunities, Made Simple",
+    description: brand.tagline,
+    images: [ogImagePath]
   },
   alternates: {
     canonical: "/"
+  },
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" }
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon-32x32.png"]
   }
 };
 
@@ -35,11 +76,29 @@ const organizationSchema = {
   name: brand.name,
   slogan: brand.tagline,
   founder: brand.founder,
-  telephone: brand.phone,
+  logo: `${siteUrl}${ogImagePath}`,
+  image: `${siteUrl}${ogImagePath}`,
+  url: siteUrl,
+  telephone: [brand.phone, brand.secondaryPhone],
   email: brand.email,
+  identifier: brand.digitalAddress,
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: brand.phone,
+      contactType: "customer service",
+      areaServed: "GH"
+    },
+    {
+      "@type": "ContactPoint",
+      telephone: brand.secondaryPhone,
+      contactType: "customer service",
+      areaServed: "GH"
+    }
+  ],
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Spintex",
+    streetAddress: `${brand.address} (${brand.digitalAddress})`,
     addressLocality: "Accra",
     addressCountry: "GH"
   }

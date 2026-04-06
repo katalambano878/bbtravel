@@ -16,7 +16,22 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   if (!post) return { title: "Insight Not Found" };
   return {
     title: `${post.title} | Insights`,
-    description: post.excerpt
+    description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${params.slug}`
+    },
+    openGraph: {
+      title: `${post.title} | Insights`,
+      description: post.excerpt,
+      url: `/blog/${params.slug}`,
+      images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${post.title} | Insights`,
+      description: post.excerpt,
+      images: ["/seo/og-image.png"]
+    }
   };
 }
 

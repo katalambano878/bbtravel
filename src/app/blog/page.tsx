@@ -8,7 +8,20 @@ import { blogPosts } from "@/lib/mockData";
 
 export const metadata: Metadata = {
   title: "Insights & Strategy | The Ledger",
-  description: "Read the latest legal insights, travel alerts, and strategic methodologies from our consulting team."
+  description: "Read the latest legal insights, travel alerts, and strategic methodologies from our consulting team.",
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Insights & Strategy | The Ledger",
+    description: "Read the latest legal insights, travel alerts, and strategic methodologies from our consulting team.",
+    url: "/blog",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Insights & Strategy | The Ledger",
+    description: "Read the latest legal insights, travel alerts, and strategic methodologies from our consulting team.",
+    images: ["/seo/og-image.png"]
+  }
 };
 
 export default function BlogHubPage() {

@@ -1,8 +1,27 @@
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/shared/page-hero";
 import { getPublicTours } from "@/lib/data/public-content";
 import { Card, CardContent } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Travel Deals",
+  description: "Premium tour packages curated for comfort, confidence, and memorable travel experiences.",
+  alternates: { canonical: "/travel-deals" },
+  openGraph: {
+    title: "Travel Deals | B.B. Travel Consult",
+    description: "Premium tour packages curated for comfort, confidence, and memorable travel experiences.",
+    url: "/travel-deals",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Travel Deals | B.B. Travel Consult",
+    description: "Premium tour packages curated for comfort, confidence, and memorable travel experiences.",
+    images: ["/seo/og-image.png"]
+  }
+};
 
 export default async function TravelDealsPage() {
   const tours = await getPublicTours();

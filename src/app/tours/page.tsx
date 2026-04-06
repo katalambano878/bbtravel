@@ -10,7 +10,20 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Exclusive Tours",
-  description: "Curated premium travel experiences."
+  description: "Curated premium travel experiences.",
+  alternates: { canonical: "/tours" },
+  openGraph: {
+    title: "Exclusive Tours | B.B. Travel Consult",
+    description: "Curated premium travel experiences.",
+    url: "/tours",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Exclusive Tours | B.B. Travel Consult",
+    description: "Curated premium travel experiences.",
+    images: ["/seo/og-image.png"]
+  }
 };
 
 export default function ToursHubPage() {

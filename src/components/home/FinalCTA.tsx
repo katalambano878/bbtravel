@@ -48,7 +48,7 @@ export function FinalCTA() {
               </Button>
               
               <Button variant="secondary" asChild className="h-14 px-8 text-base bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-medium w-full sm:w-auto rounded-2xl transition-all duration-300 backdrop-blur-md">
-                <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+                <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} target="_blank" rel="noreferrer">
                   <MessageCircle className="w-4 h-4 mr-2 text-bb-gold" /> Speak to an Advisor
                 </a>
               </Button>

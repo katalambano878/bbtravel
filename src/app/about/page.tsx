@@ -10,7 +10,20 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "About Us | Brand Ethos",
-  description: "Learn about the ethos and execution frameworks behind Ghana's premium travel consulting agency."
+  description: "Learn about the ethos and execution frameworks behind Ghana's premium travel consulting agency.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About Us | Brand Ethos",
+    description: "Learn about the ethos and execution frameworks behind Ghana's premium travel consulting agency.",
+    url: "/about",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | Brand Ethos",
+    description: "Learn about the ethos and execution frameworks behind Ghana's premium travel consulting agency.",
+    images: ["/seo/og-image.png"]
+  }
 };
 
 export default function AboutPage() {

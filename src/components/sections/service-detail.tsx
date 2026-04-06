@@ -287,7 +287,7 @@ export function ServiceDetailSection(props: ServiceDetailProps) {
                 </Link>
               </Button>
               <Button variant="secondary" asChild className="h-12 px-6 bg-white/5 border border-white/10 text-white hover:bg-white/10 text-sm font-semibold rounded-xl">
-                <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+                <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} target="_blank" rel="noreferrer">
                   <MessageCircle className="w-4 h-4 mr-2 text-bb-gold" /> WhatsApp
                 </a>
               </Button>

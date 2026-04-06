@@ -1,8 +1,27 @@
+import { Metadata } from "next";
 import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
 import { successStories } from "@/lib/data/content";
 import { getPublicTestimonials } from "@/lib/data/public-content";
 import { Card, CardContent } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Success Stories",
+  description: "Real outcomes across visas, recruitment, study placements, and tours delivered by B.B. Travel Consult.",
+  alternates: { canonical: "/success-stories" },
+  openGraph: {
+    title: "Success Stories | B.B. Travel Consult",
+    description: "Real outcomes across visas, recruitment, study placements, and tours delivered by B.B. Travel Consult.",
+    url: "/success-stories",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Success Stories | B.B. Travel Consult",
+    description: "Real outcomes across visas, recruitment, study placements, and tours delivered by B.B. Travel Consult.",
+    images: ["/seo/og-image.png"]
+  }
+};
 
 export default async function SuccessStoriesPage() {
   const testimonials = await getPublicTestimonials();

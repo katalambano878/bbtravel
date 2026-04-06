@@ -95,7 +95,7 @@ export function HeroJourney() {
                 </Link>
               </Button>
               <Button asChild className="h-14 px-8 text-base bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 text-white font-medium transition-all w-full sm:w-auto rounded-xl">
-                <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+                <a href={`https://wa.me/${brand.whatsapp.replace(/\D/g, "").replace(/^0/, "233")}`} target="_blank" rel="noreferrer">
                   <MessageCircle className="ml-0 mr-2 w-5 h-5 text-bb-gold" /> Speak to a Consultant
                 </a>
               </Button>

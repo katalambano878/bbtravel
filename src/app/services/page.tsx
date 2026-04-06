@@ -10,7 +10,20 @@ import { FlightPathBackground } from "@/components/brand/FlightPathBackground";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Explore our premium travel, study, and recruitment consultancy services."
+  description: "Explore our premium travel, study, and recruitment consultancy services.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: "Services | B.B. Travel Consult",
+    description: "Explore our premium travel, study, and recruitment consultancy services.",
+    url: "/services",
+    images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Services | B.B. Travel Consult",
+    description: "Explore our premium travel, study, and recruitment consultancy services.",
+    images: ["/seo/og-image.png"]
+  }
 };
 
 const iconMap: Record<string, React.ElementType> = {
