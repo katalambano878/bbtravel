@@ -3,7 +3,9 @@ import {
   FileBadge2,
   Globe,
   GraduationCap,
+  Hotel,
   Plane,
+  PlaneTakeoff,
   type LucideIcon
 } from "lucide-react";
 
@@ -12,7 +14,9 @@ const iconMap: Record<string, LucideIcon> = {
   BriefcaseBusiness,
   GraduationCap,
   Plane,
-  Globe
+  PlaneTakeoff,
+  Globe,
+  Hotel
 };
 
 export function ServiceIcon({ name }: { name: string }) {

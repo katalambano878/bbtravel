@@ -120,5 +120,16 @@ export const checklistTemplates: Record<ServiceType, string[]> = {
   INTERNATIONAL_RECRUITMENT: ["CV standardization", "Qualification verification", "Role fit statement", "Interview readiness checklist"],
   STUDY_ABROAD: ["Academic transcripts", "Personal statement draft", "Financial proof preparation", "Visa readiness bundle"],
   TOUR_PACKAGE: ["Passport and identity checks", "Family/group preference sheet", "Budget and experience priority list", "Travel insurance guidance"],
-  BUSINESS_EXPORT: ["Business intent summary", "Target market notes", "Trade compliance checklist", "Partner due diligence guide"]
+  FLIGHT_RESERVATION: [
+    "Traveler details and route confirmation",
+    "Preferred airline and transit options",
+    "Baggage and fare flexibility selection",
+    "Ticket issuance and pre-flight checklist"
+  ],
+  BUSINESS_EXPORT: [
+    "Travel dates and destination confirmation",
+    "Guest ID/passport information sheet",
+    "Room preference and occupancy details",
+    "Cancellation and payment policy selection"
+  ]
 };

@@ -79,6 +79,7 @@ export default function ContactHubPage() {
                   <div>
                     <h3 className="font-bold text-bb-navy text-lg mb-1">Direct Line</h3>
                     <p className="text-sm font-medium text-bb-navy">{brand.phone}</p>
+                    <p className="text-sm font-medium text-bb-navy">{brand.secondaryPhone}</p>
                     <p className="text-sm text-slate-500 font-light mt-1">Mon-Fri, 9am - 5pm GMT</p>
                   </div>
                 </a>
@@ -106,6 +107,9 @@ export default function ContactHubPage() {
                 <h2 className="text-3xl font-bold text-bb-navy mb-4">Visit our Headquarters</h2>
                 <p className="text-xl text-slate-600 font-medium mb-6 leading-relaxed">
                   {brand.address}
+                </p>
+                <p className="text-base text-slate-500 font-medium mb-6">
+                  Digital Address: {brand.digitalAddress}
                 </p>
                 <div className="space-y-4 mb-10">
                   <div className="flex items-start gap-3 text-slate-500 font-light">

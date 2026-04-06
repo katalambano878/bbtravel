@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, FileText, Briefcase, GraduationCap, Globe, Building } from "lucide-react";
+import { ArrowRight, FileText, Briefcase, GraduationCap, Globe, Building, PlaneTakeoff, Hotel } from "lucide-react";
 import Image from "next/image";
 
 import { Container } from "@/components/layout/Container";
@@ -18,7 +18,9 @@ const iconMap: Record<string, React.ElementType> = {
   Briefcase: Briefcase,
   GraduationCap: GraduationCap,
   Globe: Globe,
-  Building: Building
+  Building: Building,
+  PlaneTakeoff: PlaneTakeoff,
+  Hotel: Hotel
 };
 
 export default function ServicesHubPage() {

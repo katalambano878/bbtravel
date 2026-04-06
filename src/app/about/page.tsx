@@ -63,7 +63,13 @@ export default function AboutPage() {
             </div>
             <div className="relative">
               <div className="aspect-square md:aspect-[4/3] rounded-[2rem] overflow-hidden shadow-premium">
-                <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=1200&q=80" alt="Consultation" className="w-full h-full object-cover" />
+                <Image
+                  src="/images/ceo-bright-nana-brown.png"
+                  alt="Mr. Bright Nana Brown, Founder of B.B. Travel Consult"
+                  width={900}
+                  height={1200}
+                  className="w-full h-full object-cover object-top"
+                />
               </div>
               <div className="absolute -bottom-8 -left-8 bg-white p-8 rounded-[2rem] shadow-premium max-w-[280px] hidden md:block">
                 <div className="flex items-center gap-4 mb-3">

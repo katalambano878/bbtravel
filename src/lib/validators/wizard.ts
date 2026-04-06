@@ -6,7 +6,8 @@ export const wizardSchema = z.object({
     "INTERNATIONAL_RECRUITMENT",
     "STUDY_ABROAD",
     "TOUR_PACKAGE",
-    "BUSINESS_EXPORT"
+    "BUSINESS_EXPORT",
+    "FLIGHT_RESERVATION"
   ]),
   full_name: z.string().min(2),
   phone: z.string().min(7),

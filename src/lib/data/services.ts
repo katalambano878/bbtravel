@@ -38,12 +38,12 @@ export const serviceDetails: {
         answer: "This depends on the destination country and visa type. Typically, our preparation phase takes 5–10 business days. Embassy processing times vary: Schengen averages 15 calendar days, UK Standard Visitor 3–6 weeks, US B1/B2 depends on interview availability, and Canadian TRVs can take 4–12 weeks. We provide realistic timelines upfront so you can plan accordingly."
       },
       {
-        question: "What's included in your visa service fee?",
+        question: "What's included in your service fee?",
         answer: "Our fee covers: comprehensive profile assessment, document audit and gap analysis, full application form completion (DS-160, UK online forms, etc.), financial narrative structuring, interview preparation coaching, appointment scheduling guidance, and post-submission tracking support. Embassy fees and third-party costs (e.g., VFS processing fees) are paid separately by the client."
       },
       {
         question: "Do you handle both tourist and work/student visas?",
-        answer: "Yes. We service the full spectrum — tourist/visitor visas, business visas, student permits, skilled worker visas, family reunification, and dependent applications. Each category has a tailored preparation protocol because the scrutiny criteria differ significantly between visa classes."
+        answer: "Yes. We service the full spectrum — tourist/visitor visas, business visas, skilled worker visas, family reunification, and dependent applications. Each category has a tailored preparation protocol because the scrutiny criteria differ significantly between visa classes."
       }
     ]
   },
@@ -162,40 +162,90 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "BUSINESS_EXPORT",
-    slug: "business-export-facilitation",
-    title: "Business & Export Advisory Services",
-    whoFor: "Ghanaian entrepreneurs, SMEs, and established businesses looking to expand into international markets through export, partnerships, trade missions, and cross-border commerce.",
+    type: "FLIGHT_RESERVATION",
+    slug: "flight-reservations",
+    title: "Flights Reservations Service",
+    whoFor:
+      "Individuals, families, students, business travelers, and group coordinators who want reliable flight options with clear fare rules and support before departure.",
     overview:
-      "Expanding your business beyond Ghana's borders is one of the highest-leverage growth moves you can make — but the compliance requirements, documentation standards, and market-entry barriers can be overwhelming without expert guidance. Our business facilitation service helps companies navigate the full spectrum: from Ghana Export Promotion Authority (GEPA) registration and export documentation to trade compliance, international partner vetting, and market-entry strategy. We work with agricultural exporters, manufacturers, service providers, and tech companies. Whether you're shipping shea butter to Europe, establishing a distribution channel in North America, or attending a trade mission, we provide the process infrastructure to make it happen compliantly and efficiently.",
+      "Flight booking mistakes are expensive. Hidden fare restrictions, poor transit choices, and baggage surprises can disrupt the entire trip. Our flights reservation service solves that by matching each traveler to the best-fit route based on budget, timing, flexibility, and comfort. We compare multiple carriers, explain all fare conditions up front, and issue tickets with complete documentation and support. Whether you need one-way, return, multi-city, or group bookings, we handle reservations with precision and transparency.",
     checklistPreview: [
-      "Business registration documents (certificate of incorporation, TIN)",
-      "Product/service specifications and market readiness assessment",
-      "Export license and GEPA registration (we assist with this if not yet obtained)",
-      "Target market identification and competitive landscape analysis",
-      "Financial documentation for trade financing or LC arrangements",
-      "Compliance and quality certification requirements for destination market"
+      "Traveler names exactly as shown on valid passport or ID",
+      "Preferred origin, destination, and exact travel dates",
+      "Baggage requirement (hand luggage only, checked bags, extra weight)",
+      "Ticket flexibility preference (fixed, partially flexible, fully flexible)",
+      "Airline or transit preference (direct flight or acceptable layover)",
+      "Emergency contact and confirmation email/phone details"
     ],
     faqs: [
       {
-        question: "Do I need to be an established company to use this service?",
-        answer: "No. We work with businesses at all stages — from solo entrepreneurs preparing their first export shipment to established companies scaling into new markets. Our service is modular: you can engage us for specific support (e.g., documentation only) or full market-entry advisory depending on your needs and stage."
+        question: "Can you book both international and domestic flights?",
+        answer:
+          "Yes. We handle both domestic and international routes, including single passenger bookings, family trips, and group travel plans."
       },
       {
-        question: "Can you help me identify which international markets to target?",
-        answer: "Yes. We conduct market viability assessments that factor in your product type, competitive landscape, trade agreements (like AfCFTA and EPA), compliance requirements, and logistics costs. We don't send you into markets blindly — we help you target the ones where your product or service has realistic commercial potential."
+        question: "Do you help me choose between cheaper and flexible fares?",
+        answer:
+          "Absolutely. We explain each fare class in plain terms so you understand baggage limits, change fees, and cancellation conditions before you pay."
       },
       {
-        question: "Do you handle the actual shipping and logistics?",
-        answer: "We provide logistics advisory and connect you with vetted freight forwarding partners, but we don't operate as a logistics company ourselves. Our role is ensuring your documentation, compliance, and commercial preparation are airtight before goods move. We'll help you select logistics partners and negotiate competitive freight terms."
+        question: "Will I receive full ticket confirmation immediately?",
+        answer:
+          "Yes. Once your booking is finalized, we send your e-ticket, airline reservation code, itinerary details, and key travel reminders."
       },
       {
-        question: "Can you assist with trade missions and international exhibitions?",
-        answer: "Yes. We coordinate participation in international trade fairs and buyer-seller matchmaking events. This includes visa processing for business travel, exhibition registration, pre-event preparation (pitch decks, product catalogs), and post-event follow-up strategy with contacts made during the mission."
+        question: "Can you support date changes after booking?",
+        answer:
+          "If your fare rules allow changes, we coordinate rebooking and guide you through any airline penalties or fare difference charges."
       },
       {
-        question: "What about the legal and regulatory side of exporting?",
-        answer: "We guide you through the compliance framework but do not provide legal representation. This includes GEPA registration, FDA export certificates (for food/cosmetic products), phytosanitary certificates (for agricultural goods), and destination-country import regulations. For complex legal matters, we connect you with specialized trade attorneys in our network."
+        question: "Do you offer group flight reservations?",
+        answer:
+          "Yes. We support group bookings for families, tour groups, corporate teams, and church delegations with coordinated itineraries."
+      }
+    ]
+  },
+  {
+    type: "BUSINESS_EXPORT",
+    slug: "hotel-booking-reservation",
+    title: "Hotel Booking & Reservation Service",
+    whoFor:
+      "Business travelers, tourists, families, student travelers, and group coordinators who want stress-free hotel selection and trusted reservations at the right price point.",
+    overview:
+      "Booking a hotel should be simple, but poor location choices, hidden policy terms, and overpriced rates can ruin even the best travel plan. Our hotel booking and reservation service is designed to remove that risk. We match your destination, budget, and travel purpose to carefully vetted properties, compare rate plans transparently, and secure reservations with clear cancellation and payment terms. From short-stay city trips to long-stay business and study travel, we coordinate your accommodation with precision so your trip starts smoothly.",
+    checklistPreview: [
+      "Destination city and exact check-in/check-out dates",
+      "Guest details exactly as they appear on passport or valid ID",
+      "Room preference and occupancy requirement (single, twin, family, group)",
+      "Budget range and preferred hotel rating (3-star, 4-star, 5-star)",
+      "Special requests (early check-in, airport transfer, breakfast, accessibility)",
+      "Payment method confirmation and cancellation preference (flexible vs fixed)"
+    ],
+    faqs: [
+      {
+        question: "Can you book hotels for both local and international destinations?",
+        answer:
+          "Yes. We support domestic and international hotel reservations. We shortlist options based on your destination, budget, safety expectations, and trip purpose."
+      },
+      {
+        question: "Do you only book luxury hotels?",
+        answer:
+          "No. We book across budget, mid-range, premium, and luxury categories. The key is matching you to the best-value property for your exact travel objective."
+      },
+      {
+        question: "Will I receive a confirmed reservation document?",
+        answer:
+          "Absolutely. You receive full reservation confirmation details, including booking reference, property address, check-in instructions, and policy summary."
+      },
+      {
+        question: "Can you handle group or family hotel bookings?",
+        answer:
+          "Yes. We coordinate group reservations, room allocations, and special requests for families, church groups, corporate teams, and tour groups."
+      },
+      {
+        question: "What happens if my travel dates change?",
+        answer:
+          "Where the chosen rate plan allows changes, we support date modifications and rebooking. We always explain flexibility terms before final confirmation."
       }
     ]
   }

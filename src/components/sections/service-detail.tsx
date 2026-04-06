@@ -87,7 +87,7 @@ export function ServiceDetailSection(props: ServiceDetailProps) {
             {[
               { icon: Shield, label: "Licensed & Registered", value: "Fully Compliant" },
               { icon: Clock, label: "Average Response Time", value: "Under 2 Hours" },
-              { icon: Users, label: "Clients Served", value: "2,500+" },
+              { icon: Users, label: "Clients Served", value: "287 people" },
               { icon: Star, label: "Client Satisfaction", value: "4.9/5 Rating" },
             ].map((stat, i) => (
               <motion.div

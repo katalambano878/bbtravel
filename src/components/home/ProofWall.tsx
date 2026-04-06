@@ -38,7 +38,7 @@ export function ProofWall() {
           >
             <div className="absolute inset-0 bg-slate-900/10 z-10 transition-opacity group-hover:opacity-0" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent z-10" />
-            <div className="absolute inset-0 bg-[url('/images/founder.webp')] bg-cover bg-top transition-transform duration-1000 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-[url('/images/ceo-bright-nana-brown.png')] bg-cover bg-top transition-transform duration-1000 group-hover:scale-105" />
             
             <div className="relative z-20 mt-auto">
               <div className="bg-bb-gold/90 backdrop-blur-md w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-xl">
@@ -122,7 +122,13 @@ export function ProofWall() {
                   <span className="text-slate-500">Phone:</span> {brand.phone}
                 </span>
                 <span className="text-sm font-medium text-bb-navy flex justify-between">
+                  <span className="text-slate-500">Alt Phone:</span> {brand.secondaryPhone}
+                </span>
+                <span className="text-sm font-medium text-bb-navy flex justify-between">
                   <span className="text-slate-500">Email:</span> {brand.email}
+                </span>
+                <span className="text-sm font-medium text-bb-navy flex justify-between">
+                  <span className="text-slate-500">Digital Address:</span> {brand.digitalAddress}
                 </span>
               </div>
             </div>

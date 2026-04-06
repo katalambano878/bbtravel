@@ -78,9 +78,18 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-4">
                 <Phone className="w-5 h-5 text-bb-gold shrink-0" />
-                <a href={`tel:${brand.phone.replace(/\\s/g, "")}`} className="hover:text-white transition-colors font-light">
-                  {brand.phone}
-                </a>
+                <div className="flex flex-col">
+                  <a href={`tel:${brand.phone.replace(/\\s/g, "")}`} className="hover:text-white transition-colors font-light">
+                    {brand.phone}
+                  </a>
+                  <a href={`tel:${brand.secondaryPhone.replace(/\\s/g, "")}`} className="hover:text-white transition-colors font-light">
+                    {brand.secondaryPhone}
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-4">
+                <MapPin className="w-5 h-5 text-bb-gold shrink-0 mt-0.5" />
+                <span className="leading-relaxed font-light">Digital Address: {brand.digitalAddress}</span>
               </li>
               <li className="flex items-center gap-4">
                 <Mail className="w-5 h-5 text-bb-gold shrink-0" />

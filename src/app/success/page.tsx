@@ -11,11 +11,12 @@ import { brand } from "@/lib/data/brand";
 
 export const metadata: Metadata = {
   title: "Client Results & Case Studies | B.B. Travel Consult",
-  description: "Explore detailed case studies of successfully executed visa applications, international recruitments, study placements, and business export facilitations by B.B. Travel Consult."
+  description:
+    "Explore detailed case studies of successfully executed visa applications, international recruitments, study placements, tour coordination, and hotel booking support by B.B. Travel Consult."
 };
 
 const stats = [
-  { icon: Users, value: "2,500+", label: "Clients Served" },
+  { icon: Users, value: "287 people", label: "Clients Served" },
   { icon: Globe, value: "30+", label: "Countries Covered" },
   { icon: TrendingUp, value: "94%", label: "First-Attempt Success Rate" },
   { icon: CheckCircle, value: "500+", label: "Visas Processed" },
@@ -162,7 +163,7 @@ export default function SuccessPage() {
             Your success story starts with a single conversation.
           </h2>
           <p className="text-slate-300 font-light text-lg mb-10 max-w-xl mx-auto">
-            Whether it's a visa, a career move, a study placement, or a business expansion — we've done it before, and we'll do it for you.
+            Whether it's a visa, a career move, a study placement, or a complete travel booking experience — we've done it before, and we'll do it for you.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild className="h-14 px-8 bg-bb-gold text-bb-navy hover:bg-white text-base rounded-xl font-bold">

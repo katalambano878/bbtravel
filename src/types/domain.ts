@@ -3,7 +3,8 @@ export type ServiceType =
   | "INTERNATIONAL_RECRUITMENT"
   | "STUDY_ABROAD"
   | "TOUR_PACKAGE"
-  | "BUSINESS_EXPORT";
+  | "BUSINESS_EXPORT"
+  | "FLIGHT_RESERVATION";
 
 export type LeadStage = "NEW" | "CONTACTED" | "QUALIFIED" | "CONVERTED" | "CLOSED";
 

@@ -56,18 +56,50 @@ export const services = [
     timeline: ["Preference Mapping", "Itinerary Design", "Booking & Documentation", "Pre-Departure Brief", "Concierge Support"]
   },
   {
-    id: "business-export-facilitation",
-    title: "Business & Export Advisory",
-    slug: "business-export-facilitation",
-    shortDescription: "GEPA registration, export compliance, market-entry strategy, and international trade facilitation for Ghanaian businesses.",
-    description: "We help Ghanaian businesses navigate the full export pipeline — from GEPA registration and FDA export certification to international partner vetting, trade mission coordination, and market-entry strategy. Whether you're shipping shea butter to Europe or attending a trade exhibition, we provide the process infrastructure.",
-    longDetails: "Ghanaian businesses have world-class products but often lack the regulatory knowledge and international connections to access global markets. We bridge that gap. Our export advisory covers every step — from GEPA registration and FDA export certification to EU CPNP compliance for cosmetics, product labeling standards, and international partner vetting. We coordinate trade mission participation, connect you with pre-screened distributors in the UK, EU, and North America, and provide ongoing advisory as you scale your international operations. Whether you're an SME shipping shea butter or a manufacturer targeting industrial buyers, we provide the infrastructure.",
-    processTime: "8 – 20 weeks",
-    priceRange: "GH₵ 2,500+",
-    icon: "Building",
-    image: "/images/services/export.webp",
-    benefits: ["GEPA & FDA export support", "International partner vetting", "Trade mission coordination"],
-    timeline: ["Market Readiness Review", "Target Market Analysis", "Documentation & Compliance", "Partner Matchmaking", "Launch & Advisory"]
+    id: "flight-reservations",
+    title: "Flights Reservations",
+    slug: "flight-reservations",
+    shortDescription:
+      "Domestic and international flight reservations with route optimization, transparent fare terms, and pre-flight support.",
+    description:
+      "We help travelers secure the best-fit flights based on schedule, budget, baggage needs, and flexibility. From one-way and return tickets to multi-city and group bookings, every reservation is handled with clear fare breakdowns and policy guidance.",
+    longDetails:
+      "Flight booking errors can be expensive and disruptive. We reduce that risk by comparing airline options carefully and explaining exactly what each fare includes before ticketing. We provide support across domestic and international routes, coordinate multi-passenger bookings, and help with itinerary adjustments where fare rules allow. You get complete e-ticket details, travel reminders, and responsive support from booking to boarding.",
+    processTime: "Same day – 72 hours",
+    priceRange: "Service-based",
+    icon: "PlaneTakeoff",
+    image: "/images/services/tours.webp",
+    benefits: ["Transparent fare comparison", "Reliable ticket issuance and support", "Rebooking guidance when plans change"],
+    timeline: [
+      "Travel Brief Intake",
+      "Route and Fare Comparison",
+      "Best-Fit Option Selection",
+      "Ticket Issuance",
+      "Pre-Flight Support"
+    ]
+  },
+  {
+    id: "hotel-booking-reservation",
+    title: "Hotel Booking & Reservation",
+    slug: "hotel-booking-reservation",
+    shortDescription:
+      "Verified hotel selection, transparent reservation terms, and smooth stay coordination for local and international trips.",
+    description:
+      "We help travelers secure the right hotel at the right rate without hidden surprises. From destination matching and room preference planning to confirmed reservations and pre-arrival coordination, our hotel booking service keeps your trip organized and stress-free.",
+    longDetails:
+      "Finding a good hotel is more than picking a pretty photo. Location safety, cancellation terms, guest policies, airport access, and trip purpose all matter. We analyze these factors before recommending options. Whether you're planning a business trip, a family holiday, a group tour, or a long-stay arrangement, we compare rate plans carefully and finalize bookings with full confirmation details. Need upgrades, date adjustments, or special requests? We coordinate directly with properties so your accommodation experience stays smooth from check-in to checkout.",
+    processTime: "24 hours – 7 days",
+    priceRange: "Service-based",
+    icon: "Hotel",
+    image: "/images/services/tours.webp",
+    benefits: ["Verified property matching", "Transparent rate and policy guidance", "Pre-arrival and stay support"],
+    timeline: [
+      "Travel Brief Intake",
+      "Hotel Option Curation",
+      "Rate & Policy Comparison",
+      "Reservation Confirmation",
+      "Pre-Arrival Coordination"
+    ]
   }
 ];
 
@@ -324,10 +356,12 @@ export const brand = {
   founder: "Bright Nana Brown",
   tagline: "Global Opportunities, Made Simple.",
   phone: "+233 30 398 1171",
+  secondaryPhone: "0507328772",
   whatsapp: "+233 24 448 9285",
   email: "b.btravelconsult@gmail.com",
   social: "@bbtravelconsult",
-  address: "Spintex, Accra, Ghana"
+  address: "Spintex, Accra, Ghana",
+  digitalAddress: "GZ-018-0598"
 };
 
 export const caseStudies = [
@@ -350,7 +384,7 @@ export const caseStudies = [
   {
     id: "cs-schengen-family",
     client: "The Osei-Bonsu Family (4 Travelers)",
-    goal: "Schengen Visa (France — Family Holiday)",
+    goal: "Schengen Visa",
     challenges: "The family had no prior international travel history, which made their Schengen application high-risk — first-time applicants from Ghana face elevated scrutiny. Additionally, the primary sponsor's bank statements showed irregular deposits that could appear suspicious to a visa officer.",
     howWeHelped: "We structured a 10-day detailed itinerary covering Paris and Nice with confirmed hotel bookings and activity reservations that demonstrated legitimate tourism intent. For the financial documentation, we prepared a comprehensive narrative explaining the sponsor's business income patterns, supplemented with tax returns and business registration documents. Each family member received an individualized cover letter addressing their specific ties to Ghana. We conducted a full mock interview session covering the most common Schengen interview questions.",
     outcome: "All four Schengen visas approved on first attempt with a 90-day multiple entry validity — exceeding the 10 days they had applied for. The family completed their France holiday and have since returned for a second trip to Italy using our services."
@@ -371,13 +405,6 @@ export const caseStudies = [
     howWeHelped: "We conducted a thorough profile reconstruction. We compiled a comprehensive evidence package showing his business ownership (including GRA tax returns, company registration, and employee documentation), property ownership in Accra, his children's school enrollment, and his wife's established medical practice. His DS-160 was meticulously reviewed to eliminate any inconsistencies with his supporting documents. We ran two intensive mock interview sessions focused specifically on the 214(b) concerns from his previous refusals.",
     outcome: "B1/B2 visa approved on the third attempt — a 10-year multiple entry visa. Nana successfully attended a trade conference in Atlanta and has since used the visa for three additional business trips. His case remains one of our most referenced refusal-overturn successes."
   },
-  {
-    id: "cs-shea-export",
-    client: "Aseda Naturals (SME — Shea Products)",
-    goal: "Export Market Entry — European Union",
-    challenges: "Aseda Naturals produced high-quality shea butter and body care products but had zero export experience. They lacked GEPA registration, had no EU-compliant product labeling, didn't understand CPNP (Cosmetic Products Notification Portal) requirements, and had no connections to potential European distributors.",
-    howWeHelped: "We managed their end-to-end export readiness: GEPA registration and export license acquisition, FDA export certification for cosmetic products, EU CPNP notification guidance, product labeling compliance review (ingredients listing, batch coding, EU responsible person requirements), and connection with three pre-vetted UK-based African product distributors. We also coordinated their participation in a GEPA-sponsored trade exhibition in London where they met buyers directly.",
-    outcome: "First export shipment (1,200 units) dispatched to a UK distributor within 5 months of engagement. Aseda Naturals is now exporting to 2 UK retailers and exploring a German market entry. Revenue from exports now accounts for 40% of their total business."
-  }
+  
 ];
 

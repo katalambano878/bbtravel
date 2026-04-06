@@ -8,7 +8,7 @@ export default function StartApplicationPage() {
     <>
       <PageHero
         eyebrow="Start Application"
-        title="One smart intake, five service pathways."
+        title="One smart intake, six service pathways."
         description="Complete this onboarding wizard to create your case, unlock your checklist, and see your readiness score."
       />
       <section className="section-shell">

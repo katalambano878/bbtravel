@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | B.B. Travel Consult"
   },
   description:
-    "Premium Ghanaian travel and recruitment consultancy for visa assistance, study abroad, international jobs, tours, and business export facilitation.",
+    "Premium Ghanaian travel and recruitment consultancy for visa assistance, study abroad, international jobs, tours, and hotel booking services.",
   openGraph: {
     title: "B.B. Travel Consult",
     description: brand.tagline,

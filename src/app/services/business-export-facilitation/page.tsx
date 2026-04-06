@@ -1,31 +1,5 @@
-import { notFound } from "next/navigation";
-import { PageHero } from "@/components/shared/page-hero";
-import { CtaBanner } from "@/components/shared/cta-banner";
-import { ServiceDetailSection } from "@/components/sections/service-detail";
-import { getServiceBySlug } from "@/lib/data/services";
+import { redirect } from "next/navigation";
 
-export default function BusinessExportPage() {
-  const service = getServiceBySlug("business-export-facilitation");
-  if (!service) return notFound();
-
-  return (
-    <>
-      <PageHero 
-        eyebrow="Business & Export Facilitation" 
-        title={service.title} 
-        description="End-to-end export compliance, buyer connection, and market entry strategy for Ghanaian businesses going global."
-        image="/images/page-hero/services.webp"
-      />
-      <ServiceDetailSection
-        title={service.title}
-        overview={service.overview}
-        whoFor={service.whoFor}
-        checklistPreview={service.checklistPreview}
-        faqs={service.faqs}
-        serviceType={service.type}
-        backgroundImage="/images/page-hero/services.webp"
-      />
-      <CtaBanner />
-    </>
-  );
+export default function LegacyBusinessExportPage() {
+  redirect("/services/hotel-booking-reservation");
 }

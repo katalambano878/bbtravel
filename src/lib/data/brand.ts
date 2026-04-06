@@ -7,8 +7,10 @@ export const brand = {
   founder: "Mr. Bright Nana Brown",
   hq: "Accra, Ghana (Spintex)",
   phone: "+233 30 398 1171",
+  secondaryPhone: "0507328772",
   whatsapp: "+233 24 448 9285",
   email: "b.btravelconsult@gmail.com",
+  digitalAddress: "GZ-018-0598",
   socialHandle: "@bbtravelconsult",
   mission: "To make global mobility simple, accessible, and trustworthy for every client.",
   vision: "To become Africa's most trusted travel and recruitment brand.",
@@ -65,11 +67,18 @@ export const serviceCatalog: {
     icon: "Plane"
   },
   {
+    type: "FLIGHT_RESERVATION",
+    title: "Flights Reservations",
+    short: "International and domestic flight search, fare optimization, and booking support.",
+    href: "/services/flight-reservations",
+    icon: "PlaneTakeoff"
+  },
+  {
     type: "BUSINESS_EXPORT",
-    title: "Business & Export Facilitation",
-    short: "Cross-border trade, import/export advisory, and partnerships.",
-    href: "/services/business-export-facilitation",
-    icon: "Globe"
+    title: "Hotel Booking & Reservation",
+    short: "Global hotel booking, reservation planning, and stay coordination.",
+    href: "/services/hotel-booking-reservation",
+    icon: "Hotel"
   }
 ];
 
@@ -106,13 +115,21 @@ export const serviceWorkflows: Record<ServiceType, string[]> = {
     "Pre-departure briefing — every traveler receives a comprehensive trip pack with itineraries, emergency contacts, cultural tips, and insurance details",
     "On-ground concierge support — airport transfers, guided tours, and 24/7 direct-line assistance throughout your entire journey"
   ],
+  FLIGHT_RESERVATION: [
+    "Travel brief capture — route, dates, traveler details, baggage needs, and ticket flexibility preferences are documented clearly",
+    "Fare scouting and comparison — we compare multiple airlines and fare classes to balance cost, transit time, and reliability",
+    "Best-fit option shortlist — options are presented with transparent details on baggage, change policy, and cancellation conditions",
+    "Ticket reservation and issuance — once approved, we process your booking and share complete e-ticket and airline reference details",
+    "Pre-flight support — seat selection guidance, check-in reminders, and travel document checks before departure",
+    "Change and disruption handling — rebooking support for date changes, missed connections, or airline schedule adjustments"
+  ],
   BUSINESS_EXPORT: [
-    "Business assessment & market readiness review — your product, capacity, and compliance readiness are evaluated for international viability",
-    "Target market analysis — we identify high-potential markets factoring in trade agreements, demand patterns, and regulatory requirements",
-    "Export documentation & certification — GEPA registration, FDA certificates, phytosanitary documents, and destination-specific compliance are managed",
-    "Partner vetting & matchmaking — potential distributors, buyers, and logistics partners are vetted through our due diligence framework",
-    "Trade mission & exhibition support — from visa processing to pitch preparation, we coordinate your participation in international trade events",
-    "Launch support & ongoing advisory — post-entry monitoring, buyer relationship management guidance, and expansion strategy as your trade volume grows"
+    "Travel brief capture — destination, check-in/check-out dates, room preferences, and budget are collected in one structured intake",
+    "Property curation — we shortlist verified hotels based on safety, location, ratings, amenities, and your exact trip purpose",
+    "Rate optimization — refundable and non-refundable options are compared to secure the best value with transparent terms",
+    "Reservation confirmation — bookings are finalized with clear confirmation details, policy highlights, and payment proof",
+    "Pre-arrival coordination — early check-in requests, airport transfer preference, and special notes are communicated to the property",
+    "Stay support — our team remains available for rebooking, upgrades, or itinerary-driven hotel adjustments during your trip"
   ]
 };
 

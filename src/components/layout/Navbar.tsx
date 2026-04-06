@@ -199,7 +199,7 @@ export function Navbar() {
                 )}
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span className="hidden xl:inline">{brand.phone}</span>
+                <span className="hidden xl:inline">{brand.phone} / {brand.secondaryPhone}</span>
               </a>
 
               <Link
@@ -329,7 +329,7 @@ export function Navbar() {
                     className="flex items-center justify-center gap-2 w-full py-3 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
                   >
                     <Phone className="w-4 h-4" />
-                    {brand.phone}
+                    {brand.phone} / {brand.secondaryPhone}
                   </a>
                   <Link
                     href="/start"

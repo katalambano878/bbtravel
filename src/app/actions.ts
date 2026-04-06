@@ -23,7 +23,10 @@ function buildChecklist(payload: WizardPayload) {
   if (payload.service_type === "TOUR_PACKAGE") {
     return [...base, "Itinerary planning", "Budget matching", "Travel documentation guidance"];
   }
-  return [...base, "Business objective review", "Trade compliance guidance", "Partner outreach prep"];
+  if (payload.service_type === "FLIGHT_RESERVATION") {
+    return [...base, "Route and fare comparison", "Ticket issuance", "Pre-flight checklist"];
+  }
+  return [...base, "Hotel preference review", "Reservation policy alignment", "Stay coordination setup"];
 }
 
 export async function submitWizardAction(formData: FormData) {
