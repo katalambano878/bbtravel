@@ -3,7 +3,7 @@ import { getPublicBlogPosts, getPublicTours } from "@/lib/data/public-content";
 import { services, featuredTours, blogPosts } from "@/lib/mockData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.APP_BASE_URL || "https://bbtravelconsult.vercel.app";
+  const baseUrl = process.env.APP_BASE_URL || "https://bbtravelconsult.com";
   const staticRoutes = [
     "",
     "/about",

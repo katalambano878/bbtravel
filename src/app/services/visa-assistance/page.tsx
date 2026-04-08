@@ -3,6 +3,13 @@ import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
 import { ServiceDetailSection } from "@/components/sections/service-detail";
 import { getServiceBySlug } from "@/lib/data/services";
+import { buildServiceMetadata } from "@/lib/seo";
+
+export const metadata = buildServiceMetadata(
+  "Visa Assistance & Documentation Service",
+  "Embassy-aligned visa strategy, document preparation, and passport support for confident submissions.",
+  "visa-assistance"
+);
 
 export default function VisaAssistancePage() {
   const service = getServiceBySlug("visa-assistance");

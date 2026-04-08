@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { FileCheck2, CalendarClock, MessageSquare } from "lucide-react";
 
@@ -14,6 +15,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RealtimeCaseFeed } from "@/components/portal/realtime-case-feed";
 import { DocumentUploadForm } from "@/components/portal/document-upload-form";
+
+export const metadata: Metadata = {
+  title: "Client Portal",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default async function PortalDashboardPage() {
   const user = await getCurrentUser();

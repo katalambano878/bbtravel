@@ -8,7 +8,7 @@ import { brand } from "@/lib/mockData";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
-const siteUrl = process.env.APP_BASE_URL || "https://bbtravelconsult.vercel.app";
+const siteUrl = process.env.APP_BASE_URL || "https://bbtravelconsult.com";
 const ogImagePath = "/seo/og-image.png";
 
 export const metadata: Metadata = {
@@ -34,6 +34,20 @@ export const metadata: Metadata = {
   publisher: "B.B. Travel Consult",
   category: "Travel",
   applicationName: "B.B. Travel Consult",
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+      "max-snippet": -1
+    }
+  },
   openGraph: {
     title: "B.B. Travel Consult | Global Opportunities, Made Simple",
     description: brand.tagline,
@@ -58,6 +72,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/"
+  },
+  other: {
+    "geo.region": "GH-AA",
+    "geo.placename": "Accra"
   },
   manifest: "/manifest.webmanifest",
   icons: {
@@ -104,6 +122,18 @@ const organizationSchema = {
   }
 };
 
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "B.B. Travel Consult",
+  url: siteUrl,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${siteUrl}/services?query={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+};
+
 export default function RootLayout({
   children
 }: Readonly<{
@@ -113,6 +143,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${sora.variable} min-h-screen bg-background font-sans`}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
         <Navbar />
         <main>{children}</main>
         <Footer />

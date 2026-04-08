@@ -1,9 +1,19 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { signInAction } from "@/app/actions";
 import { PageHero } from "@/components/shared/page-hero";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { AuthHeader } from "@/components/portal/auth-header";
+
+export const metadata: Metadata = {
+  title: "Portal Login",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default function PortalLoginPage() {
   return (
@@ -14,6 +24,7 @@ export default function PortalLoginPage() {
         description="Access your timeline, document checklist, appointments, and messages in one transparent dashboard."
       />
       <section className="section-shell">
+        <AuthHeader current="login" />
         <form action={signInAction} className="mx-auto max-w-md space-y-5 rounded-3xl border border-slate-200 bg-white p-8">
           <div>
             <Label htmlFor="email">Email</Label>

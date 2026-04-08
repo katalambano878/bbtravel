@@ -1,7 +1,7 @@
 export const services = [
   {
     id: "visa-assistance",
-    title: "Strategic Visa Advisory",
+    title: "Visa Assistance & Documentation",
     slug: "visa-assistance",
     shortDescription: "Embassy-aligned application strategy, document auditing, and refusal overturn expertise for 30+ countries.",
     description: "We reverse-engineer embassy decision criteria to build visa applications that withstand scrutiny. From Schengen to US B1/B2 and Canadian TRVs — including prior refusal overturns — our structured framework eliminates the guesswork that costs applicants time and money.",
@@ -10,8 +10,19 @@ export const services = [
     priceRange: "GH₵ 1,500+",
     icon: "Passport",
     image: "/images/services/visa.webp",
-    benefits: ["Embassy-specific document auditing", "DS-160 & UK form mastery", "Prior refusal analysis & overturn strategy"],
-    timeline: ["Profile Assessment", "Document Audit", "Application Mastery", "Interview Prep", "Submission & Tracking"]
+    benefits: [
+      "Embassy-specific document auditing",
+      "Visa form mastery and interview preparation",
+      "Document authentication and passport support",
+      "Prior refusal analysis and overturn strategy"
+    ],
+    timeline: [
+      "Profile Assessment",
+      "Document and Passport Review",
+      "Application Mastery",
+      "Interview Prep",
+      "Submission and Tracking"
+    ]
   },
   {
     id: "international-recruitment",
@@ -57,7 +68,7 @@ export const services = [
   },
   {
     id: "flight-reservations",
-    title: "Flights Reservations",
+    title: "Flight Bookings & Ticketing",
     slug: "flight-reservations",
     shortDescription:
       "Domestic and international flight reservations with route optimization, transparent fare terms, and pre-flight support.",
@@ -99,6 +110,144 @@ export const services = [
       "Rate & Policy Comparison",
       "Reservation Confirmation",
       "Pre-Arrival Coordination"
+    ]
+  },
+  {
+    id: "corporate-travel-solutions",
+    title: "Corporate Travel Solutions",
+    slug: "corporate-travel-solutions",
+    shortDescription:
+      "End-to-end business travel coordination for teams, executives, and company events with compliance-first planning.",
+    description:
+      "We manage business travel programs for organizations that need speed, structure, and accountability. From executive flights and hotel blocks to visa documentation, reporting, and policy compliance, we coordinate every moving part.",
+    longDetails:
+      "Corporate travel goes beyond booking tickets. Companies need route efficiency, budget control, traveler safety, and clean documentation for finance and HR. Our corporate travel desk handles these requirements in one coordinated workflow. We support recurring business trips, conference travel, incentive travel, and multi-country executive movements with clear approvals, transparent cost breakdowns, and service-level responsiveness.",
+    processTime: "24 hours – 10 days",
+    priceRange: "Service-based",
+    icon: "Building2",
+    image: "/images/services/tours.webp",
+    benefits: ["Policy-aligned booking control", "Executive and team travel support", "Expense transparency and reporting"],
+    timeline: [
+      "Company Travel Brief",
+      "Policy and Budget Alignment",
+      "Flight and Hotel Coordination",
+      "Approval and Ticketing",
+      "Trip Monitoring and Support"
+    ]
+  },
+  {
+    id: "travel-insurance",
+    title: "Travel Insurance",
+    slug: "travel-insurance",
+    shortDescription:
+      "Travel protection planning for medical emergencies, trip disruption, and baggage or document loss.",
+    description:
+      "We help travelers secure appropriate insurance cover before departure so one incident does not derail the entire trip. Coverage options are explained clearly with inclusions, limits, and claim guidance.",
+    longDetails:
+      "Many travelers only discover policy limitations after an emergency. We prevent that by matching your trip profile to suitable insurance plans and clarifying exclusions before purchase. Whether you are traveling for tourism, study, business, or group tours, we help you choose plans covering medical care, cancellations, delays, lost baggage, and emergency evacuation where relevant.",
+    processTime: "Same day – 48 hours",
+    priceRange: "Policy-based",
+    icon: "ShieldCheck",
+    image: "/images/services/visa.webp",
+    benefits: ["Clear policy comparison", "Pre-trip risk protection", "Claim support guidance"],
+    timeline: [
+      "Trip Risk Assessment",
+      "Policy Option Comparison",
+      "Coverage Selection",
+      "Policy Issuance",
+      "Claim Guidance Readiness"
+    ]
+  },
+  {
+    id: "event-destination-management",
+    title: "Event & Destination Management",
+    slug: "event-destination-management",
+    shortDescription:
+      "Structured planning and logistics for destination events, retreats, celebrations, and hosted group experiences.",
+    description:
+      "We coordinate destination events from concept to execution, including venue recommendations, guest travel logistics, accommodation blocks, and on-ground support.",
+    longDetails:
+      "Destination events fail when travel, venue, and guest operations are handled in silos. Our team unifies these into one execution framework. We support corporate retreats, conferences, weddings, milestone celebrations, and association events with disciplined planning timelines, supplier coordination, contingency control, and guest communication support.",
+    processTime: "2 – 12 weeks",
+    priceRange: "Project-based",
+    icon: "CalendarCheck2",
+    image: "/images/services/tours.webp",
+    benefits: ["Centralized event logistics", "Vendor and guest coordination", "On-ground execution support"],
+    timeline: [
+      "Event Discovery Call",
+      "Destination and Venue Planning",
+      "Travel and Stay Coordination",
+      "Run-of-Show Finalization",
+      "On-Ground Delivery"
+    ]
+  },
+  {
+    id: "transport-car-services",
+    title: "Transport & Car Services",
+    slug: "transport-car-services",
+    shortDescription:
+      "Airport transfers, intercity rides, chauffeur options, and scheduled transport for individuals or groups.",
+    description:
+      "We arrange reliable transport solutions for airport pickup, local movement, and destination mobility with clear schedules and professional driver coordination.",
+    longDetails:
+      "Ground transport is where many trips lose time and comfort. We solve that with pre-arranged pickups, route planning, and dependable vehicle options suited to your party size and travel purpose. Services include airport transfers, corporate shuttle coordination, event transport movement, and premium chauffeur support where required.",
+    processTime: "Same day – 72 hours",
+    priceRange: "Route-based",
+    icon: "Car",
+    image: "/images/services/tours.webp",
+    benefits: ["Reliable pickup and drop-off planning", "Vehicle options for solo or group travel", "Driver and timing coordination"],
+    timeline: [
+      "Mobility Requirement Intake",
+      "Vehicle and Route Planning",
+      "Schedule Confirmation",
+      "Driver Dispatch",
+      "Live Trip Support"
+    ]
+  },
+  {
+    id: "consultation-advisory-services",
+    title: "Consultation & Advisory Services",
+    slug: "consultation-advisory-services",
+    shortDescription:
+      "Strategic travel and immigration advisory sessions for clients needing expert direction before execution.",
+    description:
+      "Our consultation desk provides clarity before you commit time and money. We assess your goals, risks, document readiness, and route options, then provide a practical action roadmap.",
+    longDetails:
+      "Many clients start with conflicting advice and incomplete information. Our advisory sessions are designed to eliminate noise and define your next best move with precision. We review your profile, identify gaps, recommend the right service pathway, and explain timelines, costs, and feasibility in plain terms. Ideal for first-time applicants, prior refusals, and clients planning complex travel outcomes.",
+    processTime: "Same day – 5 days",
+    priceRange: "Session-based",
+    icon: "MessagesSquare",
+    image: "/images/services/visa.webp",
+    benefits: ["Expert profile diagnostics", "Risk and readiness assessment", "Clear action roadmap"],
+    timeline: [
+      "Consultation Intake",
+      "Profile and Goal Review",
+      "Constraint and Risk Analysis",
+      "Roadmap Development",
+      "Next-Step Alignment"
+    ]
+  },
+  {
+    id: "work-study-abroad-document-processing",
+    title: "Work & Study Abroad Document Processing",
+    slug: "work-study-abroad-document-processing",
+    shortDescription:
+      "End-to-end documentation support for study and work pathways, including verification and submission readiness.",
+    description:
+      "We help clients structure and process required documents for work and study travel so applications are consistent, complete, and submission-ready.",
+    longDetails:
+      "Strong applications fail when supporting documents are weak, inconsistent, or incomplete. This service focuses specifically on document processing: credential collation, supporting evidence structure, verification support, notarization and legalization guidance, and readiness checks before submission. It is built for students, professionals, and sponsors handling strict documentation demands.",
+    processTime: "3 – 21 days",
+    priceRange: "Service-based",
+    icon: "FileBadge2",
+    image: "/images/services/study.webp",
+    benefits: ["Document consistency checks", "Verification and legalization guidance", "Submission-ready file preparation"],
+    timeline: [
+      "Document Requirement Mapping",
+      "Collection and Verification",
+      "Formatting and Structuring",
+      "Legalization Guidance",
+      "Final Readiness Review"
     ]
   }
 ];

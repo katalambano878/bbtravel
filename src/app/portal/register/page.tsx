@@ -1,9 +1,19 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { signUpAction } from "@/app/actions";
 import { PageHero } from "@/components/shared/page-hero";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { AuthHeader } from "@/components/portal/auth-header";
+
+export const metadata: Metadata = {
+  title: "Portal Registration",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default function PortalRegisterPage() {
   return (
@@ -14,6 +24,7 @@ export default function PortalRegisterPage() {
         description="Register with your application email to track progress, upload documents, and receive updates."
       />
       <section className="section-shell">
+        <AuthHeader current="register" />
         <form action={signUpAction} className="mx-auto max-w-md space-y-5 rounded-3xl border border-slate-200 bg-white p-8">
           <div>
             <Label htmlFor="full_name">Full Name</Label>

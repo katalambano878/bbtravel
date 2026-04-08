@@ -3,6 +3,13 @@ import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
 import { ServiceDetailSection } from "@/components/sections/service-detail";
 import { getServiceBySlug } from "@/lib/data/services";
+import { buildServiceMetadata } from "@/lib/seo";
+
+export const metadata = buildServiceMetadata(
+  "Curated International Tour Packages",
+  "Premium tour packages with end-to-end planning, logistics, and concierge support.",
+  "tour-packages"
+);
 
 export default function TourPackagesPage() {
   const service = getServiceBySlug("tour-packages");

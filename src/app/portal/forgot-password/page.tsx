@@ -1,9 +1,18 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { resetPasswordAction } from "@/app/actions";
 import { PageHero } from "@/components/shared/page-hero";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Portal Password Reset",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default function PortalForgotPasswordPage() {
   return (

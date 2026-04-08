@@ -3,6 +3,13 @@ import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
 import { ServiceDetailSection } from "@/components/sections/service-detail";
 import { getServiceBySlug } from "@/lib/data/services";
+import { buildServiceMetadata } from "@/lib/seo";
+
+export const metadata = buildServiceMetadata(
+  "International Recruitment & Career Placement",
+  "Verified international recruitment pathways with ethical employer matching and relocation support.",
+  "international-recruitment"
+);
 
 export default function InternationalRecruitmentPage() {
   const service = getServiceBySlug("international-recruitment");

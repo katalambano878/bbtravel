@@ -3,6 +3,13 @@ import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
 import { ServiceDetailSection } from "@/components/sections/service-detail";
 import { getServiceBySlug } from "@/lib/data/services";
+import { buildServiceMetadata } from "@/lib/seo";
+
+export const metadata = buildServiceMetadata(
+  "Study Abroad Advisory & University Placement",
+  "University shortlisting, application strategy, and student visa preparation for global study pathways.",
+  "study-abroad"
+);
 
 export default function StudyAbroadPage() {
   const service = getServiceBySlug("study-abroad");

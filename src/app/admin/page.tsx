@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PlusCircle, Shield, UserCog } from "lucide-react";
 
@@ -16,6 +17,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+export const metadata: Metadata = {
+  title: "Admin Console",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 function hasAccess(permissions: string[], key: string) {
   return permissions.includes(key) || permissions.includes("staff.manage");

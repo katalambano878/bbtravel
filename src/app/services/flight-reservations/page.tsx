@@ -3,6 +3,13 @@ import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
 import { ServiceDetailSection } from "@/components/sections/service-detail";
 import { getServiceBySlug } from "@/lib/data/services";
+import { buildServiceMetadata } from "@/lib/seo";
+
+export const metadata = buildServiceMetadata(
+  "Flight Bookings & Ticketing Service",
+  "Domestic and international flight bookings with route optimization and transparent fare guidance.",
+  "flight-reservations"
+);
 
 export default function FlightReservationsPage() {
   const service = getServiceBySlug("flight-reservations");
@@ -11,7 +18,7 @@ export default function FlightReservationsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Flights Reservations"
+        eyebrow="Flight Bookings & Ticketing"
         title={service.title}
         description="Reliable domestic and international flight reservations with transparent fares, smart route planning, and full pre-flight support."
         image="/images/page-hero/services.webp"
