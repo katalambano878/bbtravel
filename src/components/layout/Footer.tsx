@@ -15,7 +15,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-20">
           
           {/* Brand & CTA Area */}
-          <div className="lg:col-span-5 space-y-8 tracking-tight">
+          <div className="lg:col-span-4 space-y-8 tracking-tight">
             <div>
               <Link href="/" className="inline-block mb-4">
                 <img 
@@ -24,12 +24,12 @@ export function Footer() {
                   className="h-10 md:h-12 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
                 />
               </Link>
-              <p className="text-slate-400 font-light text-lg max-w-sm leading-relaxed">
+              <p className="text-slate-400 font-light text-[15px] leading-relaxed pr-4">
                 Where your global dreams take flight with structure, transparency, and elite support.
               </p>
             </div>
             
-            <Button asChild className="h-14 px-8 text-base bg-bb-gold text-bb-navy hover:bg-white font-bold transition-all duration-300 rounded-xl group overflow-hidden">
+            <Button asChild className="h-12 px-6 text-sm bg-bb-gold text-bb-navy hover:bg-white font-bold transition-all duration-300 rounded-xl group overflow-hidden">
               <Link href="/start">
                 <span className="relative z-10 flex items-center">
                   Start Your Journey <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -37,32 +37,32 @@ export function Footer() {
               </Link>
             </Button>
             
-            <div className="flex items-center gap-4 pt-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold">
+            <div className="flex items-center gap-3 pt-4">
+              <a href="#" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold shadow-sm backdrop-blur-sm">
                 IG
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold">
+              <a href="#" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold shadow-sm backdrop-blur-sm">
                 FB
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold">
+              <a href="#" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold shadow-sm backdrop-blur-sm">
                 X
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold">
+              <a href="#" className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-bb-gold hover:border-bb-gold transition-colors text-xs font-bold shadow-sm backdrop-blur-sm">
                 IN
               </a>
             </div>
           </div>
 
           {/* Core Services */}
-          <div className="lg:col-span-3">
-            <h4 className="text-sm font-semibold text-bb-gold uppercase tracking-[0.15em] mb-6 border-b border-white/10 pb-4">
+          <div className="lg:col-span-5">
+            <h4 className="text-xs font-semibold text-bb-gold uppercase tracking-[0.15em] mb-6 border-b border-white/10 pb-4">
               Core Expertise
             </h4>
-            <ul className="space-y-4">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
               {services.map(service => (
                 <li key={service.slug}>
-                  <Link href={`/services/${service.slug}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 group text-sm">
-                    <span className="w-1 h-1 rounded-full bg-white/20 group-hover:bg-bb-gold transition-colors" />
+                  <Link href={`/services/${service.slug}`} className="text-slate-400 hover:text-white transition-colors flex items-start gap-2 group text-[13px] leading-snug">
+                    <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-white/20 group-hover:bg-bb-gold transition-colors mt-1.5" />
                     {service.title}
                   </Link>
                 </li>
@@ -71,19 +71,23 @@ export function Footer() {
           </div>
 
           {/* Quick Links & Info */}
-          <div className="lg:col-span-4">
-            <h4 className="text-sm font-semibold text-bb-gold uppercase tracking-[0.15em] mb-6 border-b border-white/10 pb-4">
+          <div className="lg:col-span-3">
+            <h4 className="text-xs font-semibold text-bb-gold uppercase tracking-[0.15em] mb-6 border-b border-white/10 pb-4">
               Concierge Contact
             </h4>
-            <ul className="space-y-5 text-sm text-slate-400">
-              <li className="flex items-start gap-4">
-                <MapPin className="w-5 h-5 text-bb-gold shrink-0 mt-0.5" />
-                <span className="leading-relaxed font-light">{brand.address}</span>
+            <ul className="space-y-6 text-[13px] text-slate-400">
+              <li className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                  <MapPin className="w-3.5 h-3.5 text-bb-gold" />
+                </div>
+                <span className="leading-relaxed font-light mt-1.5">{brand.address}</span>
               </li>
-              <li className="flex items-center gap-4">
-                <Phone className="w-5 h-5 text-bb-gold shrink-0" />
-                <div className="flex flex-col">
-                  <a href={`tel:${brand.phone.replace(/\\s/g, "")}`} className="hover:text-white transition-colors font-light">
+              <li className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                  <Phone className="w-3.5 h-3.5 text-bb-gold" />
+                </div>
+                <div className="flex flex-col mt-1">
+                  <a href={`tel:${brand.phone.replace(/\\s/g, "")}`} className="hover:text-white transition-colors font-light pb-0.5">
                     {brand.phone}
                   </a>
                   <a href={`tel:${brand.secondaryPhone.replace(/\\s/g, "")}`} className="hover:text-white transition-colors font-light">
@@ -91,13 +95,17 @@ export function Footer() {
                   </a>
                 </div>
               </li>
-              <li className="flex items-start gap-4">
-                <MapPin className="w-5 h-5 text-bb-gold shrink-0 mt-0.5" />
-                <span className="leading-relaxed font-light">Digital Address: {brand.digitalAddress}</span>
+              <li className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                  <MapPin className="w-3.5 h-3.5 text-bb-gold" />
+                </div>
+                <span className="leading-relaxed font-light mt-1.5">Digital Address: {brand.digitalAddress}</span>
               </li>
-              <li className="flex items-center gap-4">
-                <Mail className="w-5 h-5 text-bb-gold shrink-0" />
-                <a href={`mailto:${brand.email}`} className="hover:text-white transition-colors font-light">
+              <li className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                  <Mail className="w-3.5 h-3.5 text-bb-gold" />
+                </div>
+                <a href={`mailto:${brand.email}`} className="hover:text-white transition-colors font-light mt-1.5">
                   {brand.email}
                 </a>
               </li>
