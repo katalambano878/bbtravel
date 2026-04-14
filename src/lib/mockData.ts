@@ -9,7 +9,7 @@ export const services = [
     processTime: "2 – 6 weeks",
     priceRange: "GH₵ 1,500+",
     icon: "Passport",
-    image: "/images/services/visa.webp",
+    image: "/images/services/visa_passport.png",
     benefits: [
       "Embassy-specific document auditing",
       "Visa form mastery and interview preparation",
@@ -34,7 +34,7 @@ export const services = [
     processTime: "4 – 12 weeks",
     priceRange: "GH₵ 2,000+",
     icon: "Briefcase",
-    image: "/images/services/jobs.webp",
+    image: "/images/services/recruitment_handshake.png",
     benefits: ["Verified employer network only", "Full credential verification & NMC support", "Contract review & visa processing"],
     timeline: ["Professional Profiling", "Credential Verification", "Opportunity Matching", "Interview Coaching", "Placement & Relocation"]
   },
@@ -48,7 +48,7 @@ export const services = [
     processTime: "6 – 16 weeks",
     priceRange: "GH₵ 1,800+",
     icon: "GraduationCap",
-    image: "/images/services/study.webp",
+    image: "/images/services/study_university.png",
     benefits: ["Data-driven university shortlisting", "Professional SOP & essay review", "Scholarship sourcing & visa processing"],
     timeline: ["Academic Assessment", "Strategic Shortlisting", "Application Crafting", "Scholarship & Visa", "Pre-Departure"]
   },

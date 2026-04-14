@@ -20,12 +20,19 @@ export type CaseStatus =
 
 export type StaffRole =
   | "super_admin"
+  | "operations_manager"
   | "case_manager"
   | "visa_officer"
   | "recruitment_officer"
   | "study_abroad_officer"
   | "tours_officer"
+  | "finance_manager"
+  | "accountant"
+  | "hr_manager"
+  | "hr_officer"
   | "customer_support"
+  | "auditor"
+  | "read_only_analyst"
   | "finance";
 
 export interface NavLink {

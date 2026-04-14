@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Admin Console",
@@ -55,6 +56,48 @@ export default async function AdminPage() {
           <p className="text-sm text-slate-500">
             Signed in as {context.profile.full_name} ({context.profile.role})
           </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(context.permissions.includes("crm.view") || context.permissions.includes("leads.view") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/crm">CRM</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("cases.view") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/cases">Case Ops</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("documents.view") || context.permissions.includes("documents.review") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/documents">Documents</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("messages.manage") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/notifications">Notifications</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("hr.view") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/hr">HRMS</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("finance.view") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/finance">Finance</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("reports.view") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/bi">BI</Link>
+            </Button>
+          )}
+          {(context.permissions.includes("settings.manage") || context.profile.role === "super_admin") && (
+            <Button asChild variant="secondary">
+              <Link href="/admin/settings">Settings</Link>
+            </Button>
+          )}
         </div>
       </div>
 

@@ -148,8 +148,13 @@ export async function getStaffAccessContext() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase.from("staff_profiles").select("role, full_name").eq("user_id", user.id).maybeSingle();
+  const { data: profile } = await supabase
+    .from("staff_profiles")
+    .select("role, full_name, department, manager_user_id, is_active, custom_title")
+    .eq("user_id", user.id)
+    .maybeSingle();
   if (!profile) return null;
+  if (profile.is_active === false) return null;
 
   const { data: role } = await supabase.from("roles").select("id, role_key").eq("role_key", profile.role).maybeSingle();
   let permissions: { permission_key: string }[] = [];

@@ -50,10 +50,10 @@ export function TransparencyTimeline() {
             >
               <div className="flex -space-x-3 shrink-0">
                 <div className="w-12 h-12 rounded-full border-2 border-bb-navy/50 bg-slate-100 overflow-hidden shadow-sm">
-                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80" alt="Client" className="w-full h-full object-cover" />
+                  <img src="/images/female_avatar.png" alt="Client" className="w-full h-full object-cover" />
                 </div>
                 <div className="w-12 h-12 rounded-full border-2 border-bb-navy/50 bg-slate-100 overflow-hidden shadow-sm">
-                  <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80" alt="Client" className="w-full h-full object-cover" />
+                  <img src="/images/male_avatar.png" alt="Client" className="w-full h-full object-cover" />
                 </div>
                 <div className="w-12 h-12 rounded-full border-2 border-bb-navy/50 bg-bb-gold flex items-center justify-center text-xs font-bold text-white shadow-sm z-10">
                   500+

@@ -49,7 +49,7 @@ export function ProofWall() {
               </p>
               <div>
                 <h4 className="text-white font-bold text-xl">{brand.founder}</h4>
-                <p className="text-bb-gold text-sm font-semibold tracking-wide uppercase">Managing Director</p>
+                <p className="text-bb-gold text-sm font-semibold tracking-wide uppercase">Executive Director</p>
               </div>
             </div>
           </motion.div>
