@@ -17,8 +17,12 @@ export function Footer() {
           {/* Brand & CTA Area */}
           <div className="lg:col-span-5 space-y-8 tracking-tight">
             <div>
-              <Link href="/" className="inline-block text-2xl font-bold text-white mb-2">
-                {brand.name}
+              <Link href="/" className="inline-block mb-4">
+                <img 
+                  src="/images/logo.png" 
+                  alt="B.B. Travel Consult Logo" 
+                  className="h-10 md:h-12 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
+                />
               </Link>
               <p className="text-slate-400 font-light text-lg max-w-sm leading-relaxed">
                 Where your global dreams take flight with structure, transparency, and elite support.

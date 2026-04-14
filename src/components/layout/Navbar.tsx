@@ -55,30 +55,15 @@ export function Navbar() {
           <div className="flex items-center justify-between">
 
             {/* ── Logo ── */}
-            <Link href="/" className="relative z-50 flex items-center gap-3 group">
-              {/* Icon mark */}
-              <div className={cn(
-                "w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300",
-                isScrolled
-                  ? "bg-bb-navy text-white"
-                  : "bg-white/10 backdrop-blur-sm text-white border border-white/20"
-              )}>
-                BB
-              </div>
-              <div className="flex flex-col">
-                <span className={cn(
-                  "text-[15px] font-semibold tracking-tight leading-tight transition-colors duration-300",
-                  isScrolled ? "text-bb-navy" : "text-white"
-                )}>
-                  B.B. Travel Consult
-                </span>
-                <span className={cn(
-                  "text-[10px] font-medium tracking-[0.15em] uppercase leading-tight transition-colors duration-300",
-                  isScrolled ? "text-slate-400" : "text-white/60"
-                )}>
-                  Global Opportunities
-                </span>
-              </div>
+            <Link href="/" className="relative z-50 flex items-center group">
+              <img 
+                src="/images/logo.png" 
+                alt="B.B. Travel Consult Logo" 
+                className={cn(
+                  "h-10 md:h-12 w-auto object-contain transition-all duration-300 group-hover:scale-105",
+                  !isScrolled && "brightness-0 invert drop-shadow-md"
+                )}
+              />
             </Link>
 
             {/* ── Desktop Navigation ── */}
