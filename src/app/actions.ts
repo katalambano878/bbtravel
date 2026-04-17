@@ -244,7 +244,10 @@ export async function signInAction(formData: FormData) {
   redirect("/portal");
 }
 
-export async function adminSignInAction(formData: FormData) {
+export async function adminSignInAction(
+  _prevState: { error?: string } | null,
+  formData: FormData
+): Promise<{ error?: string }> {
   const supabase = await createServerClient();
   const admin = createAdminClient();
   const email = String(formData.get("email") || "");
@@ -266,7 +269,7 @@ export async function adminSignInAction(formData: FormData) {
       login_status: "LOCKED",
       failure_reason: "LOCKOUT_ACTIVE"
     });
-    throw new Error("Account temporarily locked due to repeated failed login attempts.");
+    return { error: "Account temporarily locked due to repeated failed login attempts." };
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -288,7 +291,7 @@ export async function adminSignInAction(formData: FormData) {
       login_status: shouldLock ? "LOCKED" : "FAILED",
       failure_reason: error.message
     });
-    throw error;
+    return { error: "Invalid email or password." };
   }
 
   const { data: staffProfile } = await admin
@@ -299,7 +302,7 @@ export async function adminSignInAction(formData: FormData) {
 
   if (!staffProfile) {
     await supabase.auth.signOut();
-    throw new Error("Access denied. This login is for authorised staff only.");
+    return { error: "Access denied. This login is for authorised staff only." };
   }
 
   await admin.from("staff_login_attempts").upsert({
