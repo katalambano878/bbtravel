@@ -48,10 +48,6 @@ export default async function AdminFinancePage() {
         <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>
           Finance
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Invoices, payments, refunds, and expense approvals for every service line.
-          Use the service preset to raise invoices with brand-aligned pricing in seconds.
-        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-5">

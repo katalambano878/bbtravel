@@ -316,10 +316,6 @@ export default async function AdminCasesPage() {
         >
           Case operations
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Live work across the visa, travel, corporate, and advisory desks. Open a
-          case to manage tasks, notes, and linked files.
-        </p>
       </div>
 
       {/* KPI row */}

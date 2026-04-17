@@ -45,9 +45,6 @@ export default async function AdminHrPage() {
         <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>
           People & HR
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          B.B. Travel Consult staff, departments, attendance, leave, and payroll.
-        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-5">

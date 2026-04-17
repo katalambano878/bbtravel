@@ -80,11 +80,6 @@ export default async function AdminNotificationsPage() {
         >
           Client communications
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Send WhatsApp, email, SMS, or in-app messages using pre-baked templates
-          for lead acknowledgement, visa updates, flight confirmations, invoices,
-          and document follow-ups.
-        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

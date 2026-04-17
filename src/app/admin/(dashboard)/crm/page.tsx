@@ -72,10 +72,6 @@ export default async function AdminCrmPage() {
           >
             Sales pipeline
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Track travel and visa enquiries from first contact through booking.
-            Convert a lead to activate a case and trigger the service workflow.
-          </p>
         </div>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
           {snapshot.leads.length} total leads

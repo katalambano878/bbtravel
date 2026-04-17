@@ -143,9 +143,6 @@ export default async function AdminDashboardPage() {
           <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>
             Welcome back, {context.profile.full_name.split(" ")[0]}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Here&apos;s a snapshot of the visa, travel, and corporate desks across B.B. Travel Consult.
-          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button asChild size="sm">
@@ -198,16 +195,13 @@ export default async function AdminDashboardPage() {
           const division = divisions[key];
           const count = divisionCounts[key];
           return (
-            <Card key={key}>
+            <Card key={key} className={`border-l-4 ${division.accentClass}`}>
               <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    {division.label}
-                  </p>
-                  <span className="text-[11px] text-slate-400">Active cases</span>
-                </div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {division.short}
+                </p>
                 <p className="mt-2 text-3xl font-bold text-bb-navy">{count}</p>
-                <p className="mt-1 text-xs text-slate-500 line-clamp-2">{division.description}</p>
+                <p className="mt-1 text-[11px] text-slate-400">Active cases</p>
               </CardContent>
             </Card>
           );

@@ -33,7 +33,6 @@ export default async function AdminSettingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>Settings</h1>
-        <p className="mt-1 text-sm text-slate-500">System configuration, business profile, and approval thresholds.</p>
       </div>
 
       <form action={updateSystemSettingsAction} className="space-y-6">

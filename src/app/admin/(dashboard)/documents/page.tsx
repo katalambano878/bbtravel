@@ -243,11 +243,6 @@ export default async function AdminDocumentsPage() {
         >
           Documents
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Passport, visa, ticket, insurance, and placement files across all
-          desks. Watch expiry thresholds carefully — embassies reject documents
-          that are inside their trailing six-month validity window.
-        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
