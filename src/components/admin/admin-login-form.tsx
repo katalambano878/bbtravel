@@ -1,19 +1,17 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { adminSignInAction } from "@/app/actions";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 export function AdminLoginForm() {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState(adminSignInAction, null);
 
   useEffect(() => {
     if (state?.success) {
-      router.push("/admin");
+      window.location.href = "/admin";
     }
-  }, [state?.success, router]);
+  }, [state?.success]);
 
   return (
     <form action={formAction} className="space-y-5">
