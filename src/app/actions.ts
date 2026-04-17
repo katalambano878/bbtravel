@@ -245,9 +245,9 @@ export async function signInAction(formData: FormData) {
 }
 
 export async function adminSignInAction(
-  _prevState: { error?: string } | null,
+  _prevState: { error?: string; success?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; success?: boolean }> {
   const supabase = await createServerClient();
   const admin = createAdminClient();
   const email = String(formData.get("email") || "");
@@ -320,7 +320,7 @@ export async function adminSignInAction(
   });
   await admin.from("staff_profiles").update({ last_login_at: new Date().toISOString() }).eq("user_id", data.user.id);
 
-  redirect("/admin");
+  return { success: true };
 }
 
 export async function resetPasswordAction(formData: FormData) {
