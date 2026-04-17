@@ -1,91 +1,93 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function baseUrl(request: NextRequest) {
+  return new URL("/", request.url);
+}
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-  const email = String(formData.get("email") || "");
-  const password = String(formData.get("password") || "");
-  const origin = request.nextUrl.origin;
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
 
-  const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } }
-  );
-
-  const userAgent = request.headers.get("user-agent");
-  const ipAddress = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip");
-
-  const { data: policy } = await admin.from("auth_security_policies").select("*").eq("id", 1).maybeSingle();
-  const maxFailedAttempts = policy?.max_failed_attempts ?? 5;
-  const lockoutMinutes = policy?.lockout_minutes ?? 15;
-
-  const { data: loginAttempt } = await admin.from("staff_login_attempts").select("*").eq("email", email).maybeSingle();
-  if (loginAttempt?.locked_until && new Date(loginAttempt.locked_until) > new Date()) {
-    await admin.from("staff_login_events").insert({
-      email, ip_address: ipAddress, user_agent: userAgent,
-      login_status: "LOCKED", failure_reason: "LOCKOUT_ACTIVE"
-    });
-    return NextResponse.redirect(`${origin}/admin/login?error=locked`, { status: 303 });
+  if (!email || !password) {
+    const url = new URL("/admin/login", request.url);
+    url.searchParams.set("error", "missing");
+    return NextResponse.redirect(url, { status: 303 });
   }
 
-  let response = NextResponse.redirect(`${origin}/admin`, { status: 303 });
+  // We attach Supabase's auth cookies to this response object so they are
+  // sent to the browser along with the redirect.
+  let response = NextResponse.redirect(new URL("/admin", request.url), {
+    status: 303
+  });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
-          });
-        }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnon) {
+    const url = new URL("/admin/login", request.url);
+    url.searchParams.set("error", "config");
+    return NextResponse.redirect(url, { status: 303 });
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnon, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          // Update request cookies so subsequent calls within this handler
+          // (e.g. the staff_profiles lookup that runs RLS via auth.uid())
+          // see the freshly issued session.
+          request.cookies.set({ name, value, ...options });
+          response.cookies.set(name, value, options);
+        });
       }
     }
-  );
+  });
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    const failedAttempts = (loginAttempt?.failed_attempts ?? 0) + 1;
-    const shouldLock = failedAttempts >= maxFailedAttempts;
-    const lockedUntil = shouldLock ? new Date(Date.now() + lockoutMinutes * 60 * 1000).toISOString() : null;
-    await admin.from("staff_login_attempts").upsert({
-      email, failed_attempts: failedAttempts,
-      last_attempt_at: new Date().toISOString(), locked_until: lockedUntil
-    });
-    await admin.from("staff_login_events").insert({
-      email, ip_address: ipAddress, user_agent: userAgent,
-      login_status: shouldLock ? "LOCKED" : "FAILED", failure_reason: error.message
-    });
-    return NextResponse.redirect(`${origin}/admin/login?error=invalid`, { status: 303 });
+  if (error || !data?.user) {
+    const url = new URL("/admin/login", request.url);
+    url.searchParams.set("error", "credentials");
+    return NextResponse.redirect(url, { status: 303 });
   }
 
-  const { data: staffProfile } = await admin
+  // Verify the user is a staff member with an active profile.
+  const { data: profile } = await supabase
     .from("staff_profiles")
-    .select("role")
+    .select("user_id, is_active")
     .eq("user_id", data.user.id)
     .maybeSingle();
 
-  if (!staffProfile) {
+  if (!profile || profile.is_active === false) {
     await supabase.auth.signOut();
-    return NextResponse.redirect(`${origin}/admin/login?error=denied`, { status: 303 });
+    const url = new URL("/admin/login", request.url);
+    url.searchParams.set("error", "not_staff");
+    return NextResponse.redirect(url, { status: 303 });
   }
 
-  await admin.from("staff_login_attempts").upsert({
-    email, failed_attempts: 0,
-    last_attempt_at: new Date().toISOString(), locked_until: null
-  });
-  await admin.from("staff_login_events").insert({
-    user_id: data.user.id, email, ip_address: ipAddress,
-    user_agent: userAgent, login_status: "SUCCESS"
-  });
-  await admin.from("staff_profiles").update({ last_login_at: new Date().toISOString() }).eq("user_id", data.user.id);
+  // Best-effort: stamp last_login_at. Never block login if this fails.
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const { createClient } = await import("@supabase/supabase-js");
+      const admin = createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { persistSession: false }
+      });
+      await admin
+        .from("staff_profiles")
+        .update({ last_login_at: new Date().toISOString() })
+        .eq("user_id", data.user.id);
+    } catch {
+      // ignore
+    }
+  }
 
   return response;
 }

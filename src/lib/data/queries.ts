@@ -163,11 +163,17 @@ export async function getStaffAccessContext() {
       .from("role_permissions")
       .select("permissions(permission_key)")
       .eq("role_id", role.id);
-    permissions = (data ?? []).flatMap((row: { permissions?: { permission_key?: string }[] }) =>
-      (row.permissions ?? []).map((permission) => ({
-        permission_key: permission.permission_key ?? ""
-      }))
-    );
+    // Supabase returns the related row as either an object or an array depending
+    // on the inferred relationship cardinality. Handle both shapes safely.
+    type PermRow = { permissions?: { permission_key?: string } | { permission_key?: string }[] | null };
+    permissions = (data ?? []).flatMap((row: PermRow) => {
+      const perms = row.permissions;
+      if (!perms) return [];
+      const list = Array.isArray(perms) ? perms : [perms];
+      return list
+        .map((p) => ({ permission_key: p?.permission_key ?? "" }))
+        .filter((p) => p.permission_key !== "");
+    });
   }
 
   return {

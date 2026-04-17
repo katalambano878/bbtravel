@@ -1,41 +1,63 @@
 "use client";
 
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 
+const ERROR_MESSAGES: Record<string, string> = {
+  credentials: "Invalid email or password.",
+  missing: "Please enter both email and password.",
+  not_staff: "This account is not authorized for the admin console.",
+  config: "Server is misconfigured. Contact your administrator.",
+  unknown: "Something went wrong. Please try again."
+};
+
 export function AdminLoginForm() {
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const errorCode = searchParams.get("error");
   const [submitting, setSubmitting] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-
-    const form = new FormData(e.currentTarget);
-    const email = String(form.get("email") || "");
-    const password = String(form.get("password") || "");
-
-    const supabase = createClient();
-    try {
-      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (authError) {
-        setError("Invalid email or password.");
-        setSubmitting(false);
-        return;
-      }
-
-      window.location.href = "/admin";
-    } catch {
-      setError("Something went wrong. Please try again.");
-      setSubmitting(false);
+  // Kill any stale service worker / caches from a previous deployment
+  // that might be intercepting requests and breaking hydration.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations?.().then((regs) => {
+        regs.forEach((reg) => {
+          reg.unregister().catch(() => {});
+        });
+      });
     }
-  }
+    if ("caches" in window) {
+      caches
+        .keys()
+        .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+        .catch(() => {});
+    }
+  }, []);
+
+  const error =
+    clientError ?? (errorCode ? ERROR_MESSAGES[errorCode] ?? ERROR_MESSAGES.unknown : null);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+      method="POST"
+      action="/api/admin-signin"
+      className="space-y-5"
+      onSubmit={(e) => {
+        const form = e.currentTarget;
+        const email = (form.elements.namedItem("email") as HTMLInputElement)?.value?.trim();
+        const password = (form.elements.namedItem("password") as HTMLInputElement)?.value;
+        if (!email || !password) {
+          e.preventDefault();
+          setClientError(ERROR_MESSAGES.missing);
+          return;
+        }
+        setClientError(null);
+        setSubmitting(true);
+      }}
+    >
       {error && (
         <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -44,7 +66,10 @@ export function AdminLoginForm() {
       )}
 
       <div>
-        <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1.5">
+        <label
+          htmlFor="email"
+          className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1.5"
+        >
           Email Address
         </label>
         <input
@@ -58,7 +83,10 @@ export function AdminLoginForm() {
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1.5">
+        <label
+          htmlFor="password"
+          className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1.5"
+        >
           Password
         </label>
         <input
