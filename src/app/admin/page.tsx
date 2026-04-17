@@ -34,7 +34,7 @@ function hasAccess(permissions: string[], key: string) {
 export default async function AdminPage() {
   const context = await getStaffAccessContext();
   if (!context) {
-    redirect("/portal/login");
+    redirect("/admin/login");
   }
 
   const [overview, leads, cases, docs, appointments, logs, content] = await Promise.all([

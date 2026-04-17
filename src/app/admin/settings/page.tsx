@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 export default async function AdminSettingsPage() {
   const context = await getStaffAccessContext();
-  if (!context) redirect("/portal/login");
+  if (!context) redirect("/admin/login");
   if (!context.permissions.includes("settings.manage") && context.profile.role !== "super_admin") {
     redirect("/admin");
   }

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 export default async function AdminNotificationsPage() {
   const context = await getStaffAccessContext();
-  if (!context) redirect("/portal/login");
+  if (!context) redirect("/admin/login");
   if (!(context.permissions.includes("messages.manage") || context.profile.role === "super_admin")) {
     redirect("/admin");
   }

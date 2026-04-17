@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
-    <footer className="bg-bb-navy text-white pt-24 pb-8 overflow-hidden relative">
+    <footer data-footer className="bg-bb-navy text-white pt-24 pb-8 overflow-hidden relative">
       {/* Background Motifs */}
       <div className="absolute inset-0 grid-overlay-dark opacity-40 mix-blend-overlay pointer-events-none" />
       <div className="absolute -top-[300px] -right-[300px] w-[800px] h-[800px] bg-bb-gold/5 rounded-full blur-[120px] pointer-events-none" />

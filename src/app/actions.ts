@@ -244,6 +244,82 @@ export async function signInAction(formData: FormData) {
   redirect("/portal");
 }
 
+export async function adminSignInAction(formData: FormData) {
+  const supabase = await createServerClient();
+  const admin = createAdminClient();
+  const email = String(formData.get("email") || "");
+  const password = String(formData.get("password") || "");
+  const requestHeaders = await headers();
+  const userAgent = requestHeaders.get("user-agent");
+  const ipAddress = requestHeaders.get("x-forwarded-for") ?? requestHeaders.get("x-real-ip");
+
+  const { data: policy } = await admin.from("auth_security_policies").select("*").eq("id", 1).maybeSingle();
+  const maxFailedAttempts = policy?.max_failed_attempts ?? 5;
+  const lockoutMinutes = policy?.lockout_minutes ?? 15;
+
+  const { data: loginAttempt } = await admin.from("staff_login_attempts").select("*").eq("email", email).maybeSingle();
+  if (loginAttempt?.locked_until && new Date(loginAttempt.locked_until) > new Date()) {
+    await admin.from("staff_login_events").insert({
+      email,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      login_status: "LOCKED",
+      failure_reason: "LOCKOUT_ACTIVE"
+    });
+    throw new Error("Account temporarily locked due to repeated failed login attempts.");
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    const failedAttempts = (loginAttempt?.failed_attempts ?? 0) + 1;
+    const shouldLock = failedAttempts >= maxFailedAttempts;
+    const lockedUntil = shouldLock ? new Date(Date.now() + lockoutMinutes * 60 * 1000).toISOString() : null;
+
+    await admin.from("staff_login_attempts").upsert({
+      email,
+      failed_attempts: failedAttempts,
+      last_attempt_at: new Date().toISOString(),
+      locked_until: lockedUntil
+    });
+    await admin.from("staff_login_events").insert({
+      email,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      login_status: shouldLock ? "LOCKED" : "FAILED",
+      failure_reason: error.message
+    });
+    throw error;
+  }
+
+  const { data: staffProfile } = await admin
+    .from("staff_profiles")
+    .select("role")
+    .eq("user_id", data.user.id)
+    .maybeSingle();
+
+  if (!staffProfile) {
+    await supabase.auth.signOut();
+    throw new Error("Access denied. This login is for authorised staff only.");
+  }
+
+  await admin.from("staff_login_attempts").upsert({
+    email,
+    failed_attempts: 0,
+    last_attempt_at: new Date().toISOString(),
+    locked_until: null
+  });
+  await admin.from("staff_login_events").insert({
+    user_id: data.user.id,
+    email,
+    ip_address: ipAddress,
+    user_agent: userAgent,
+    login_status: "SUCCESS"
+  });
+  await admin.from("staff_profiles").update({ last_login_at: new Date().toISOString() }).eq("user_id", data.user.id);
+
+  redirect("/admin");
+}
+
 export async function resetPasswordAction(formData: FormData) {
   const supabase = await createServerClient();
   const email = String(formData.get("email") || "");
