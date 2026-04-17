@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import Image from "next/image";
 import { Shield } from "lucide-react";
@@ -75,7 +76,9 @@ export default function AdminLoginPage() {
             </p>
           </div>
 
-          <AdminLoginForm />
+          <Suspense>
+            <AdminLoginForm />
+          </Suspense>
 
           <p className="mt-8 text-center text-xs text-slate-400">
             Client portal? <a href="/portal/login" className="text-bb-sky hover:underline">Sign in here</a>
