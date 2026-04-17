@@ -1,32 +1,60 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { AlertCircle, Loader2 } from "lucide-react";
 
-const errorMessages: Record<string, string> = {
-  invalid: "Invalid email or password.",
-  locked: "Account temporarily locked due to repeated failed login attempts.",
-  denied: "Access denied. This login is for authorised staff only."
-};
-
 export function AdminLoginForm() {
-  const searchParams = useSearchParams();
-  const errorKey = searchParams.get("error");
-  const errorMessage = errorKey ? errorMessages[errorKey] ?? "Login failed. Please try again." : null;
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") || "");
+    const password = String(form.get("password") || "");
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (authError) {
+      setError("Invalid email or password.");
+      setSubmitting(false);
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Authentication failed. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    const { data: staffProfile } = await supabase
+      .from("staff_profiles")
+      .select("role")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!staffProfile) {
+      await supabase.auth.signOut();
+      setError("Access denied. This login is for authorised staff only.");
+      setSubmitting(false);
+      return;
+    }
+
+    window.location.href = "/admin";
+  }
+
   return (
-    <form
-      action="/api/admin-signin"
-      method="POST"
-      onSubmit={() => setSubmitting(true)}
-      className="space-y-5"
-    >
-      {errorMessage && (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {error && (
         <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{errorMessage}</span>
+          <span>{error}</span>
         </div>
       )}
 
