@@ -70,18 +70,39 @@ export async function getAdminOverview() {
   const admin = createAdminClient();
   const today = new Date();
   const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
-  const [leadsRes, casesRes, docsRes, appointmentsRes] = await Promise.all([
+  const weekAhead = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const [
+    leadsRes,
+    casesRes,
+    docsRes,
+    appointmentsRes,
+    invoicesOutstandingRes,
+    weekAppointmentsRes
+  ] = await Promise.all([
     admin.from("leads").select("*", { count: "exact", head: true }).gte("created_at", startOfDay),
     admin.from("cases").select("*", { count: "exact", head: true }).neq("status", "COMPLETED"),
     admin.from("documents").select("*", { count: "exact", head: true }).eq("status", "PENDING"),
-    admin.from("appointments").select("*", { count: "exact", head: true }).gte("scheduled_at", startOfDay)
+    admin.from("appointments").select("*", { count: "exact", head: true }).gte("scheduled_at", startOfDay),
+    admin.from("invoices").select("total_amount, amount_paid").neq("status", "PAID"),
+    admin
+      .from("appointments")
+      .select("*", { count: "exact", head: true })
+      .gte("scheduled_at", startOfDay)
+      .lte("scheduled_at", weekAhead)
   ]);
+
+  const outstandingRevenue = (invoicesOutstandingRes.data ?? []).reduce(
+    (sum, row) => sum + Math.max(Number(row.total_amount ?? 0) - Number(row.amount_paid ?? 0), 0),
+    0
+  );
 
   return {
     newLeadsToday: leadsRes.count ?? 0,
     activeCases: casesRes.count ?? 0,
     pendingDocuments: docsRes.count ?? 0,
-    upcomingAppointments: appointmentsRes.count ?? 0
+    upcomingAppointments: appointmentsRes.count ?? 0,
+    appointmentsThisWeek: weekAppointmentsRes.count ?? 0,
+    outstandingRevenue
   };
 }
 
@@ -95,7 +116,7 @@ export async function getAdminCases() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("cases")
-    .select("id, case_type, status, assigned_to, created_at, updated_at, clients(name,email)")
+    .select("id, case_type, status, assigned_to, created_at, updated_at, meta, clients(name,email)")
     .order("updated_at", { ascending: false });
   return data ?? [];
 }
@@ -116,6 +137,90 @@ export async function getAdminAppointments() {
     .select("id, case_id, scheduled_at, location, notes")
     .order("scheduled_at", { ascending: true });
   return data ?? [];
+}
+
+/**
+ * Service-division breakdown of ACTIVE cases, for the dashboard home.
+ * Returns count keyed by division ("IMMIGRATION" | "TRAVEL" | "CORPORATE_EVENTS" | "CONSULTATION").
+ */
+export async function getAdminCasesByService() {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("cases")
+    .select("case_type, status")
+    .neq("status", "COMPLETED");
+  return data ?? [];
+}
+
+/**
+ * Appointments in the next N days with case + client info for the
+ * Visa Desk / Travel Desk dashboard widgets.
+ */
+export async function getAdminUpcomingAppointments(days = 7) {
+  const admin = createAdminClient();
+  const now = new Date();
+  const until = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  const { data } = await admin
+    .from("appointments")
+    .select("id, case_id, scheduled_at, location, notes, cases(case_type, meta, clients(name))")
+    .gte("scheduled_at", now.toISOString())
+    .lte("scheduled_at", until.toISOString())
+    .order("scheduled_at", { ascending: true })
+    .limit(25);
+  return data ?? [];
+}
+
+/**
+ * Service-segmented BI metrics — by division + per-service counts.
+ * Returns active/completed case counts, visa approval rate, tickets issued,
+ * bookings, placements, and revenue split.
+ */
+export async function getServiceSegmentedMetrics() {
+  const admin = createAdminClient();
+  const [casesRes, invoicesRes] = await Promise.all([
+    admin.from("cases").select("id, case_type, status, client_id"),
+    admin
+      .from("invoices")
+      .select("id, total_amount, amount_paid, cases(case_type)")
+  ]);
+  return {
+    cases: casesRes.data ?? [],
+    invoices: invoicesRes.data ?? []
+  };
+}
+
+/**
+ * Cases that represent travel departures inside a rolling window, used by
+ * the "Travel Desk — Upcoming Departures" widget. Reads `meta.departure_date`
+ * which flight/tour/hotel cases store.
+ */
+export async function getUpcomingDepartures(days = 14) {
+  const admin = createAdminClient();
+  const now = new Date();
+  const until = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  const { data } = await admin
+    .from("cases")
+    .select("id, case_type, status, meta, clients(name)")
+    .in("case_type", ["FLIGHT_RESERVATION", "TOUR_PACKAGE", "HOTEL_BOOKING", "CORPORATE_TRAVEL"])
+    .neq("status", "COMPLETED")
+    .order("updated_at", { ascending: false })
+    .limit(50);
+  const rows = data ?? [];
+  return rows
+    .filter((row) => {
+      const meta = (row.meta ?? {}) as Record<string, unknown>;
+      const key =
+        row.case_type === "HOTEL_BOOKING"
+          ? "check_in"
+          : row.case_type === "CORPORATE_TRAVEL"
+            ? "departure_date"
+            : "departure_date";
+      const raw = meta[key];
+      if (!raw || typeof raw !== "string") return false;
+      const date = new Date(raw);
+      return !Number.isNaN(date.getTime()) && date >= now && date <= until;
+    })
+    .slice(0, 10);
 }
 
 export async function getAdminAuditLogs() {

@@ -6,7 +6,7 @@ export async function createNotification(input: {
   userId: string;
   title: string;
   body: string;
-  channel?: "IN_APP" | "EMAIL";
+  channel?: "IN_APP" | "EMAIL" | "WHATSAPP" | "SMS";
   entityType?: string;
   entityId?: string;
   scheduledFor?: string;

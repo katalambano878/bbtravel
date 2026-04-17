@@ -72,7 +72,11 @@ export async function getDocumentLifecycleSnapshot() {
   const admin = createAdminClient();
 
   const [documentsRes, versionsRes, reviewsRes, alertsRes] = await Promise.all([
-    admin.from("documents").select("*").order("created_at", { ascending: false }).limit(200),
+    admin
+      .from("documents")
+      .select("*, cases(case_type, clients(name))")
+      .order("created_at", { ascending: false })
+      .limit(200),
     admin.from("document_versions").select("*").order("created_at", { ascending: false }).limit(200),
     admin.from("document_reviews").select("*").order("created_at", { ascending: false }).limit(200),
     admin.from("document_expiry_alerts").select("*").order("created_at", { ascending: false }).limit(200)

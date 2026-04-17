@@ -42,8 +42,12 @@ export default async function AdminHrPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>HR Management</h1>
-        <p className="mt-1 text-sm text-slate-500">People, attendance, leave, payroll, and performance.</p>
+        <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>
+          People & HR
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          B.B. Travel Consult staff, departments, attendance, leave, and payroll.
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-5">
@@ -61,6 +65,44 @@ export default async function AdminHrPage() {
           </Card>
         ))}
       </div>
+
+      {/* Org structure reference */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-bb-navy">Organisational structure</h2>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+              {snapshot.departments.length} departments • {snapshot.teams.length} teams
+            </span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {snapshot.departments.map((dept) => {
+              const deptTeams = snapshot.teams.filter((t) => t.department_id === dept.id);
+              return (
+                <div key={dept.id} className="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                  <p className="text-sm font-semibold text-bb-navy">{dept.name}</p>
+                  {dept.description && (
+                    <p className="mt-0.5 text-xs text-slate-500 line-clamp-2">{dept.description}</p>
+                  )}
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {deptTeams.length === 0 && (
+                      <span className="text-xs text-slate-400">No teams configured.</span>
+                    )}
+                    {deptTeams.map((team) => (
+                      <li
+                        key={team.id}
+                        className="inline-flex rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-600"
+                      >
+                        {team.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="employees">
         <TabsList>
@@ -103,8 +145,34 @@ export default async function AdminHrPage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <Input name="department_id" placeholder="Department ID" />
-                    <Input name="team_id" placeholder="Team ID" />
+                    <div>
+                      <Label className="text-xs">Department</Label>
+                      <select
+                        name="department_id"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                      >
+                        <option value="">Select department</option>
+                        {snapshot.departments.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Team</Label>
+                      <select
+                        name="team_id"
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                      >
+                        <option value="">Select team</option>
+                        {snapshot.teams.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                   <Input name="manager_user_id" placeholder="Manager user ID" />
                   <div className="grid grid-cols-2 gap-3">

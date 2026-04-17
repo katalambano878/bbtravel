@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { BarChart3, Download, Users, Briefcase, DollarSign, AlertTriangle } from "lucide-react";
 
 import { createScheduledReportAction, queueReportExportAction, saveReportViewAction } from "@/app/actions";
-import { getStaffAccessContext } from "@/lib/data/queries";
+import { getStaffAccessContext, getServiceSegmentedMetrics } from "@/lib/data/queries";
 import { getExecutiveDashboardData, getReportingSnapshot } from "@/lib/reports/service";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  divisions,
+  getService,
+  serviceList,
+  type ServiceDivisionKey
+} from "@/lib/services/catalogue";
 
 export const metadata: Metadata = { title: "BI / Reports — Admin Console" };
 
@@ -22,8 +28,54 @@ export default async function AdminBiPage() {
     redirect("/admin");
   }
 
-  const [dashboard, snapshot] = await Promise.all([getExecutiveDashboardData(), getReportingSnapshot()]);
+  const [dashboard, snapshot, segmented] = await Promise.all([
+    getExecutiveDashboardData(),
+    getReportingSnapshot(),
+    getServiceSegmentedMetrics()
+  ]);
   const k = dashboard.kpis;
+
+  // Per-service and per-division metrics
+  const divisionCases: Record<ServiceDivisionKey, { total: number; active: number; completed: number; revenue: number }> = {
+    IMMIGRATION: { total: 0, active: 0, completed: 0, revenue: 0 },
+    TRAVEL: { total: 0, active: 0, completed: 0, revenue: 0 },
+    CORPORATE_EVENTS: { total: 0, active: 0, completed: 0, revenue: 0 },
+    CONSULTATION: { total: 0, active: 0, completed: 0, revenue: 0 }
+  };
+  const serviceCases: Record<string, { total: number; active: number; completed: number }> = {};
+
+  for (const c of segmented.cases) {
+    const svc = getService(c.case_type);
+    if (!svc) continue;
+    const row = divisionCases[svc.division];
+    row.total += 1;
+    if (c.status === "COMPLETED") row.completed += 1;
+    else row.active += 1;
+    const sRow = (serviceCases[svc.key] ??= { total: 0, active: 0, completed: 0 });
+    sRow.total += 1;
+    if (c.status === "COMPLETED") sRow.completed += 1;
+    else sRow.active += 1;
+  }
+
+  for (const inv of segmented.invoices) {
+    const caseRef = Array.isArray(inv.cases) ? inv.cases[0] : (inv.cases as { case_type?: string } | null);
+    const svc = getService(caseRef?.case_type);
+    if (!svc) continue;
+    divisionCases[svc.division].revenue += Number(inv.amount_paid ?? 0);
+  }
+
+  // Visa approval rate — completed visa cases / total closed (completed + cancelled) visa cases
+  const visaStats = serviceCases["VISA_ASSISTANCE"];
+  const visaApprovalRate = visaStats && visaStats.total > 0
+    ? Math.round((visaStats.completed / visaStats.total) * 100)
+    : null;
+
+  const money = (n: number) =>
+    new Intl.NumberFormat("en-GH", {
+      style: "currency",
+      currency: "GHS",
+      maximumFractionDigits: 0
+    }).format(n);
 
   const kpis = [
     { label: "Leads Total", value: k.leadsTotal, icon: Users, accent: "border-l-blue-500" },
@@ -61,6 +113,96 @@ export default async function AdminBiPage() {
           </Card>
         ))}
       </div>
+
+      {/* Division-split KPIs */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-bb-navy">Revenue & cases by division</h2>
+            {visaApprovalRate !== null && (
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                Visa success rate: {visaApprovalRate}%
+              </span>
+            )}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {(Object.keys(divisionCases) as ServiceDivisionKey[]).map((key) => {
+              const row = divisionCases[key];
+              const division = divisions[key];
+              return (
+                <div
+                  key={key}
+                  className={`rounded-xl border border-slate-100 p-4 ${division.accentClass} border-l-4`}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {division.label}
+                  </p>
+                  <p className="mt-2 text-2xl font-bold text-bb-navy">{money(row.revenue)}</p>
+                  <p className="mt-1 text-xs text-slate-500">Revenue collected</p>
+                  <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+                    <div>
+                      <p className="text-lg font-semibold text-bb-navy">{row.total}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Total</p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold text-bb-navy">{row.active}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Active</p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold text-bb-navy">{row.completed}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Done</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Service-level breakdown */}
+      <Card>
+        <CardContent className="p-6">
+          <h2 className="mb-4 text-lg font-semibold text-bb-navy">Service performance</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Service</TableHead>
+                <TableHead>Division</TableHead>
+                <TableHead className="text-right">Total cases</TableHead>
+                <TableHead className="text-right">Active</TableHead>
+                <TableHead className="text-right">Completed</TableHead>
+                <TableHead className="text-right">Success rate</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {serviceList
+                .filter((svc) => svc.key !== "BUSINESS_EXPORT")
+                .map((svc) => {
+                  const row = serviceCases[svc.key];
+                  const total = row?.total ?? 0;
+                  const completed = row?.completed ?? 0;
+                  const active = row?.active ?? 0;
+                  const rate = total > 0 ? Math.round((completed / total) * 100) : null;
+                  return (
+                    <TableRow key={svc.key}>
+                      <TableCell className="font-medium text-bb-navy">{svc.label}</TableCell>
+                      <TableCell className="text-xs text-slate-500">
+                        {divisions[svc.division].label}
+                      </TableCell>
+                      <TableCell className="text-right text-sm">{total}</TableCell>
+                      <TableCell className="text-right text-sm">{active}</TableCell>
+                      <TableCell className="text-right text-sm">{completed}</TableCell>
+                      <TableCell className="text-right text-sm font-medium text-bb-navy">
+                        {rate === null ? "—" : `${rate}%`}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="views">
         <TabsList>

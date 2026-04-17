@@ -2,11 +2,28 @@ export type ServiceType =
   | "VISA_ASSISTANCE"
   | "INTERNATIONAL_RECRUITMENT"
   | "STUDY_ABROAD"
+  | "DOCUMENT_PROCESSING"
   | "TOUR_PACKAGE"
-  | "BUSINESS_EXPORT"
-  | "FLIGHT_RESERVATION";
+  | "FLIGHT_RESERVATION"
+  | "HOTEL_BOOKING"
+  | "TRAVEL_INSURANCE"
+  | "TRANSPORT_SERVICES"
+  | "CORPORATE_TRAVEL"
+  | "EVENT_MANAGEMENT"
+  | "CONSULTATION"
+  | "BUSINESS_EXPORT";
 
-export type LeadStage = "NEW" | "CONTACTED" | "QUALIFIED" | "CONVERTED" | "CLOSED";
+export type LeadStage =
+  | "NEW"
+  | "CONTACTED"
+  | "SCOPED"
+  | "QUOTED"
+  | "BOOKED"
+  | "COMPLETED"
+  | "CLOSED"
+  // Legacy stages retained for backward compatibility with historical data.
+  | "QUALIFIED"
+  | "CONVERTED";
 
 export type CaseStatus =
   | "SUBMITTED"

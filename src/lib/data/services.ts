@@ -212,7 +212,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "BUSINESS_EXPORT",
+    type: "HOTEL_BOOKING",
     slug: "hotel-booking-reservation",
     title: "Hotel Booking & Reservation Service",
     whoFor:
@@ -256,7 +256,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "TOUR_PACKAGE",
+    type: "CORPORATE_TRAVEL",
     slug: "corporate-travel-solutions",
     title: "Corporate Travel Solutions",
     whoFor:
@@ -300,7 +300,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "TOUR_PACKAGE",
+    type: "TRAVEL_INSURANCE",
     slug: "travel-insurance",
     title: "Travel Insurance Support",
     whoFor:
@@ -344,7 +344,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "TOUR_PACKAGE",
+    type: "EVENT_MANAGEMENT",
     slug: "event-destination-management",
     title: "Event & Destination Management",
     whoFor:
@@ -388,7 +388,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "TOUR_PACKAGE",
+    type: "TRANSPORT_SERVICES",
     slug: "transport-car-services",
     title: "Transport & Car Services",
     whoFor:
@@ -432,7 +432,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "VISA_ASSISTANCE",
+    type: "CONSULTATION",
     slug: "consultation-advisory-services",
     title: "Consultation & Advisory Services",
     whoFor:
@@ -476,7 +476,7 @@ export const serviceDetails: {
     ]
   },
   {
-    type: "STUDY_ABROAD",
+    type: "DOCUMENT_PROCESSING",
     slug: "work-study-abroad-document-processing",
     title: "Work & Study Abroad Document Processing",
     whoFor:

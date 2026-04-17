@@ -128,7 +128,8 @@ export async function convertLeadToClientAndCase({
   await admin
     .from("leads")
     .update({
-      stage: "CONVERTED",
+      // Travel-tailored pipeline: a converted lead = service "booked" / submitted.
+      stage: "BOOKED",
       converted_client_id: clientId,
       converted_case_id: createdCase.id
     })

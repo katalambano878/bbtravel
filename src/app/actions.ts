@@ -496,7 +496,7 @@ export async function createNotificationAction(formData: FormData) {
     userId: String(formData.get("user_id") || ""),
     title: String(formData.get("title") || ""),
     body: String(formData.get("body") || ""),
-    channel: String(formData.get("channel") || "IN_APP") as "IN_APP" | "EMAIL",
+    channel: String(formData.get("channel") || "IN_APP") as "IN_APP" | "EMAIL" | "WHATSAPP" | "SMS",
     entityType: String(formData.get("entity_type") || ""),
     entityId: String(formData.get("entity_id") || "")
   });

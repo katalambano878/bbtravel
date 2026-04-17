@@ -1,4 +1,5 @@
 import type { ServiceType } from "@/types/domain";
+import { serviceCatalogue, SERVICE_TYPE_KEYS } from "@/lib/services/catalogue";
 
 export const testimonials = [
   {
@@ -115,21 +116,14 @@ export const blogPosts = [
   }
 ];
 
-export const checklistTemplates: Record<ServiceType, string[]> = {
-  VISA_ASSISTANCE: ["Passport validity check", "Purpose of travel documentation", "Financial support evidence", "Appointment prep sheet"],
-  INTERNATIONAL_RECRUITMENT: ["CV standardization", "Qualification verification", "Role fit statement", "Interview readiness checklist"],
-  STUDY_ABROAD: ["Academic transcripts", "Personal statement draft", "Financial proof preparation", "Visa readiness bundle"],
-  TOUR_PACKAGE: ["Passport and identity checks", "Family/group preference sheet", "Budget and experience priority list", "Travel insurance guidance"],
-  FLIGHT_RESERVATION: [
-    "Traveler details and route confirmation",
-    "Preferred airline and transit options",
-    "Baggage and fare flexibility selection",
-    "Ticket issuance and pre-flight checklist"
-  ],
-  BUSINESS_EXPORT: [
-    "Travel dates and destination confirmation",
-    "Guest ID/passport information sheet",
-    "Room preference and occupancy details",
-    "Cancellation and payment policy selection"
-  ]
-};
+/**
+ * Derived from the canonical service catalogue so any catalogue change
+ * auto-extends the public-site readiness preview and admin docs checklist.
+ */
+export const checklistTemplates: Record<ServiceType, string[]> = SERVICE_TYPE_KEYS.reduce(
+  (acc, key) => {
+    acc[key as ServiceType] = serviceCatalogue[key].documentChecklist.map((item) => item.label);
+    return acc;
+  },
+  {} as Record<ServiceType, string[]>
+);

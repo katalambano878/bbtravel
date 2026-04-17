@@ -1,4 +1,5 @@
 import type { NavLink, ServiceType } from "@/types/domain";
+import { serviceCatalogue, SERVICE_DISPLAY_ORDER } from "@/lib/services/catalogue";
 
 export const brand = {
   name: "B.B. Travel Consult",
@@ -31,56 +32,31 @@ export const navLinks: NavLink[] = [
   { label: "Contact", href: "/contact" }
 ];
 
+/**
+ * Legacy view of the service catalogue. Derived from the canonical
+ * catalogue in `src/lib/services/catalogue.ts` so that extending the
+ * catalogue auto-propagates across the public site.
+ */
 export const serviceCatalog: {
   type: ServiceType;
   title: string;
   short: string;
   href: string;
   icon: string;
-}[] = [
-  {
-    type: "VISA_ASSISTANCE",
-    title: "Visa Application Assistance",
-    short: "Tourist, business, student, and work visa documentation support.",
-    href: "/services/visa-assistance",
-    icon: "FileBadge2"
-  },
-  {
-    type: "INTERNATIONAL_RECRUITMENT",
-    title: "International Recruitment",
-    short: "Ethical international job placement and candidate preparation.",
-    href: "/services/international-recruitment",
-    icon: "BriefcaseBusiness"
-  },
-  {
-    type: "STUDY_ABROAD",
-    title: "Study Abroad Placement",
-    short: "Admission guidance, documentation, and onboarding support.",
-    href: "/services/study-abroad",
-    icon: "GraduationCap"
-  },
-  {
-    type: "TOUR_PACKAGE",
-    title: "International Tour Packages",
-    short: "Customized private and group travel experiences.",
-    href: "/services/tour-packages",
-    icon: "Plane"
-  },
-  {
-    type: "FLIGHT_RESERVATION",
-    title: "Flights Reservations",
-    short: "International and domestic flight search, fare optimization, and booking support.",
-    href: "/services/flight-reservations",
-    icon: "PlaneTakeoff"
-  },
-  {
-    type: "BUSINESS_EXPORT",
-    title: "Hotel Booking & Reservation",
-    short: "Global hotel booking, reservation planning, and stay coordination.",
-    href: "/services/hotel-booking-reservation",
-    icon: "Hotel"
-  }
-];
+}[] = SERVICE_DISPLAY_ORDER
+  // Hide BUSINESS_EXPORT from the public service catalogue since it's a
+  // legacy admin-only classification.
+  .filter((key) => key !== "BUSINESS_EXPORT")
+  .map((key) => {
+    const svc = serviceCatalogue[key];
+    return {
+      type: svc.key as ServiceType,
+      title: svc.label,
+      short: svc.shortDescription,
+      href: `/services/${svc.slug}`,
+      icon: svc.icon.displayName ?? "FileBadge2"
+    };
+  });
 
 export const serviceWorkflows: Record<ServiceType, string[]> = {
   VISA_ASSISTANCE: [
@@ -123,13 +99,61 @@ export const serviceWorkflows: Record<ServiceType, string[]> = {
     "Pre-flight support — seat selection guidance, check-in reminders, and travel document checks before departure",
     "Change and disruption handling — rebooking support for date changes, missed connections, or airline schedule adjustments"
   ],
-  BUSINESS_EXPORT: [
+  HOTEL_BOOKING: [
     "Travel brief capture — destination, check-in/check-out dates, room preferences, and budget are collected in one structured intake",
     "Property curation — we shortlist verified hotels based on safety, location, ratings, amenities, and your exact trip purpose",
     "Rate optimization — refundable and non-refundable options are compared to secure the best value with transparent terms",
     "Reservation confirmation — bookings are finalized with clear confirmation details, policy highlights, and payment proof",
     "Pre-arrival coordination — early check-in requests, airport transfer preference, and special notes are communicated to the property",
     "Stay support — our team remains available for rebooking, upgrades, or itinerary-driven hotel adjustments during your trip"
+  ],
+  TRAVEL_INSURANCE: [
+    "Trip risk assessment — destination, duration, activities, and traveler profile are reviewed to identify real exposure points",
+    "Policy option comparison — suitable insurers are shortlisted with plain-language breakdowns of limits, exclusions, and claim triggers",
+    "Coverage selection — medical, cancellation, baggage, and evacuation cover are matched to your trip's actual risk profile",
+    "Policy issuance — the chosen plan is issued with full policy document, certificate of insurance, and emergency assistance contacts",
+    "Claim readiness handoff — you are briefed on exactly what evidence and notifications a claim requires, before departure"
+  ],
+  TRANSPORT_SERVICES: [
+    "Mobility intake — pickup and drop-off locations, dates, passenger count, and luggage volume are documented",
+    "Vehicle and route planning — suitable vehicle class is matched to your party size, trip type, and comfort level",
+    "Schedule confirmation — pickup times are locked in, flight details synced for airport transfers, and buffers built in",
+    "Driver dispatch — vetted driver details are shared with you ahead of pickup with contact information",
+    "Live trip support — the team stays reachable during your movement for adjustments, delays, or reroutes"
+  ],
+  CORPORATE_TRAVEL: [
+    "Company travel brief — traveler list, destinations, dates, and purpose captured in one structured intake",
+    "Policy and budget alignment — bookings calibrated to your internal travel policy, budget ceilings, and cabin class rules",
+    "Flight and hotel coordination — routes optimized for time and cost; accommodation blocks secured for multi-traveler movements",
+    "Approval and ticketing — approvals routed cleanly, tickets issued, and finance-ready cost breakdowns shared",
+    "Trip monitoring and support — active monitoring with disruption recovery support while your team is on the move"
+  ],
+  EVENT_MANAGEMENT: [
+    "Event discovery — objective, destination, guest profile, budget, and programme sketched through a structured briefing",
+    "Destination and venue planning — venues scouted, quoted, and selected against your event goals and attendee experience",
+    "Travel and stay coordination — group flights, accommodation blocks, and transfers planned with contingency options",
+    "Run-of-show finalization — programme flow, supplier deliverables, and responsibilities locked down before travel",
+    "On-ground delivery — coordinated execution during the event with a single-point contact for all guest-facing operations"
+  ],
+  CONSULTATION: [
+    "Consultation intake — goal summary, history, and constraints captured so the session is focused from minute one",
+    "Profile and goal review — realistic eligibility, risk points, and best service pathway identified using real-world benchmarks",
+    "Risk and constraint analysis — timeline, budget, document gaps, and dependencies mapped so nothing is left to chance",
+    "Roadmap development — sequenced action plan produced with required documents, expected costs, and realistic timelines",
+    "Next-step alignment — the plan is handed off to execution (ours or yours) with clear ownership of each action"
+  ],
+  DOCUMENT_PROCESSING: [
+    "Requirement mapping — destination-specific document list confirmed against the officer's real review criteria",
+    "Collection and verification — every document is collected, authenticity-checked, and cross-referenced for consistency",
+    "Formatting and structuring — file is ordered, indexed, and presented so reviewers can move through it without ambiguity",
+    "Legalization guidance — notarization, apostille, and embassy authentication steps planned where required",
+    "Final readiness review — a submission-readiness audit is done before the file is handed off for filing"
+  ],
+  BUSINESS_EXPORT: [
+    "Export brief intake — target markets, product category, volumes, and compliance requirements captured upfront",
+    "Market and buyer planning — entry paths mapped with introduction support where our network allows",
+    "Travel and visa coordination — business visit logistics organised end-to-end so time on ground is productive",
+    "Follow-up support — post-trip follow-through on buyer contacts and documentation continuity"
   ]
 };
 

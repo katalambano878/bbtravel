@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { DollarSign, CreditCard, TrendingDown, TrendingUp, PiggyBank } from "lucide-react";
 
 import {
-  createInvoiceAction,
   decideExpenseAction,
   processRefundAction,
   recordInvoicePaymentAction
@@ -16,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { InvoiceComposer } from "@/components/admin/invoice-composer";
+import { EXPENSE_CATEGORIES } from "@/lib/finance/expense-categories";
 
 export const metadata: Metadata = { title: "Finance — Admin Console" };
 
@@ -44,8 +45,13 @@ export default async function AdminFinancePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>Finance</h1>
-        <p className="mt-1 text-sm text-slate-500">Revenue, expenses, AR/AP, and refund controls.</p>
+        <h1 className="text-2xl font-bold text-bb-navy" style={{ fontFamily: "var(--font-sora)" }}>
+          Finance
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Invoices, payments, refunds, and expense approvals for every service line.
+          Use the service preset to raise invoices with brand-aligned pricing in seconds.
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-5">
@@ -75,25 +81,8 @@ export default async function AdminFinancePage() {
         <TabsContent value="invoice">
           <Card>
             <CardContent className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-bb-navy">New Invoice</h2>
-              <form action={createInvoiceAction} className="grid gap-3 sm:grid-cols-2">
-                <Input name="client_id" placeholder="Client ID (optional)" />
-                <Input name="case_id" placeholder="Case ID (optional)" />
-                <div>
-                  <Label className="text-xs">Due Date</Label>
-                  <Input name="due_date" type="date" required />
-                </div>
-                <Input name="item_description" placeholder="Line item description" required />
-                <Input name="item_quantity" type="number" step="0.01" defaultValue="1" placeholder="Quantity" />
-                <Input name="item_unit_price" type="number" step="0.01" placeholder="Unit price" required />
-                <Input name="item_tax_rate" type="number" step="0.0001" placeholder="Line tax rate" />
-                <Input name="tax_amount" type="number" step="0.01" placeholder="Invoice tax amount" />
-                <Input name="discount_amount" type="number" step="0.01" placeholder="Discount amount" />
-                <Input name="notes" placeholder="Notes" />
-                <div className="sm:col-span-2">
-                  <Button type="submit">Create Invoice</Button>
-                </div>
-              </form>
+              <h2 className="mb-4 text-lg font-semibold text-bb-navy">New invoice</h2>
+              <InvoiceComposer />
             </CardContent>
           </Card>
         </TabsContent>
@@ -128,16 +117,53 @@ export default async function AdminFinancePage() {
         <TabsContent value="expense">
           <Card>
             <CardContent className="p-6">
-              <h2 className="mb-4 text-lg font-semibold text-bb-navy">Expense Approval</h2>
+              <h2 className="mb-4 text-lg font-semibold text-bb-navy">Expense approval</h2>
               <form action={decideExpenseAction} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <Input name="expense_id" placeholder="Expense ID" required />
-                <select name="status" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                <select
+                  name="status"
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                >
                   <option value="APPROVED">Approve</option>
                   <option value="REJECTED">Reject</option>
                 </select>
                 <Input name="approver_notes" placeholder="Approver notes" />
-                <Button type="submit">Submit Decision</Button>
+                <Button type="submit">Submit decision</Button>
               </form>
+
+              <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Expense category reference
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Use these categories when submitting expenses so finance reports stay accurate.
+                </p>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                  {(["IMMIGRATION", "TRAVEL", "CORPORATE_EVENTS", "OPERATIONS"] as const).map(
+                    (division) => {
+                      const list = EXPENSE_CATEGORIES.filter((c) => c.division === division);
+                      if (list.length === 0) return null;
+                      return (
+                        <div key={division}>
+                          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                            {division.replace("_", " & ")}
+                          </p>
+                          <ul className="mt-1 space-y-1 text-xs text-slate-600">
+                            {list.map((c) => (
+                              <li key={c.key}>
+                                <span className="font-medium text-bb-navy">{c.label}</span>
+                                {c.hint ? (
+                                  <span className="text-slate-400"> — {c.hint}</span>
+                                ) : null}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
