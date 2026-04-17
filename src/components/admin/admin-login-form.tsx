@@ -18,35 +18,20 @@ export function AdminLoginForm() {
     const password = String(form.get("password") || "");
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (authError) {
-      setError("Invalid email or password.");
+      if (authError) {
+        setError("Invalid email or password.");
+        setSubmitting(false);
+        return;
+      }
+
+      window.location.href = "/admin";
+    } catch {
+      setError("Something went wrong. Please try again.");
       setSubmitting(false);
-      return;
     }
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setError("Authentication failed. Please try again.");
-      setSubmitting(false);
-      return;
-    }
-
-    const { data: staffProfile } = await supabase
-      .from("staff_profiles")
-      .select("role")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (!staffProfile) {
-      await supabase.auth.signOut();
-      setError("Access denied. This login is for authorised staff only.");
-      setSubmitting(false);
-      return;
-    }
-
-    window.location.href = "/admin";
   }
 
   return (
