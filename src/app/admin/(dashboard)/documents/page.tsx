@@ -149,7 +149,7 @@ function DocsTable({ rows }: { rows: DocumentRow[] }) {
             <th className="px-4 py-2.5 text-right font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
           {rows.map((d) => (
             <DocsRow key={d.id as string} doc={d} />
           ))}

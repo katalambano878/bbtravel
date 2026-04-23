@@ -144,14 +144,35 @@ export default function ContactHubPage() {
         </Container>
       </Section>
 
-      <Section variant="neutral" className="border-b border-slate-200">
-        <Container>
-          <div className="mx-auto max-w-3xl">
-            <h2 className="mb-2 text-3xl font-bold text-bb-navy">Send a message</h2>
-            <p className="mb-8 text-slate-600">
-              Share your goals and we will respond by email. Your inquiry is also logged in our system so the team
-              can follow up without anything falling through the cracks.
+      <Section variant="neutral" className="relative border-b border-slate-200">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.08),transparent_60%),radial-gradient(ellipse_at_bottom_left,rgba(11,47,84,0.06),transparent_55%)]" />
+        <Container className="relative">
+          <div className="mx-auto max-w-3xl text-center" id="message">
+            <span className="eyebrow mb-3 inline-block text-bb-gold">Send a message</span>
+            <h2 className="text-3xl font-bold text-bb-navy md:text-4xl">Tell us what you are planning.</h2>
+            <p className="mx-auto mt-3 max-w-xl text-slate-600">
+              Share your goals and we will respond by email. Every inquiry is logged in our system so nothing
+              falls through the cracks.
             </p>
+          </div>
+
+          <div className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
+            {[
+              { title: "Reply within one working day", body: "Usually much faster on WhatsApp." },
+              { title: "No spam, ever", body: "We only contact you about your inquiry." },
+              { title: "Human advisor assigned", body: "A real consultant reviews your details." }
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-slate-200 bg-white/70 p-4 text-left backdrop-blur"
+              >
+                <p className="text-sm font-semibold text-bb-navy">{item.title}</p>
+                <p className="mt-1 text-xs text-slate-500">{item.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mx-auto mt-10 max-w-3xl">
             <ContactForm />
           </div>
         </Container>

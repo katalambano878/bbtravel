@@ -187,7 +187,7 @@ export default async function AdminFinancePage({
                       <th className="pb-2 text-right">Due</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {snapshot.invoices.slice(0, 10).map((inv) => (
                       <tr key={inv.id as string}>
                         <td className="py-2 font-semibold text-bb-navy">{inv.invoice_number}</td>
@@ -330,7 +330,7 @@ export default async function AdminFinancePage({
                       <th className="px-4 py-2.5 text-right font-semibold">Due</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {snapshot.invoices.slice(0, 60).map((inv) => (
                       <tr key={inv.id as string}>
                         <td className="px-4 py-3 font-semibold text-bb-navy">{inv.invoice_number}</td>
@@ -429,7 +429,7 @@ export default async function AdminFinancePage({
                       <th className="px-4 py-2.5 text-right font-semibold">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {snapshot.payments.slice(0, 50).map((p) => (
                       <tr key={p.id as string}>
                         <td className="px-4 py-3 text-[12px] text-slate-500">
@@ -552,7 +552,7 @@ export default async function AdminFinancePage({
                       <th className="px-4 py-2.5 text-right font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {snapshot.expenses.slice(0, 60).map((e) => (
                       <tr key={e.id as string}>
                         <td className="px-4 py-3 text-[12px] text-slate-500">{formatDate(e.expense_date as string)}</td>
@@ -787,7 +787,7 @@ export default async function AdminFinancePage({
                       <th className="pb-2 text-right font-semibold">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {petty.movements.slice(0, 40).map((m) => (
                       <tr key={m.id as string}>
                         <td className="py-2 text-[12px] text-slate-500">{formatDate(m.occurred_at as string)}</td>
@@ -927,7 +927,7 @@ export default async function AdminFinancePage({
                       <th className="px-4 py-2.5 text-left font-semibold">Terms</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {vendors.map((v) => (
                       <tr key={v.id as string}>
                         <td className="px-4 py-3 font-semibold text-bb-navy">{v.vendor_name}</td>
@@ -1004,7 +1004,7 @@ export default async function AdminFinancePage({
                       <th className="px-4 py-2.5 text-right font-semibold">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {snapshot.refunds.slice(0, 30).map((r) => (
                       <tr key={r.id as string}>
                         <td className="px-4 py-3 text-[12px] text-slate-500">{formatDate(r.created_at as string)}</td>
@@ -1040,7 +1040,7 @@ export default async function AdminFinancePage({
                       <th className="pb-2 text-right font-semibold">Collection %</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {Array.from(biByService.entries())
                       .sort((a, b) => b[1].billed - a[1].billed)
                       .map(([key, v]) => {

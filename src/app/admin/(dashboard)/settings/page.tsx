@@ -166,7 +166,7 @@ export default async function AdminSettingsPage() {
                   <th className="px-4 py-2.5 text-right font-semibold">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                 {partners.map((p) => (
                   <tr key={p.id as string} className={p.is_active ? "" : "opacity-50"}>
                     <td className="px-4 py-2 font-semibold text-bb-navy">{p.name}</td>

@@ -235,7 +235,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                         <th className="pb-2 text-right">Paid</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                       {data.invoices.map((inv) => (
                         <tr key={inv.id as string}>
                           <td className="py-2 font-semibold text-bb-navy">{inv.invoice_number}</td>

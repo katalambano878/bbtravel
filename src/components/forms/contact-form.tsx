@@ -33,19 +33,21 @@ export function ContactForm() {
     return (
       <div
         id="contact-form"
-        className="rounded-3xl border border-emerald-200 bg-emerald-50/80 p-8 text-center shadow-sm"
+        className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-10 text-center shadow-sm"
       >
-        <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-emerald-600" />
-        <h3 className="text-xl font-bold text-bb-navy">Message received</h3>
-        <p className="mt-2 text-sm text-slate-600">
-          We will get back to you shortly. You can also reach us on WhatsApp for a faster reply.
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
+          <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+        </div>
+        <h3 className="text-2xl font-bold text-bb-navy">Message received.</h3>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-slate-600">
+          A consultant will reach out shortly. For faster response, message us on WhatsApp.
         </p>
       </div>
     );
   }
 
   return (
-    <form id="contact-form" action={formAction} className="space-y-5 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <form id="contact-form" action={formAction} className="space-y-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
       {state?.error ? (
         <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{state.error}</p>
       ) : null}

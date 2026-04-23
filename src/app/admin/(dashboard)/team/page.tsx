@@ -214,7 +214,7 @@ export default async function AdminTeamPage({
                       <th className="px-4 py-2.5 text-right font-semibold">Base (GHS)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                     {snapshot.employees.map((e) => (
                       <tr key={e.id as string}>
                         <td className="px-4 py-2 font-semibold text-bb-navy">{e.employee_code}</td>
@@ -255,7 +255,7 @@ export default async function AdminTeamPage({
                     <th className="px-4 py-2.5 text-right font-semibold">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                   {snapshot.leaveRequests.map((lr) => (
                     <tr key={lr.id as string}>
                       <td className="px-4 py-2 text-[12px] text-bb-navy">{String(lr.employee_id).slice(0, 8)}…</td>

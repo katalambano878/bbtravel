@@ -246,7 +246,7 @@ export default async function PipelinePage({
                     <th className="px-4 py-2.5 text-right font-semibold">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                   {leads.slice(0, 50).map((lead) => {
                     const svc = getService(lead.service_type as string);
                     const waPhone = (lead as { whatsapp?: string }).whatsapp || lead.phone;
@@ -425,7 +425,7 @@ export default async function PipelinePage({
                     <th className="px-4 py-2.5 text-right font-semibold">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 [&_tr]:transition-colors [&_tr:hover]:bg-slate-50/60">
                   {cases.slice(0, 80).map((c) => {
                     const client = fromMaybeArray(c.clients as unknown) as
                       | { id?: string; name?: string; phone?: string; whatsapp?: string }
