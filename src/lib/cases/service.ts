@@ -90,6 +90,52 @@ export async function linkCases(input: {
   });
 }
 
+export async function updateCaseOwnership(input: {
+  caseId: string;
+  status?: string;
+  assignedTo?: string;
+  slaDueAt?: string | null;
+  meta?: Record<string, unknown>;
+}) {
+  const context = await requirePermission("cases.edit");
+  const admin = createAdminClient();
+  const patch: Record<string, unknown> = {};
+  if (input.status) patch.status = input.status;
+  if (input.assignedTo !== undefined) patch.assigned_to = input.assignedTo;
+  if (input.slaDueAt !== undefined) patch.sla_due_at = input.slaDueAt;
+  if (input.meta) patch.meta = input.meta;
+  if (Object.keys(patch).length === 0) return;
+  await admin.from("cases").update(patch).eq("id", input.caseId);
+
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "CASE_UPDATED",
+    targetType: "case",
+    targetId: input.caseId,
+    payload: patch
+  });
+}
+
+export async function completeCaseTask(input: { taskId: string; status?: "DONE" | "CANCELLED" | "BLOCKED" }) {
+  const context = await requirePermission("cases.edit");
+  const admin = createAdminClient();
+  const newStatus = input.status ?? "DONE";
+  const { data, error } = await admin
+    .from("case_tasks")
+    .update({ status: newStatus, completed_at: newStatus === "DONE" ? new Date().toISOString() : null })
+    .eq("id", input.taskId)
+    .select("case_id")
+    .single();
+  if (error) throw error;
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "CASE_TASK_COMPLETED",
+    targetType: "case",
+    targetId: data.case_id,
+    payload: { task_id: input.taskId, status: newStatus }
+  });
+}
+
 export async function getCaseOperationsSnapshot() {
   await requirePermission("cases.view");
   const admin = createAdminClient();

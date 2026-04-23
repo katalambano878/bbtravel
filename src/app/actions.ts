@@ -11,13 +11,19 @@ import { calculateReadinessScore } from "@/lib/utils/readiness-score";
 import { requirePermission } from "@/lib/auth/policy";
 import { writeAuditEvent } from "@/lib/audit/events";
 import { updateSystemSettings } from "@/lib/settings/system-settings";
-import { addLeadActivity, assignLead, convertLeadToClientAndCase } from "@/lib/crm/service";
-import { addCaseNote, createCaseTask, linkCases } from "@/lib/cases/service";
+import { addLeadActivity, assignLead, convertLeadToClientAndCase, createLeadInline, setLeadNextAction, updateLeadStage } from "@/lib/crm/service";
+import { addCaseNote, completeCaseTask, createCaseTask, linkCases, updateCaseOwnership } from "@/lib/cases/service";
 import { createNotification, createSystemTask } from "@/lib/notifications/service";
-import { createDocumentVersion, requestDocumentReview } from "@/lib/documents/service";
+import { createDocumentRecord, createDocumentVersion, decideDocument, requestDocumentReview } from "@/lib/documents/service";
 import { decideLeaveRequest, recordAttendance, upsertEmployeeRecord, upsertPayrollInput } from "@/lib/hr/service";
-import { createInvoice, decideExpense, processRefund, recordInvoicePayment } from "@/lib/finance/service";
+import { createInvoice, createVendorBill, decideExpense, processRefund, recordInvoicePayment, submitExpense, upsertVendor } from "@/lib/finance/service";
+import { createPettyCashBox, recordPettyCashMovement, transferBetweenBoxes } from "@/lib/finance/petty-cash";
+import { EXPENSE_CATEGORIES } from "@/lib/finance/expense-categories";
+import { archivePartner, upsertPartner } from "@/lib/partners/service";
+import { createAppointment, updateAppointmentStatus } from "@/lib/appointments/service";
+import { logWhatsappSend } from "@/lib/whatsapp/service";
 import { createScheduledReport, queueReportExport, saveReportView } from "@/lib/reports/service";
+import type { PaymentMethod, AppointmentType, AppointmentStatus, PartnerType } from "@/types/domain";
 
 function buildChecklist(payload: WizardPayload) {
   const base = ["Identity details validated", "Initial consultation completed"];
@@ -589,12 +595,14 @@ export async function createInvoiceAction(formData: FormData) {
 }
 
 export async function recordInvoicePaymentAction(formData: FormData) {
+  const depositToBoxId = String(formData.get("deposit_to_box_id") || "");
   await recordInvoicePayment({
     invoiceId: String(formData.get("invoice_id") || ""),
     amount: Number(formData.get("amount") || 0),
-    paymentMethod: String(formData.get("payment_method") || "BANK_TRANSFER") as "CASH" | "BANK_TRANSFER" | "MOBILE_MONEY" | "CARD" | "OTHER",
+    paymentMethod: String(formData.get("payment_method") || "BANK_TRANSFER") as PaymentMethod,
     reference: String(formData.get("reference") || ""),
-    notes: String(formData.get("notes") || "")
+    notes: String(formData.get("notes") || ""),
+    depositToBoxId: depositToBoxId || undefined
   });
   revalidatePath("/admin/finance");
 }
@@ -657,4 +665,245 @@ export async function createScheduledReportAction(formData: FormData) {
     }
   });
   revalidatePath("/admin/bi");
+}
+
+// ======================================================================
+// Admin v2 — Ghana-tuned ops actions
+// ======================================================================
+
+// -------- CRM / Pipeline --------
+export async function createLeadInlineAction(formData: FormData): Promise<void> {
+  await createLeadInline({
+    name: String(formData.get("name") || ""),
+    email: String(formData.get("email") || ""),
+    phone: String(formData.get("phone") || "") || undefined,
+    whatsapp: String(formData.get("whatsapp") || "") || undefined,
+    serviceType: String(formData.get("service_type") || "CONSULTATION"),
+    destination: String(formData.get("destination") || "") || undefined,
+    timeline: String(formData.get("timeline") || "") || undefined,
+    notes: String(formData.get("notes") || "") || undefined,
+    sourceKey: String(formData.get("source_key") || "") || undefined,
+    nextActionDate: String(formData.get("next_action_date") || "") || undefined
+  });
+  revalidatePath("/admin/pipeline");
+  revalidatePath("/admin");
+}
+
+export async function updateLeadStageAction(formData: FormData) {
+  await updateLeadStage({
+    leadId: String(formData.get("lead_id") || ""),
+    stage: String(formData.get("stage") || "NEW"),
+    note: String(formData.get("note") || "") || undefined
+  });
+  revalidatePath("/admin/pipeline");
+  revalidatePath("/admin");
+}
+
+export async function setLeadNextActionAction(formData: FormData) {
+  const raw = String(formData.get("next_action_date") || "");
+  await setLeadNextAction({
+    leadId: String(formData.get("lead_id") || ""),
+    nextActionDate: raw || null,
+    note: String(formData.get("note") || "") || undefined
+  });
+  revalidatePath("/admin/pipeline");
+  revalidatePath("/admin");
+}
+
+// -------- Cases --------
+export async function updateCaseOwnershipAction(formData: FormData) {
+  await updateCaseOwnership({
+    caseId: String(formData.get("case_id") || ""),
+    status: String(formData.get("status") || "") || undefined,
+    assignedTo: String(formData.get("assigned_to") || "") || undefined,
+    slaDueAt: (formData.get("sla_due_at") as string) || null
+  });
+  revalidatePath("/admin/pipeline");
+  revalidatePath("/admin");
+}
+
+export async function completeCaseTaskAction(formData: FormData) {
+  await completeCaseTask({
+    taskId: String(formData.get("task_id") || ""),
+    status: (String(formData.get("status") || "DONE") as "DONE" | "CANCELLED" | "BLOCKED")
+  });
+  revalidatePath("/admin");
+  revalidatePath("/admin/pipeline");
+}
+
+// -------- Documents --------
+export async function decideDocumentAction(formData: FormData) {
+  await decideDocument({
+    documentId: String(formData.get("document_id") || ""),
+    decision: String(formData.get("decision") || "APPROVED") as "APPROVED" | "REJECTED",
+    notes: String(formData.get("notes") || "") || undefined
+  });
+  revalidatePath("/admin/documents");
+  revalidatePath("/admin");
+}
+
+export async function uploadDocumentAction(formData: FormData): Promise<void> {
+  await createDocumentRecord({
+    caseId: String(formData.get("case_id") || ""),
+    docType: String(formData.get("doc_type") || "other"),
+    fileUrl: String(formData.get("file_url") || ""),
+    fileName: String(formData.get("file_name") || "") || undefined,
+    mimeType: String(formData.get("mime_type") || "") || undefined,
+    expiresAt: String(formData.get("expires_at") || "") || null
+  });
+  revalidatePath("/admin/documents");
+}
+
+// -------- Appointments --------
+export async function createAppointmentAction(formData: FormData) {
+  await createAppointment({
+    caseId: String(formData.get("case_id") || ""),
+    scheduledAt: String(formData.get("scheduled_at") || new Date().toISOString()),
+    appointmentType: String(formData.get("appointment_type") || "CONSULTATION") as AppointmentType,
+    durationMinutes: Number(formData.get("duration_minutes") || 60),
+    location: String(formData.get("location") || "") || undefined,
+    notes: String(formData.get("notes") || "") || undefined,
+    assignedTo: String(formData.get("assigned_to") || "") || undefined,
+    reminderWhatsapp: formData.get("reminder_whatsapp") === "on"
+  });
+  revalidatePath("/admin");
+  revalidatePath("/admin/pipeline");
+}
+
+export async function updateAppointmentStatusAction(formData: FormData) {
+  await updateAppointmentStatus({
+    appointmentId: String(formData.get("appointment_id") || ""),
+    status: String(formData.get("status") || "SCHEDULED") as AppointmentStatus,
+    notes: String(formData.get("notes") || "") || undefined
+  });
+  revalidatePath("/admin");
+}
+
+// -------- WhatsApp --------
+export async function logWhatsappSendAction(formData: FormData) {
+  const id = await logWhatsappSend({
+    toPhone: String(formData.get("to_phone") || ""),
+    toName: String(formData.get("to_name") || "") || undefined,
+    clientId: String(formData.get("client_id") || "") || undefined,
+    caseId: String(formData.get("case_id") || "") || undefined,
+    leadId: String(formData.get("lead_id") || "") || undefined,
+    templateKey: String(formData.get("template_key") || "") || undefined,
+    subject: String(formData.get("subject") || "") || undefined,
+    body: String(formData.get("body") || "")
+  });
+  revalidatePath("/admin");
+  return { id };
+}
+
+// -------- Finance: expenses, vendors, vendor bills, petty cash --------
+export async function submitExpenseAction(formData: FormData) {
+  const categoryKey = String(formData.get("category_key") || "OTHER");
+  const explicitLabel = String(formData.get("category") || "");
+  const derived = EXPENSE_CATEGORIES.find((c) => c.key === categoryKey)?.label ?? categoryKey;
+  await submitExpense({
+    categoryKey,
+    category: explicitLabel || derived,
+    amount: Number(formData.get("amount") || 0),
+    description: String(formData.get("description") || "") || undefined,
+    vendorId: String(formData.get("vendor_id") || "") || null,
+    employeeId: String(formData.get("employee_id") || "") || null,
+    expenseDate: String(formData.get("expense_date") || "") || undefined,
+    paymentMethod: (String(formData.get("payment_method") || "") || null) as PaymentMethod | null,
+    paidFromBoxId: String(formData.get("paid_from_box_id") || "") || null
+  });
+  revalidatePath("/admin/finance");
+}
+
+export async function upsertVendorAction(formData: FormData) {
+  await upsertVendor({
+    id: String(formData.get("id") || "") || undefined,
+    vendorName: String(formData.get("vendor_name") || ""),
+    contactName: String(formData.get("contact_name") || "") || undefined,
+    phone: String(formData.get("phone") || "") || undefined,
+    email: String(formData.get("email") || "") || undefined,
+    paymentTerms: String(formData.get("payment_terms") || "") || undefined
+  });
+  revalidatePath("/admin/finance");
+}
+
+export async function createVendorBillAction(formData: FormData) {
+  await createVendorBill({
+    vendorId: String(formData.get("vendor_id") || ""),
+    billNumber: String(formData.get("bill_number") || ""),
+    billDate: String(formData.get("bill_date") || ""),
+    dueDate: String(formData.get("due_date") || ""),
+    amount: Number(formData.get("amount") || 0),
+    notes: String(formData.get("notes") || "") || undefined
+  });
+  revalidatePath("/admin/finance");
+}
+
+export async function createPettyCashBoxAction(formData: FormData) {
+  await createPettyCashBox({
+    name: String(formData.get("name") || ""),
+    type: String(formData.get("type") || "CASH") as
+      | "CASH"
+      | "MOMO_MTN"
+      | "MOMO_VODAFONE"
+      | "MOMO_AIRTELTIGO"
+      | "BANK"
+      | "OTHER",
+    opening: Number(formData.get("opening") || 0),
+    notes: String(formData.get("notes") || "") || undefined
+  });
+  revalidatePath("/admin/finance");
+}
+
+export async function recordPettyCashMovementAction(formData: FormData) {
+  await recordPettyCashMovement({
+    boxId: String(formData.get("box_id") || ""),
+    movementType: String(formData.get("movement_type") || "OUT") as
+      | "IN"
+      | "OUT"
+      | "TRANSFER_IN"
+      | "TRANSFER_OUT"
+      | "TOPUP"
+      | "ADJUSTMENT",
+    amount: Number(formData.get("amount") || 0),
+    description: String(formData.get("description") || ""),
+    category: String(formData.get("category") || "") || undefined,
+    reference: String(formData.get("reference") || "") || undefined,
+    counterparty: String(formData.get("counterparty") || "") || undefined
+  });
+  revalidatePath("/admin/finance");
+}
+
+export async function transferBetweenBoxesAction(formData: FormData) {
+  await transferBetweenBoxes({
+    fromBoxId: String(formData.get("from_box_id") || ""),
+    toBoxId: String(formData.get("to_box_id") || ""),
+    amount: Number(formData.get("amount") || 0),
+    description: String(formData.get("description") || "Transfer"),
+    reference: String(formData.get("reference") || "") || undefined
+  });
+  revalidatePath("/admin/finance");
+}
+
+// -------- Partners --------
+export async function upsertPartnerAction(formData: FormData) {
+  await upsertPartner({
+    id: String(formData.get("id") || "") || undefined,
+    partnerType: String(formData.get("partner_type") || "OTHER") as PartnerType,
+    name: String(formData.get("name") || ""),
+    country: String(formData.get("country_code") || "") || undefined,
+    city: String(formData.get("city") || "") || undefined,
+    address: String(formData.get("address") || "") || undefined,
+    contactName: String(formData.get("contact_name") || "") || undefined,
+    phone: String(formData.get("phone") || "") || undefined,
+    whatsapp: String(formData.get("whatsapp") || "") || undefined,
+    email: String(formData.get("email") || "") || undefined,
+    website: String(formData.get("website") || "") || undefined,
+    notes: String(formData.get("notes") || "") || undefined
+  });
+  revalidatePath("/admin/settings");
+}
+
+export async function archivePartnerAction(formData: FormData) {
+  await archivePartner(String(formData.get("id") || ""));
+  revalidatePath("/admin/settings");
 }

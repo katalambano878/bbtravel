@@ -246,6 +246,230 @@ export async function getSiteContent() {
   };
 }
 
+/**
+ * "Today" inbox — aggregates everything a staff member can act on right now.
+ * Designed for the admin home page so it is a real todo list, not a vanity wall.
+ */
+export async function getTodayInbox() {
+  const admin = createAdminClient();
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+  const weekAhead = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  const [
+    newLeadsTodayRes,
+    leadsToCallRes,
+    tasksDueRes,
+    docsAwaitingRes,
+    overdueInvoicesRes,
+    paidInvoicesRes,
+    appointmentsTodayRes,
+    expiringDocsRes,
+    slaAtRiskCasesRes,
+    pendingExpensesRes,
+    leaveRequestsRes
+  ] = await Promise.all([
+    admin
+      .from("leads")
+      .select("id, name, service_type, stage, created_at, phone, email, whatsapp, destination, next_action_date, assigned_to")
+      .gte("created_at", startOfDay.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(25),
+    admin
+      .from("leads")
+      .select("id, name, service_type, stage, next_action_date, phone, whatsapp, destination, assigned_to")
+      .in("stage", ["NEW", "CONTACTED", "SCOPED", "QUOTED"])
+      .or(`next_action_date.is.null,next_action_date.lte.${endOfDay.toISOString().slice(0, 10)}`)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    admin
+      .from("case_tasks")
+      .select("id, case_id, title, priority, assigned_to, due_at, status, cases(id, case_type, clients(id, name, phone, whatsapp))")
+      .in("status", ["OPEN", "IN_PROGRESS", "BLOCKED"])
+      .lte("due_at", endOfDay.toISOString())
+      .order("due_at", { ascending: true })
+      .limit(25),
+    admin
+      .from("documents")
+      .select("id, case_id, doc_type, status, created_at, cases(case_type, clients(name, phone, whatsapp))")
+      .eq("status", "PENDING")
+      .order("created_at", { ascending: false })
+      .limit(20),
+    admin
+      .from("invoices")
+      .select("id, invoice_number, client_id, case_id, total_amount, amount_paid, due_date, status, clients(name, phone, whatsapp)")
+      .in("status", ["SENT", "PARTIALLY_PAID", "OVERDUE"])
+      .lte("due_date", endOfDay.toISOString().slice(0, 10))
+      .order("due_date", { ascending: true })
+      .limit(20),
+    admin
+      .from("invoices")
+      .select("total_amount, amount_paid, status")
+      .gte("created_at", new Date(now.getTime() - 30 * 86400 * 1000).toISOString()),
+    admin
+      .from("appointments")
+      .select("id, case_id, scheduled_at, appointment_type, status, location, cases(case_type, clients(name, phone, whatsapp))")
+      .gte("scheduled_at", startOfDay.toISOString())
+      .lte("scheduled_at", endOfDay.toISOString())
+      .order("scheduled_at", { ascending: true }),
+    admin
+      .from("documents")
+      .select("id, case_id, doc_type, expires_at, cases(case_type, clients(name, phone, whatsapp))")
+      .not("expires_at", "is", null)
+      .lte("expires_at", in30Days.toISOString().slice(0, 10))
+      .gte("expires_at", startOfDay.toISOString().slice(0, 10))
+      .order("expires_at", { ascending: true })
+      .limit(20),
+    admin
+      .from("cases")
+      .select("id, case_type, status, sla_due_at, assigned_to, clients(name, phone, whatsapp)")
+      .not("sla_due_at", "is", null)
+      .lte("sla_due_at", weekAhead.toISOString())
+      .neq("status", "COMPLETED")
+      .order("sla_due_at", { ascending: true })
+      .limit(15),
+    admin
+      .from("expenses")
+      .select("id, amount, category, category_key, expense_date, submitted_by, description")
+      .eq("status", "PENDING")
+      .order("expense_date", { ascending: true })
+      .limit(15),
+    admin
+      .from("leave_requests")
+      .select("id, employee_id, leave_type, start_date, end_date, status")
+      .eq("status", "PENDING")
+      .order("start_date", { ascending: true })
+      .limit(15)
+  ]);
+
+  const paidInvoices = (paidInvoicesRes.data ?? []).reduce(
+    (sum, row) => sum + Number(row.amount_paid ?? 0),
+    0
+  );
+  const outstanding = (overdueInvoicesRes.data ?? []).reduce(
+    (sum, row) => sum + Math.max(Number(row.total_amount ?? 0) - Number(row.amount_paid ?? 0), 0),
+    0
+  );
+
+  return {
+    newLeadsToday: (newLeadsTodayRes.data ?? []).length,
+    leadsToCall: leadsToCallRes.data ?? [],
+    newLeadsTodayList: newLeadsTodayRes.data ?? [],
+    tasksDue: tasksDueRes.data ?? [],
+    docsAwaiting: docsAwaitingRes.data ?? [],
+    invoicesDue: overdueInvoicesRes.data ?? [],
+    appointmentsToday: appointmentsTodayRes.data ?? [],
+    expiringDocs: expiringDocsRes.data ?? [],
+    slaAtRisk: slaAtRiskCasesRes.data ?? [],
+    pendingExpenses: pendingExpensesRes.data ?? [],
+    pendingLeaveRequests: leaveRequestsRes.data ?? [],
+    kpis: {
+      outstandingRevenue: outstanding,
+      collected30d: paidInvoices
+    }
+  };
+}
+
+/** Paginated clients list with counts for CRM-style browsing. */
+export async function getClientsList(params: { search?: string; limit?: number } = {}) {
+  const admin = createAdminClient();
+  const limit = params.limit ?? 100;
+  let query = admin
+    .from("clients")
+    .select("id, name, email, phone, whatsapp, city, country, preferred_channel, tags, created_at, cases(id, status)")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (params.search) {
+    const search = params.search.trim();
+    query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,whatsapp.ilike.%${search}%`);
+  }
+  const { data, error } = await query;
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Full 360 view for a single client. */
+export async function getClientDetail(clientId: string) {
+  const admin = createAdminClient();
+  const [
+    client,
+    cases,
+    invoices,
+    documents,
+    leads,
+    whatsapp,
+    notes,
+    appointments
+  ] = await Promise.all([
+    admin.from("clients").select("*").eq("id", clientId).maybeSingle(),
+    admin
+      .from("cases")
+      .select("id, case_type, status, created_at, updated_at, meta, assigned_to, sla_due_at")
+      .eq("client_id", clientId)
+      .order("created_at", { ascending: false }),
+    admin
+      .from("invoices")
+      .select("id, invoice_number, total_amount, amount_paid, status, issue_date, due_date")
+      .eq("client_id", clientId)
+      .order("issue_date", { ascending: false }),
+    admin
+      .from("documents")
+      .select("id, case_id, doc_type, status, expires_at, created_at, file_url")
+      .in("case_id",
+        (
+          await admin.from("cases").select("id").eq("client_id", clientId)
+        ).data?.map((r) => r.id) ?? ["00000000-0000-0000-0000-000000000000"]
+      )
+      .order("created_at", { ascending: false })
+      .limit(50),
+    admin
+      .from("leads")
+      .select("id, name, service_type, stage, created_at, destination, notes")
+      .eq("converted_client_id", clientId)
+      .order("created_at", { ascending: false })
+      .limit(20),
+    admin
+      .from("whatsapp_messages")
+      .select("id, body, subject, template_key, status, sent_at, to_phone")
+      .eq("client_id", clientId)
+      .order("sent_at", { ascending: false })
+      .limit(25),
+    admin
+      .from("case_notes")
+      .select("id, case_id, note, visibility, created_at")
+      .in("case_id",
+        (
+          await admin.from("cases").select("id").eq("client_id", clientId)
+        ).data?.map((r) => r.id) ?? ["00000000-0000-0000-0000-000000000000"]
+      )
+      .order("created_at", { ascending: false })
+      .limit(25),
+    admin
+      .from("appointments")
+      .select("id, case_id, scheduled_at, appointment_type, status, location")
+      .in("case_id",
+        (
+          await admin.from("cases").select("id").eq("client_id", clientId)
+        ).data?.map((r) => r.id) ?? ["00000000-0000-0000-0000-000000000000"]
+      )
+      .order("scheduled_at", { ascending: false })
+      .limit(25)
+  ]);
+
+  return {
+    client: client.data,
+    cases: cases.data ?? [],
+    invoices: invoices.data ?? [],
+    documents: documents.data ?? [],
+    leads: leads.data ?? [],
+    whatsapp: whatsapp.data ?? [],
+    notes: notes.data ?? [],
+    appointments: appointments.data ?? []
+  };
+}
+
 export async function getStaffAccessContext() {
   const supabase = await createServerClient();
   const {

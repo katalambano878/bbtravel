@@ -67,6 +67,79 @@ export async function createDocumentVersion(input: {
   });
 }
 
+export async function decideDocument(input: {
+  documentId: string;
+  decision: "APPROVED" | "REJECTED";
+  notes?: string;
+}) {
+  const context = await requirePermission("documents.review");
+  const admin = createAdminClient();
+  await admin
+    .from("documents")
+    .update({
+      status: input.decision,
+      reviewer_notes: input.notes ?? null
+    })
+    .eq("id", input.documentId);
+  await admin.from("document_reviews").insert({
+    document_id: input.documentId,
+    review_status: input.decision === "APPROVED" ? "APPROVED" : "CHANGES_REQUESTED",
+    reviewer_id: context.user.id,
+    review_notes: input.notes ?? null
+  });
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "DOCUMENT_DECIDED",
+    targetType: "document",
+    targetId: input.documentId,
+    payload: { decision: input.decision }
+  });
+}
+
+export async function createDocumentRecord(input: {
+  caseId: string;
+  docType: string;
+  fileUrl: string;
+  fileName?: string;
+  mimeType?: string;
+  expiresAt?: string | null;
+}) {
+  const context = await requirePermission("documents.upload");
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("documents")
+    .insert({
+      case_id: input.caseId,
+      doc_type: input.docType,
+      file_url: input.fileUrl,
+      status: "PENDING",
+      version_no: 1,
+      expires_at: input.expiresAt ?? null,
+      uploaded_by: context.user.id
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+
+  await admin.from("document_versions").insert({
+    document_id: data.id,
+    version_no: 1,
+    file_url: input.fileUrl,
+    file_name: input.fileName ?? null,
+    mime_type: input.mimeType ?? null,
+    uploaded_by: context.user.id
+  });
+
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "DOCUMENT_CREATED",
+    targetType: "document",
+    targetId: data.id,
+    payload: { doc_type: input.docType, case_id: input.caseId }
+  });
+  return data.id as string;
+}
+
 export async function getDocumentLifecycleSnapshot() {
   await requirePermission("documents.view");
   const admin = createAdminClient();

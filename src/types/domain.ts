@@ -21,7 +21,6 @@ export type LeadStage =
   | "BOOKED"
   | "COMPLETED"
   | "CLOSED"
-  // Legacy stages retained for backward compatibility with historical data.
   | "QUALIFIED"
   | "CONVERTED";
 
@@ -51,6 +50,65 @@ export type StaffRole =
   | "auditor"
   | "read_only_analyst"
   | "finance";
+
+export type PaymentMethod =
+  | "CASH"
+  | "BANK_TRANSFER"
+  | "MOBILE_MONEY"
+  | "CARD"
+  | "OTHER"
+  | "MOMO_MTN"
+  | "MOMO_VODAFONE"
+  | "MOMO_AIRTELTIGO"
+  | "POS"
+  | "CHEQUE";
+
+export type AppointmentType =
+  | "CONSULTATION"
+  | "VFS_SUBMISSION"
+  | "EMBASSY_INTERVIEW"
+  | "BIOMETRICS"
+  | "DOCUMENT_DROPOFF"
+  | "INTERNAL_REVIEW"
+  | "TRAVEL_DEPARTURE"
+  | "TRAVEL_RETURN"
+  | "OTHER";
+
+export type AppointmentStatus =
+  | "SCHEDULED"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "NO_SHOW"
+  | "RESCHEDULED";
+
+export type PartnerType =
+  | "EMBASSY"
+  | "VFS_CENTER"
+  | "AIRLINE"
+  | "HOTEL"
+  | "RECRUITER"
+  | "UNIVERSITY"
+  | "INSURANCE"
+  | "TRANSPORT"
+  | "TRAINING"
+  | "OTHER";
+
+export type PettyCashBoxType =
+  | "CASH"
+  | "MOMO_MTN"
+  | "MOMO_VODAFONE"
+  | "MOMO_AIRTELTIGO"
+  | "BANK"
+  | "OTHER";
+
+export type PettyCashMovementType =
+  | "IN"
+  | "OUT"
+  | "TRANSFER_IN"
+  | "TRANSFER_OUT"
+  | "TOPUP"
+  | "ADJUSTMENT";
 
 export interface NavLink {
   label: string;

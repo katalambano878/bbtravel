@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Users,
-  Briefcase,
-  FileText,
-  Bell,
-  UserCog,
-  DollarSign,
-  BarChart3,
+  Inbox,
+  Route,
+  UsersRound,
+  FolderOpen,
+  Wallet,
+  Building2,
   Settings,
   ChevronLeft,
   ChevronRight
@@ -23,17 +21,16 @@ export interface NavItem {
   href: string;
   icon: React.ElementType;
   permissionKey?: string;
+  matchPrefix?: string;
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "CRM / Leads", href: "/admin/crm", icon: Users, permissionKey: "crm.view" },
-  { label: "Cases", href: "/admin/cases", icon: Briefcase, permissionKey: "cases.view" },
-  { label: "Documents", href: "/admin/documents", icon: FileText, permissionKey: "documents.view" },
-  { label: "Notifications", href: "/admin/notifications", icon: Bell, permissionKey: "messages.manage" },
-  { label: "HR", href: "/admin/hr", icon: UserCog, permissionKey: "hr.view" },
-  { label: "Finance", href: "/admin/finance", icon: DollarSign, permissionKey: "finance.view" },
-  { label: "Reports / BI", href: "/admin/bi", icon: BarChart3, permissionKey: "reports.view" },
+  { label: "Today", href: "/admin", icon: Inbox },
+  { label: "Pipeline", href: "/admin/pipeline", icon: Route, permissionKey: "crm.view" },
+  { label: "Clients", href: "/admin/clients", icon: UsersRound, permissionKey: "cases.view" },
+  { label: "Documents", href: "/admin/documents", icon: FolderOpen, permissionKey: "documents.view" },
+  { label: "Finance", href: "/admin/finance", icon: Wallet, permissionKey: "finance.view" },
+  { label: "Team", href: "/admin/team", icon: Building2, permissionKey: "hr.view", matchPrefix: "/admin/team" },
   { label: "Settings", href: "/admin/settings", icon: Settings, permissionKey: "settings.manage" }
 ];
 
@@ -57,7 +54,7 @@ export function AdminSidebar({ permissions, role, collapsed, onToggle }: AdminSi
     <aside
       className={cn(
         "fixed inset-y-0 left-0 z-40 flex flex-col bg-bb-navy transition-all duration-300",
-        collapsed ? "w-[68px]" : "w-[240px]"
+        collapsed ? "w-[68px]" : "w-[220px]"
       )}
     >
       <div className={cn("flex h-16 items-center border-b border-white/10 px-4", collapsed ? "justify-center" : "gap-3")}>
@@ -67,6 +64,7 @@ export function AdminSidebar({ permissions, role, collapsed, onToggle }: AdminSi
         <button
           onClick={onToggle}
           className="ml-auto flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
@@ -75,7 +73,9 @@ export function AdminSidebar({ permissions, role, collapsed, onToggle }: AdminSi
       <nav className="flex-1 overflow-y-auto py-4 px-2">
         <ul className="space-y-1">
           {visibleItems.map((item) => {
-            const isActive = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+            const matchBase = item.matchPrefix ?? item.href;
+            const isActive =
+              matchBase === "/admin" ? pathname === "/admin" : pathname.startsWith(matchBase);
             const Icon = item.icon;
             return (
               <li key={item.href}>

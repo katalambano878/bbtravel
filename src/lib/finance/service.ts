@@ -79,9 +79,20 @@ export async function createInvoice(input: {
 export async function recordInvoicePayment(input: {
   invoiceId: string;
   amount: number;
-  paymentMethod: "CASH" | "BANK_TRANSFER" | "MOBILE_MONEY" | "CARD" | "OTHER";
+  paymentMethod:
+    | "CASH"
+    | "BANK_TRANSFER"
+    | "MOBILE_MONEY"
+    | "CARD"
+    | "OTHER"
+    | "MOMO_MTN"
+    | "MOMO_VODAFONE"
+    | "MOMO_AIRTELTIGO"
+    | "POS"
+    | "CHEQUE";
   reference?: string;
   notes?: string;
+  depositToBoxId?: string;
 }) {
   const context = await requirePermission("finance.payment.record");
   const admin = createAdminClient();
@@ -114,9 +125,140 @@ export async function recordInvoicePayment(input: {
     targetId: input.invoiceId,
     payload: {
       payment_id: payment.id,
-      amount: input.amount
+      amount: input.amount,
+      payment_method: input.paymentMethod
     }
   });
+
+  if (input.depositToBoxId) {
+    await admin.from("petty_cash_movements").insert({
+      box_id: input.depositToBoxId,
+      movement_type: "IN",
+      amount: input.amount,
+      description: `Client payment — invoice ${input.invoiceId}`,
+      category: "CLIENT_RECEIPT",
+      reference: input.reference ?? null,
+      linked_invoice_id: input.invoiceId,
+      linked_payment_id: payment.id,
+      recorded_by: context.user.id
+    });
+  }
+
+  return payment;
+}
+
+export async function submitExpense(input: {
+  categoryKey: string;
+  category: string;
+  amount: number;
+  description?: string;
+  vendorId?: string | null;
+  employeeId?: string | null;
+  expenseDate?: string;
+  paymentMethod?:
+    | "CASH"
+    | "BANK_TRANSFER"
+    | "MOBILE_MONEY"
+    | "CARD"
+    | "OTHER"
+    | "MOMO_MTN"
+    | "MOMO_VODAFONE"
+    | "MOMO_AIRTELTIGO"
+    | "POS"
+    | "CHEQUE"
+    | null;
+  paidFromBoxId?: string | null;
+}) {
+  const context = await requirePermission("finance.view");
+  const admin = createAdminClient();
+  const { data: expense, error } = await admin
+    .from("expenses")
+    .insert({
+      category: input.category,
+      category_key: input.categoryKey,
+      amount: input.amount,
+      description: input.description ?? null,
+      vendor_id: input.vendorId ?? null,
+      employee_id: input.employeeId ?? null,
+      expense_date: input.expenseDate ?? new Date().toISOString().slice(0, 10),
+      payment_method: input.paymentMethod ?? null,
+      paid_from_box_id: input.paidFromBoxId ?? null,
+      submitted_by: context.user.id,
+      status: "PENDING"
+    })
+    .select("*")
+    .single();
+  if (error) throw error;
+
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "EXPENSE_SUBMITTED",
+    targetType: "expense",
+    targetId: expense.id,
+    payload: { amount: input.amount, category: input.category, category_key: input.categoryKey }
+  });
+  return expense;
+}
+
+export async function createVendorBill(input: {
+  vendorId: string;
+  billNumber: string;
+  billDate: string;
+  dueDate: string;
+  amount: number;
+  notes?: string;
+}) {
+  const context = await requirePermission("finance.expense.approve");
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("vendor_bills")
+    .insert({
+      vendor_id: input.vendorId,
+      bill_number: input.billNumber,
+      bill_date: input.billDate,
+      due_date: input.dueDate,
+      amount: input.amount,
+      notes: input.notes ?? null,
+      created_by: context.user.id
+    })
+    .select("*")
+    .single();
+  if (error) throw error;
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "VENDOR_BILL_CREATED",
+    targetType: "vendor_bill",
+    targetId: data.id,
+    payload: { vendor_id: input.vendorId, amount: input.amount }
+  });
+  return data;
+}
+
+export async function upsertVendor(input: {
+  id?: string;
+  vendorName: string;
+  contactName?: string;
+  phone?: string;
+  email?: string;
+  paymentTerms?: string;
+}) {
+  await requirePermission("finance.expense.approve");
+  const admin = createAdminClient();
+  const row = {
+    vendor_name: input.vendorName,
+    contact_name: input.contactName ?? null,
+    phone: input.phone ?? null,
+    email: input.email ?? null,
+    payment_terms: input.paymentTerms ?? null
+  };
+  if (input.id) {
+    const { data, error } = await admin.from("vendors").update(row).eq("id", input.id).select("*").single();
+    if (error) throw error;
+    return data;
+  }
+  const { data, error } = await admin.from("vendors").insert(row).select("*").single();
+  if (error) throw error;
+  return data;
 }
 
 export async function decideExpense(input: { expenseId: string; status: "APPROVED" | "REJECTED"; approverNotes?: string }) {
@@ -127,8 +269,7 @@ export async function decideExpense(input: { expenseId: string; status: "APPROVE
     .update({
       status: input.status,
       approved_by: context.user.id,
-      approved_at: new Date().toISOString(),
-      description: input.approverNotes ?? null
+      approved_at: new Date().toISOString()
     })
     .eq("id", input.expenseId);
 
@@ -137,7 +278,7 @@ export async function decideExpense(input: { expenseId: string; status: "APPROVE
     action: "EXPENSE_DECIDED",
     targetType: "expense",
     targetId: input.expenseId,
-    payload: { status: input.status }
+    payload: { status: input.status, notes: input.approverNotes ?? null }
   });
 }
 

@@ -51,7 +51,7 @@ export function AdminShell({ children, fullName, role, permissions }: AdminShell
       )}
 
       {/* Main content */}
-      <div className={cn("transition-all duration-300", collapsed ? "lg:ml-[68px]" : "lg:ml-[240px]")}>
+      <div className={cn("transition-all duration-300", collapsed ? "lg:ml-[68px]" : "lg:ml-[220px]")}>
         <AdminTopbar
           fullName={fullName}
           role={role}

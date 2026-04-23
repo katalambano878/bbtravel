@@ -155,6 +155,90 @@ export async function convertLeadToClientAndCase({
   });
 }
 
+export async function createLeadInline(input: {
+  name: string;
+  email: string;
+  phone?: string;
+  whatsapp?: string;
+  serviceType: string;
+  destination?: string;
+  timeline?: string;
+  notes?: string;
+  sourceKey?: string;
+  nextActionDate?: string;
+  assignedTo?: string;
+}) {
+  const context = await requirePermission("crm.edit").catch(() => requirePermission("leads.edit"));
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("leads")
+    .insert({
+      name: input.name,
+      email: input.email,
+      phone: input.phone ?? null,
+      whatsapp: input.whatsapp ?? input.phone ?? null,
+      service_type: input.serviceType,
+      destination: input.destination ?? null,
+      timeline: input.timeline ?? null,
+      notes: input.notes ?? null,
+      source_key: input.sourceKey ?? null,
+      next_action_date: input.nextActionDate ?? null,
+      assigned_to: input.assignedTo ?? context.user.id,
+      stage: "NEW"
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "LEAD_CREATED",
+    targetType: "lead",
+    targetId: data.id,
+    payload: { service_type: input.serviceType, destination: input.destination ?? null }
+  });
+  return data.id as string;
+}
+
+export async function updateLeadStage(input: { leadId: string; stage: string; note?: string }) {
+  const context = await requirePermission("crm.edit").catch(() => requirePermission("leads.edit"));
+  const admin = createAdminClient();
+  const { data: previous } = await admin.from("leads").select("stage").eq("id", input.leadId).maybeSingle();
+  await admin.from("leads").update({ stage: input.stage }).eq("id", input.leadId);
+  await admin.from("lead_activities").insert({
+    lead_id: input.leadId,
+    activity_type: "STATUS_CHANGE",
+    activity_note: input.note ?? `Stage changed to ${input.stage}.`,
+    activity_meta: { from: previous?.stage ?? null, to: input.stage },
+    created_by: context.user.id
+  });
+  await writeAuditEvent({
+    actorId: context.user.id,
+    action: "LEAD_STAGE_CHANGED",
+    targetType: "lead",
+    targetId: input.leadId,
+    payload: { from: previous?.stage ?? null, to: input.stage }
+  });
+}
+
+export async function setLeadNextAction(input: { leadId: string; nextActionDate: string | null; note?: string }) {
+  const context = await requirePermission("crm.edit").catch(() => requirePermission("leads.edit"));
+  const admin = createAdminClient();
+  await admin
+    .from("leads")
+    .update({ next_action_date: input.nextActionDate })
+    .eq("id", input.leadId);
+  if (input.note) {
+    await admin.from("lead_activities").insert({
+      lead_id: input.leadId,
+      activity_type: "TASK",
+      activity_note: input.note,
+      activity_meta: { next_action_date: input.nextActionDate },
+      created_by: context.user.id
+    });
+  }
+}
+
 export async function getCrmSnapshot() {
   await requirePermission("crm.view");
   const admin = createAdminClient();
