@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, CheckCircle2, ChevronRight, CornerDownLeft, ArrowLeft } from "lucide-react";
+import { Check, CheckCircle2, ChevronRight, CornerDownLeft, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { submitStartProfileAction, type StartProfileState } from "@/app/actions";
 
 const STEPS = [
   { id: "intent", title: "What do you need help with?" },
   { id: "audience", title: "Who is this application for?" },
   { id: "location", title: "Where are you currently located?" },
-  { id: "contact", title: "Where should we send your strategy?" },
+  { id: "contact", title: "Where should we send your strategy?" }
 ];
 
 export default function StartApplicationPage() {
@@ -21,46 +22,44 @@ export default function StartApplicationPage() {
     location: "Ghana",
     name: "",
     email: "",
-    phone: "",
+    phone: ""
   });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [state, formAction, isPending] = useActionState(submitStartProfileAction, null as StartProfileState);
 
   const nextStep = () => {
     if (currentStep < STEPS.length - 1) {
-      setCurrentStep(curr => curr + 1);
-    } else {
-      setIsSubmitted(true);
+      setCurrentStep((curr) => curr + 1);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(curr => curr - 1);
+      setCurrentStep((curr) => curr - 1);
     }
   };
 
   const handleSelection = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setTimeout(() => nextStep(), 300);
   };
 
-  // Success State
-  if (isSubmitted) {
+  if (state?.ok) {
     return (
-      <div className="min-h-screen bg-bb-navy flex items-center justify-center p-6 text-center">
-        <motion.div 
+      <div className="flex min-h-screen items-center justify-center bg-bb-navy p-6 text-center">
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full glass-panel-dark rounded-[2rem] p-10 ring-1 ring-white/10"
+          className="glass-panel-dark w-full max-w-md rounded-[2rem] p-10 ring-1 ring-white/10"
         >
-          <div className="w-20 h-20 bg-bb-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-bb-gold" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-bb-gold/20">
+            <CheckCircle2 className="h-10 w-10 text-bb-gold" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">Profile Received.</h2>
-          <p className="text-slate-400 font-light mb-8">
-            Our assessment team will review your profile and reach out within 24 hours to schedule your strategic consultation.
+          <h2 className="mb-4 text-3xl font-bold text-white">Profile received.</h2>
+          <p className="mb-8 font-light text-slate-400">
+            Our assessment team will review your details and reach out within 24 hours. A case file has been opened
+            in our system so we can track your request.
           </p>
-          <Button asChild className="w-full h-14 bg-bb-gold text-bb-navy hover:bg-white text-base rounded-xl font-bold">
+          <Button asChild className="h-14 w-full rounded-xl bg-bb-gold text-base font-bold text-bb-navy hover:bg-white">
             <Link href="/">Return to Homepage</Link>
           </Button>
         </motion.div>
@@ -69,28 +68,23 @@ export default function StartApplicationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bb-navy text-white flex flex-col relative overflow-hidden selection:bg-bb-gold selection:text-bb-navy">
-      {/* Background Motifs */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-bb-gold/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-bb-sky/5 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3" />
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-bb-navy text-white selection:bg-bb-gold selection:text-bb-navy">
+      <div className="pointer-events-none absolute right-0 top-0 h-[800px] w-[800px] -translate-y-1/2 translate-x-1/3 rounded-full bg-bb-gold/5 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-[600px] w-[600px] translate-y-1/3 -translate-x-1/3 rounded-full bg-bb-sky/5 blur-[100px]" />
 
-      {/* Header */}
-      <header className="p-6 md:px-12 md:py-8 flex justify-between items-center relative z-20">
-        <Link href="/" className="flex items-center text-sm font-semibold text-slate-400 hover:text-white transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Cancel & Return
+      <header className="relative z-20 flex items-center justify-between p-6 md:px-12 md:py-8">
+        <Link href="/" className="flex items-center text-sm font-semibold text-slate-400 transition-colors hover:text-white">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Cancel &amp; Return
         </Link>
-        <div className="text-sm font-semibold text-bb-gold tracking-wide uppercase">
+        <div className="text-sm font-semibold uppercase tracking-wide text-bb-gold">
           Step {currentStep + 1} of {STEPS.length}
         </div>
       </header>
 
-      {/* Wizard Content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10 w-full max-w-2xl mx-auto">
-        
-        {/* Progress Bar */}
-        <div className="w-full max-w-md h-1.5 bg-white/10 rounded-full mb-12 overflow-hidden shadow-inner">
-          <motion.div 
-            className="h-full bg-bb-gold rounded-full"
+      <main className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center p-6">
+        <div className="mb-12 h-1.5 w-full max-w-md overflow-hidden rounded-full bg-white/10 shadow-inner">
+          <motion.div
+            className="h-full rounded-full bg-bb-gold"
             initial={{ width: "0%" }}
             animate={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -104,31 +98,35 @@ export default function StartApplicationPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-md flex flex-col items-start"
+            className="flex w-full max-w-md flex-col items-start"
           >
-            <h1 className="text-3xl md:text-4xl font-bold mb-8 leading-[1.2]">
-              <span className="text-bb-gold">{currentStep + 1} <span className="opacity-50 mx-2">→</span></span>
+            <h1 className="mb-8 text-3xl font-bold leading-[1.2] md:text-4xl">
+              <span className="text-bb-gold">
+                {currentStep + 1} <span className="mx-2 opacity-50">→</span>
+              </span>
               {STEPS[currentStep].title}
             </h1>
 
-            {/* Render Steps */}
             {currentStep === 0 && (
               <div className="w-full space-y-3">
                 {["Visa Assistance", "Jobs Abroad", "Study Abroad", "Tours / Vacations"].map((opt) => (
                   <button
                     key={opt}
+                    type="button"
                     onClick={() => handleSelection("intent", opt)}
-                    className={`w-full text-left p-5 rounded-xl border transition-all duration-300 flex items-center justify-between group ${
-                      formData.intent === opt 
-                        ? "bg-bb-gold/10 border-bb-gold text-bb-gold" 
-                        : "bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10"
+                    className={`group flex w-full items-center justify-between rounded-xl border p-5 text-left transition-all duration-300 ${
+                      formData.intent === opt
+                        ? "border-bb-gold bg-bb-gold/10 text-bb-gold"
+                        : "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
-                    <span className="font-medium text-lg">{opt}</span>
-                    <div className={`w-6 h-6 rounded-md border flex items-center justify-center ${
-                      formData.intent === opt ? "bg-bb-gold border-bb-gold text-bb-navy" : "border-white/20 group-hover:border-white/40"
-                    }`}>
-                      {formData.intent === opt && <Check className="w-4 h-4" />}
+                    <span className="text-lg font-medium">{opt}</span>
+                    <div
+                      className={`flex h-6 w-6 items-center justify-center rounded-md border ${
+                        formData.intent === opt ? "border-bb-gold bg-bb-gold text-bb-navy" : "border-white/20 group-hover:border-white/40"
+                      }`}
+                    >
+                      {formData.intent === opt && <Check className="h-4 w-4" />}
                     </div>
                   </button>
                 ))}
@@ -140,18 +138,21 @@ export default function StartApplicationPage() {
                 {["Just myself", "Myself and my spouse", "A family unit", "Corporate group"].map((opt) => (
                   <button
                     key={opt}
+                    type="button"
                     onClick={() => handleSelection("audience", opt)}
-                    className={`w-full text-left p-5 rounded-xl border transition-all duration-300 flex items-center justify-between group ${
-                      formData.audience === opt 
-                        ? "bg-bb-gold/10 border-bb-gold text-bb-gold" 
-                        : "bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10"
+                    className={`group flex w-full items-center justify-between rounded-xl border p-5 text-left transition-all duration-300 ${
+                      formData.audience === opt
+                        ? "border-bb-gold bg-bb-gold/10 text-bb-gold"
+                        : "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
-                    <span className="font-medium text-lg">{opt}</span>
-                    <div className={`w-6 h-6 rounded-md border flex items-center justify-center ${
-                      formData.audience === opt ? "bg-bb-gold border-bb-gold text-bb-navy" : "border-white/20 group-hover:border-white/40"
-                    }`}>
-                      {formData.audience === opt && <Check className="w-4 h-4" />}
+                    <span className="text-lg font-medium">{opt}</span>
+                    <div
+                      className={`flex h-6 w-6 items-center justify-center rounded-md border ${
+                        formData.audience === opt ? "border-bb-gold bg-bb-gold text-bb-navy" : "border-white/20 group-hover:border-white/40"
+                      }`}
+                    >
+                      {formData.audience === opt && <Check className="h-4 w-4" />}
                     </div>
                   </button>
                 ))}
@@ -160,65 +161,98 @@ export default function StartApplicationPage() {
 
             {currentStep === 2 && (
               <div className="w-full">
-                <select 
+                <select
                   value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 hover:border-white/30 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold rounded-xl p-5 text-lg text-white appearance-none outline-none transition-colors duration-300"
+                  onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
+                  className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors duration-300 hover:border-white/30 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
                 >
-                  <option value="Ghana" className="text-slate-900">Ghana</option>
-                  <option value="Nigeria" className="text-slate-900">Nigeria</option>
-                  <option value="UAE" className="text-slate-900">UAE (Dubai)</option>
-                  <option value="Other" className="text-slate-900">Other Global Location</option>
+                  <option value="Ghana" className="text-slate-900">
+                    Ghana
+                  </option>
+                  <option value="Nigeria" className="text-slate-900">
+                    Nigeria
+                  </option>
+                  <option value="UAE" className="text-slate-900">
+                    UAE (Dubai)
+                  </option>
+                  <option value="Other" className="text-slate-900">
+                    Other global location
+                  </option>
                 </select>
-                
                 <div className="mt-8 flex items-center gap-4">
-                  <Button onClick={nextStep} className="h-14 px-8 bg-bb-gold text-bb-navy hover:bg-white text-base rounded-xl font-bold flex-1">
-                    Continue <ChevronRight className="w-5 h-5 ml-1" />
+                  <Button onClick={nextStep} className="h-14 flex-1 rounded-xl bg-bb-gold text-base font-bold text-bb-navy hover:bg-white">
+                    Continue <ChevronRight className="ml-1 h-5 w-5" />
                   </Button>
                 </div>
               </div>
             )}
 
             {currentStep === 3 && (
-              <div className="w-full space-y-4">
-                <input 
-                  type="text" 
-                  placeholder="Full Legal Name"
+              <form action={formAction} className="w-full space-y-4">
+                <input type="hidden" name="intent" value={formData.intent} />
+                <input type="hidden" name="audience" value={formData.audience} />
+                <input type="hidden" name="location" value={formData.location} />
+                {state?.error ? <p className="text-sm text-amber-200">{state.error}</p> : null}
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  placeholder="Full legal name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold transition-colors duration-300 rounded-xl p-5 text-lg text-white outline-none placeholder:text-slate-500"
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors placeholder:text-slate-500 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
                 />
-                <input 
-                  type="email" 
-                  placeholder="Email Address"
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="Email address"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold transition-colors duration-300 rounded-xl p-5 text-lg text-white outline-none placeholder:text-slate-500"
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors placeholder:text-slate-500 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
                 />
-                <input 
-                  type="tel" 
-                  placeholder="WhatsApp Number"
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  placeholder="WhatsApp number"
                   value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold transition-colors duration-300 rounded-xl p-5 text-lg text-white outline-none placeholder:text-slate-500 mb-4"
+                  onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                  className="mb-4 w-full rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors placeholder:text-slate-500 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
                 />
-
-                <Button 
-                  onClick={nextStep} 
-                  disabled={!formData.name || !formData.email || !formData.phone}
-                  className="w-full h-14 bg-bb-gold text-bb-navy hover:bg-white text-base rounded-xl font-bold mt-4 shadow-[0_0_20px_rgba(200,164,93,0.3)] disabled:opacity-50 disabled:shadow-none transition-all"
+                <Button
+                  type="submit"
+                  disabled={isPending || !formData.name || !formData.email || !formData.phone}
+                  className="mt-4 h-14 w-full rounded-xl bg-bb-gold text-base font-bold text-bb-navy shadow-[0_0_20px_rgba(200,164,93,0.3)] transition-all hover:bg-white disabled:opacity-50 disabled:shadow-none"
                 >
-                  Submit Application <CornerDownLeft className="w-5 h-5 ml-2" />
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Submitting…
+                    </>
+                  ) : (
+                    <>
+                      Submit profile <CornerDownLeft className="ml-2 h-5 w-5" />
+                    </>
+                  )}
                 </Button>
-                <p className="text-xs text-slate-400 font-light text-center flex items-center justify-center gap-2 mt-4">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> End-to-end encrypted. No spam.
+                <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs font-light text-slate-400">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> We use your details only to respond to this request.
                 </p>
-              </div>
+              </form>
             )}
-
           </motion.div>
         </AnimatePresence>
 
+        {currentStep > 0 && !state?.ok && (
+          <button
+            type="button"
+            onClick={prevStep}
+            className="mt-8 text-sm text-slate-500 underline decoration-white/20 underline-offset-4 hover:text-white"
+          >
+            Back
+          </button>
+        )}
       </main>
     </div>
   );

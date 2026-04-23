@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Inbox,
+  Mail,
   Route,
   UsersRound,
   FolderOpen,
@@ -26,6 +27,7 @@ export interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Today", href: "/admin", icon: Inbox },
+  { label: "Inbox", href: "/admin/inbox", icon: Mail, permissionKey: "leads.view" },
   { label: "Pipeline", href: "/admin/pipeline", icon: Route, permissionKey: "crm.view" },
   { label: "Clients", href: "/admin/clients", icon: UsersRound, permissionKey: "cases.view" },
   { label: "Documents", href: "/admin/documents", icon: FolderOpen, permissionKey: "documents.view" },
@@ -47,6 +49,9 @@ export function AdminSidebar({ permissions, role, collapsed, onToggle }: AdminSi
   const visibleItems = navItems.filter((item) => {
     if (!item.permissionKey) return true;
     if (role === "super_admin") return true;
+    if (item.href === "/admin/inbox") {
+      return permissions.includes("leads.view") || permissions.includes("crm.view");
+    }
     return permissions.includes(item.permissionKey);
   });
 

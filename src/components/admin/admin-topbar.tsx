@@ -13,6 +13,7 @@ interface AdminTopbarProps {
 
 const titleMap: Record<string, string> = {
   "/admin": "Today",
+  "/admin/inbox": "Inbox",
   "/admin/pipeline": "Pipeline",
   "/admin/clients": "Clients",
   "/admin/documents": "Documents",

@@ -23,7 +23,8 @@ import { archivePartner, upsertPartner } from "@/lib/partners/service";
 import { createAppointment, updateAppointmentStatus } from "@/lib/appointments/service";
 import { logWhatsappSend } from "@/lib/whatsapp/service";
 import { createScheduledReport, queueReportExport, saveReportView } from "@/lib/reports/service";
-import type { PaymentMethod, AppointmentType, AppointmentStatus, PartnerType } from "@/types/domain";
+import { recordWebsiteFormSubmission } from "@/lib/forms/record-submission";
+import type { ServiceType, PaymentMethod, AppointmentType, AppointmentStatus, PartnerType } from "@/types/domain";
 
 function buildChecklist(payload: WizardPayload) {
   const base = ["Identity details validated", "Initial consultation completed"];
@@ -73,10 +74,12 @@ export async function submitWizardAction(formData: FormData) {
       service_type: payload.service_type,
       name: payload.full_name,
       phone: payload.phone,
+      whatsapp: payload.phone,
       email: payload.email,
       destination: payload.destination,
       timeline: payload.timeline,
-      notes: payload.notes
+      notes: payload.notes,
+      source_key: "website"
     })
     .select("id")
     .single();
@@ -135,20 +138,258 @@ export async function submitWizardAction(formData: FormData) {
     );
   }
 
+  try {
+    await recordWebsiteFormSubmission({
+      formType: "START_APPLICATION",
+      payload: {
+        ...payload,
+        readiness_score: score
+      },
+      name: payload.full_name,
+      email: payload.email,
+      phone: payload.phone,
+      pageUrl: "/start-application",
+      leadId: (lead as { id?: string })?.id ?? null,
+      caseId: (caseRecord as { id?: string } | null)?.id ?? null
+    });
+  } catch (e) {
+    console.error("[form_submissions] START_APPLICATION", e);
+  }
+
   revalidatePath("/admin");
+  revalidatePath("/admin/inbox");
   redirect(`/start-application/success?lead=${lead?.id ?? ""}&case=${caseRecord?.id ?? ""}&score=${score}`);
 }
 
-export async function submitContactAction(formData: FormData) {
+export type ContactFormState = { error?: string; ok?: boolean } | null;
+
+export async function submitContactAction(
+  _prev: ContactFormState,
+  formData: FormData
+): Promise<ContactFormState> {
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+  const serviceType = String(formData.get("service_type") || "CONSULTATION") as ServiceType;
+
+  if (name.length < 2) return { error: "Please enter your name." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Please enter a valid email." };
+  if (message.length < 5) return { error: "Please add a short message (at least 5 characters)." };
+
   const admin = createAdminClient();
-  await admin.from("leads").insert({
-    service_type: formData.get("service_type") || "VISA_ASSISTANCE",
-    name: formData.get("name"),
-    phone: formData.get("phone"),
-    email: formData.get("email"),
-    notes: `Contact form: ${formData.get("message")}`
-  });
+  const { data: lead } = await admin
+    .from("leads")
+    .insert({
+      service_type: serviceType,
+      name,
+      phone: phone || null,
+      whatsapp: phone || null,
+      email,
+      notes: `Contact form:\n\n${message}`,
+      source_key: "website"
+    })
+    .select("id")
+    .single();
+
+  try {
+    await recordWebsiteFormSubmission({
+      formType: "CONTACT",
+      payload: { name, email, phone, message, service_type: serviceType },
+      name,
+      email,
+      phone: phone || null,
+      pageUrl: "/contact",
+      leadId: (lead as { id?: string })?.id ?? null
+    });
+  } catch (e) {
+    console.error("[form_submissions] CONTACT", e);
+  }
+
   revalidatePath("/admin");
+  revalidatePath("/admin/inbox");
+  return { ok: true };
+}
+
+function mapStartIntentToServiceType(intent: string): ServiceType {
+  const m: Record<string, ServiceType> = {
+    "Visa Assistance": "VISA_ASSISTANCE",
+    "Jobs Abroad": "INTERNATIONAL_RECRUITMENT",
+    "Study Abroad": "STUDY_ABROAD",
+    "Tours / Vacations": "TOUR_PACKAGE"
+  };
+  return m[intent] ?? "CONSULTATION";
+}
+
+export type StartProfileState = { error?: string; ok?: boolean } | null;
+
+export async function submitStartProfileAction(
+  _prev: StartProfileState,
+  formData: FormData
+): Promise<StartProfileState> {
+  const intent = String(formData.get("intent") || "");
+  const audience = String(formData.get("audience") || "");
+  const location = String(formData.get("location") || "");
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+
+  if (!intent || !audience) return { error: "Please complete all steps." };
+  if (name.length < 2) return { error: "Please enter your full legal name." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Please enter a valid email." };
+  if (phone.length < 7) return { error: "Please enter a valid WhatsApp number." };
+
+  const serviceType = mapStartIntentToServiceType(intent);
+  const notes = `Start flow — intent: ${intent}; audience: ${audience}; location: ${location}`;
+
+  const wizardLike: WizardPayload = {
+    service_type: serviceType,
+    full_name: name,
+    phone,
+    email,
+    destination: location || "Not specified",
+    timeline: "To be scheduled with consultant",
+    budget_range: undefined,
+    experience_level: undefined,
+    education_level: undefined,
+    passport_status: undefined,
+    travel_history: undefined,
+    notes
+  };
+  const score = calculateReadinessScore(wizardLike);
+  const checklist = buildChecklist(wizardLike);
+
+  const admin = createAdminClient();
+
+  const { data: lead } = await admin
+    .from("leads")
+    .insert({
+      service_type: serviceType,
+      name,
+      phone,
+      whatsapp: phone,
+      email,
+      destination: location || null,
+      timeline: "TBD",
+      notes,
+      source_key: "website"
+    })
+    .select("id")
+    .single();
+
+  const { data: existingClient } = await admin.from("clients").select("id").eq("email", email).maybeSingle();
+  let clientId: string | null = existingClient?.id ?? null;
+  if (!clientId) {
+    const { data: created } = await admin
+      .from("clients")
+      .insert({ name, phone, email, whatsapp: phone })
+      .select("id")
+      .single();
+    clientId = created?.id ?? null;
+  }
+  if (!clientId) return { error: "We could not save your profile. Please try again or WhatsApp us." };
+
+  const { data: caseRecord } = await admin
+    .from("cases")
+    .insert({
+      client_id: clientId,
+      case_type: serviceType,
+      status: "SUBMITTED",
+      meta: {
+        start_profile: true,
+        intent,
+        audience,
+        location,
+        readiness_score: score,
+        checklist
+      }
+    })
+    .select("id")
+    .single();
+
+  if (caseRecord?.id) {
+    await admin.from("case_steps").insert(
+      checklist.map((step, index) => ({
+        case_id: caseRecord.id,
+        step_key: `sp_${index + 1}`,
+        title: step,
+        status: index === 0 ? "COMPLETED" : "PENDING"
+      }))
+    );
+  }
+
+  try {
+    await recordWebsiteFormSubmission({
+      formType: "START_PROFILE",
+      payload: { intent, audience, location, name, email, phone, readiness_score: score },
+      name,
+      email,
+      phone,
+      pageUrl: "/start",
+      leadId: (lead as { id?: string })?.id ?? null,
+      caseId: (caseRecord as { id?: string } | null)?.id ?? null
+    });
+  } catch (e) {
+    console.error("[form_submissions] START_PROFILE", e);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/inbox");
+  return { ok: true };
+}
+
+export type TourInquiryState = { error?: string; ok?: boolean } | null;
+
+export async function submitTourInquiryAction(
+  _prev: TourInquiryState,
+  formData: FormData
+): Promise<TourInquiryState> {
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+  const tourSlug = String(formData.get("tour_slug") || "");
+  const tourTitle = String(formData.get("tour_title") || "");
+
+  if (name.length < 2) return { error: "Please enter your name." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Please enter a valid email." };
+  if (phone.length < 7) return { error: "Please enter a valid phone number." };
+
+  const admin = createAdminClient();
+  const notes = `Travel deal inquiry — ${tourTitle || tourSlug}:\n\n${message || "(No additional message)"}`;
+
+  const { data: lead } = await admin
+    .from("leads")
+    .insert({
+      service_type: "TOUR_PACKAGE" as ServiceType,
+      name,
+      phone,
+      whatsapp: phone,
+      email,
+      destination: tourTitle || null,
+      notes,
+      source_key: "website"
+    })
+    .select("id")
+    .single();
+
+  try {
+    await recordWebsiteFormSubmission({
+      formType: "TOUR_INQUIRY",
+      payload: { name, email, phone, message, tour_slug: tourSlug, tour_title: tourTitle },
+      name,
+      email,
+      phone,
+      pageUrl: tourSlug ? `/travel-deals/${tourSlug}` : "/travel-deals",
+      leadId: (lead as { id?: string })?.id ?? null
+    });
+  } catch (e) {
+    console.error("[form_submissions] TOUR_INQUIRY", e);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/inbox");
+  return { ok: true };
 }
 
 export async function signUpAction(formData: FormData) {

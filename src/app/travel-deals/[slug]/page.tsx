@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getPublicTours } from "@/lib/data/public-content";
 import { PageHero } from "@/components/shared/page-hero";
 import { CtaBanner } from "@/components/shared/cta-banner";
+import { TourInquiryForm } from "@/components/forms/tour-inquiry-form";
 
 export async function generateStaticParams() {
   const tours = await getPublicTours();
@@ -70,6 +71,10 @@ export default async function TravelDealDetailPage({ params }: { params: Promise
             <p className="mt-3 text-sm text-slate-600">Duration: {tour.duration}</p>
             <p className="mt-2 text-sm text-slate-600">Destination: {tour.destination}</p>
             <p className="mt-2 text-lg font-semibold text-bb-navy">From ${tour.price}</p>
+            <div className="mt-8 border-t border-slate-100 pt-6">
+              <p className="mb-4 text-sm font-semibold text-bb-navy">Request this package</p>
+              <TourInquiryForm tourSlug={tour.slug} tourTitle={tour.title} />
+            </div>
           </div>
         </div>
       </section>

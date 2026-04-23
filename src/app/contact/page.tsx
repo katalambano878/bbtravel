@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { brand } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
+import { ContactForm } from "@/components/forms/contact-form";
 
 export const metadata: Metadata = {
   title: "Contact Concierge | Reach the Experts",
@@ -139,6 +140,19 @@ export default function ContactHubPage() {
               </div>
             </div>
 
+          </div>
+        </Container>
+      </Section>
+
+      <Section variant="neutral" className="border-b border-slate-200">
+        <Container>
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-2 text-3xl font-bold text-bb-navy">Send a message</h2>
+            <p className="mb-8 text-slate-600">
+              Share your goals and we will respond by email. Your inquiry is also logged in our system so the team
+              can follow up without anything falling through the cracks.
+            </p>
+            <ContactForm />
           </div>
         </Container>
       </Section>
