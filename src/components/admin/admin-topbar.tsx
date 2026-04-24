@@ -18,6 +18,8 @@ const titleMap: Record<string, string> = {
   "/admin/clients": "Clients",
   "/admin/documents": "Documents",
   "/admin/finance": "Finance",
+  "/admin/tours": "Tours",
+  "/admin/tours/new": "New tour",
   "/admin/team": "Team",
   "/admin/settings": "Settings"
 };
@@ -29,6 +31,7 @@ function resolveTitle(pathname: string): string {
   if (pathname.startsWith("/admin/pipeline/")) return "Case";
   if (pathname.startsWith("/admin/finance/")) return "Finance";
   if (pathname.startsWith("/admin/team/")) return "Team";
+  if (pathname.startsWith("/admin/tours/")) return "Edit tour";
   return "Admin";
 }
 

@@ -3,19 +3,23 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Clock, MapPin, CheckCircle2, XCircle, Calendar, ArrowRight } from "lucide-react";
 
-import { featuredTours, brand } from "@/lib/mockData";
+import { brand } from "@/lib/mockData";
+import { getPublishedTours, getPublishedTourBySlug } from "@/lib/tours/public";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { Button } from "@/components/ui/button";
 import { CtaBanner } from "@/components/shared/cta-banner";
 
-export function generateStaticParams() {
-  return featuredTours.map((t) => ({ slug: t.slug }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const tours = await getPublishedTours();
+  return tours.map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const tour = featuredTours.find((t) => t.slug === resolvedParams.slug);
+  const tour = await getPublishedTourBySlug(resolvedParams.slug);
   if (!tour) return { title: "Tour Not Found" };
   return {
     title: `${tour.title} | Premium Packages`,
@@ -40,8 +44,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function TourPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const tour = featuredTours.find((t) => t.slug === resolvedParams.slug);
-  
+  const tour = await getPublishedTourBySlug(resolvedParams.slug);
+
   if (!tour) notFound();
 
   return (

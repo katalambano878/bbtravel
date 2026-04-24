@@ -20,6 +20,13 @@ import { createInvoice, createVendorBill, decideExpense, processRefund, recordIn
 import { createPettyCashBox, recordPettyCashMovement, transferBetweenBoxes } from "@/lib/finance/petty-cash";
 import { EXPENSE_CATEGORIES } from "@/lib/finance/expense-categories";
 import { archivePartner, upsertPartner } from "@/lib/partners/service";
+import {
+  deleteTour,
+  parseItineraryText,
+  parseLineList,
+  setTourActive,
+  upsertTour
+} from "@/lib/tours/service";
 import { createAppointment, updateAppointmentStatus } from "@/lib/appointments/service";
 import { logWhatsappSend } from "@/lib/whatsapp/service";
 import { createScheduledReport, queueReportExport, saveReportView } from "@/lib/reports/service";
@@ -1147,4 +1154,77 @@ export async function upsertPartnerAction(formData: FormData) {
 export async function archivePartnerAction(formData: FormData) {
   await archivePartner(String(formData.get("id") || ""));
   revalidatePath("/admin/settings");
+}
+
+/* -----------------------------------------------------------------------
+ * Tours (website catalogue)
+ * --------------------------------------------------------------------- */
+
+export async function upsertTourAction(formData: FormData): Promise<void> {
+  const id = String(formData.get("id") || "") || undefined;
+  const title = String(formData.get("title") || "").trim();
+  if (!title) throw new Error("Title is required.");
+  const slug = String(formData.get("slug") || "").trim();
+  const destination = String(formData.get("destination") || "").trim();
+  const durationDaysRaw = String(formData.get("duration_days") || "").trim();
+  const durationDays = durationDaysRaw ? Number(durationDaysRaw) : undefined;
+  const durationLabel = String(formData.get("duration_label") || "").trim();
+  const priceRaw = String(formData.get("price") || "").trim();
+  const price = priceRaw ? Number(priceRaw) : undefined;
+  const priceRange = String(formData.get("price_range") || "").trim();
+  const coverImage = String(formData.get("cover_image") || "").trim();
+  const images = parseLineList(formData.get("images"));
+  const shortDescription = String(formData.get("short_description") || "").trim();
+  const overview = String(formData.get("overview") || "").trim();
+  const highlights = parseLineList(formData.get("highlights"));
+  const inclusions = parseLineList(formData.get("inclusions"));
+  const exclusions = parseLineList(formData.get("exclusions"));
+  const itinerary = parseItineraryText(formData.get("itinerary"));
+  const isActive = String(formData.get("is_active") || "") === "true";
+  const sortOrderRaw = String(formData.get("sort_order") || "").trim();
+  const sortOrder = sortOrderRaw ? Number(sortOrderRaw) : 0;
+
+  await upsertTour({
+    id,
+    title,
+    slug,
+    destination,
+    durationDays: Number.isFinite(durationDays) ? durationDays : null,
+    durationLabel,
+    price,
+    priceRange,
+    coverImage,
+    images,
+    shortDescription,
+    overview,
+    highlights,
+    inclusions,
+    exclusions,
+    itinerary,
+    isActive,
+    sortOrder
+  });
+
+  revalidatePath("/admin/tours");
+  revalidatePath("/tours");
+  revalidatePath("/travel-deals");
+}
+
+export async function toggleTourActiveAction(formData: FormData): Promise<void> {
+  const id = String(formData.get("id") || "");
+  const active = String(formData.get("active") || "") === "true";
+  if (!id) return;
+  await setTourActive(id, active);
+  revalidatePath("/admin/tours");
+  revalidatePath("/tours");
+  revalidatePath("/travel-deals");
+}
+
+export async function deleteTourAction(formData: FormData): Promise<void> {
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  await deleteTour(id);
+  revalidatePath("/admin/tours");
+  revalidatePath("/tours");
+  revalidatePath("/travel-deals");
 }

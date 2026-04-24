@@ -4,7 +4,7 @@ import { ArrowRight, MapPin, Clock } from "lucide-react";
 
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
-import { featuredTours } from "@/lib/mockData";
+import { getPublishedTours } from "@/lib/tours/public";
 import { FlightPathBackground } from "@/components/brand/FlightPathBackground";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +26,10 @@ export const metadata: Metadata = {
   }
 };
 
-export default function ToursHubPage() {
+export const revalidate = 60;
+
+export default async function ToursHubPage() {
+  const tours = await getPublishedTours();
   return (
     <>
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-bb-navy overflow-hidden">
@@ -46,7 +49,7 @@ export default function ToursHubPage() {
       <Section variant="white" className="border-b border-slate-200">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredTours.map((tour) => (
+            {tours.map((tour) => (
               <div
                 key={tour.id}
                 className="group relative bg-bb-navy rounded-[2rem] overflow-hidden flex flex-col justify-end shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.25)] hover:-translate-y-1.5 transition-all duration-700 ease-out h-[480px]"

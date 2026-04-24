@@ -11,6 +11,7 @@ import {
   Wallet,
   Building2,
   Settings,
+  Plane,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
   { label: "Clients", href: "/admin/clients", icon: UsersRound, permissionKey: "cases.view" },
   { label: "Documents", href: "/admin/documents", icon: FolderOpen, permissionKey: "documents.view" },
   { label: "Finance", href: "/admin/finance", icon: Wallet, permissionKey: "finance.view" },
+  { label: "Tours", href: "/admin/tours", icon: Plane, permissionKey: "tours.manage", matchPrefix: "/admin/tours" },
   { label: "Team", href: "/admin/team", icon: Building2, permissionKey: "hr.view", matchPrefix: "/admin/team" },
   { label: "Settings", href: "/admin/settings", icon: Settings, permissionKey: "settings.manage" }
 ];
