@@ -196,6 +196,11 @@ export default async function AdminInboxPage({
                   };
                   const Icon = meta.icon;
                   const payload = (row.payload ?? {}) as Record<string, unknown>;
+                  const locationFull =
+                    (typeof payload.location_full === "string" && payload.location_full) ||
+                    [payload.town, payload.region, payload.location, payload.city_other]
+                      .filter((v) => typeof v === "string" && v)
+                      .join(", ");
                   const summary =
                     (typeof payload.message === "string" && payload.message) ||
                     (typeof payload.destination === "string" && payload.destination
@@ -227,6 +232,12 @@ export default async function AdminInboxPage({
                       </td>
                       <td className={`${adminTable.td} max-w-[260px]`}>
                         <p className="line-clamp-2 text-[11px] text-slate-600">{summary || "—"}</p>
+                        {locationFull ? (
+                          <p className="mt-1 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                            <Globe2 className="h-3 w-3" />
+                            {locationFull}
+                          </p>
+                        ) : null}
                       </td>
                       <td className={adminTable.td}>
                         <div className="flex flex-wrap items-center gap-1.5 text-[11px]">

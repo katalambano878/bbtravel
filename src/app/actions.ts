@@ -237,6 +237,9 @@ export async function submitStartProfileAction(
   const intent = String(formData.get("intent") || "");
   const audience = String(formData.get("audience") || "");
   const location = String(formData.get("location") || "");
+  const region = String(formData.get("region") || "").trim();
+  const town = String(formData.get("town") || "").trim();
+  const cityOther = String(formData.get("city_other") || "").trim();
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
@@ -246,15 +249,27 @@ export async function submitStartProfileAction(
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Please enter a valid email." };
   if (phone.length < 7) return { error: "Please enter a valid WhatsApp number." };
 
+  if (location === "Ghana") {
+    if (!region) return { error: "Please select the region in Ghana you are based in." };
+    if (town.length < 2) return { error: "Please tell us the town or exact location you are based in." };
+  } else if (location && cityOther.length < 2) {
+    return { error: "Please tell us which city or area you are based in." };
+  }
+
+  const locationDetail =
+    location === "Ghana"
+      ? [town, region, "Ghana"].filter(Boolean).join(", ")
+      : [cityOther, location].filter(Boolean).join(", ");
+
   const serviceType = mapStartIntentToServiceType(intent);
-  const notes = `Start flow — intent: ${intent}; audience: ${audience}; location: ${location}`;
+  const notes = `Start flow — intent: ${intent}; audience: ${audience}; location: ${locationDetail || location}`;
 
   const wizardLike: WizardPayload = {
     service_type: serviceType,
     full_name: name,
     phone,
     email,
-    destination: location || "Not specified",
+    destination: locationDetail || location || "Not specified",
     timeline: "To be scheduled with consultant",
     budget_range: undefined,
     experience_level: undefined,
@@ -276,7 +291,7 @@ export async function submitStartProfileAction(
       phone,
       whatsapp: phone,
       email,
-      destination: location || null,
+      destination: locationDetail || location || null,
       timeline: "TBD",
       notes,
       source_key: "website"
@@ -307,6 +322,10 @@ export async function submitStartProfileAction(
         intent,
         audience,
         location,
+        region: region || null,
+        town: town || null,
+        city_other: cityOther || null,
+        location_full: locationDetail || location,
         readiness_score: score,
         checklist
       }
@@ -328,7 +347,19 @@ export async function submitStartProfileAction(
   try {
     await recordWebsiteFormSubmission({
       formType: "START_PROFILE",
-      payload: { intent, audience, location, name, email, phone, readiness_score: score },
+      payload: {
+        intent,
+        audience,
+        location,
+        region: region || null,
+        town: town || null,
+        city_other: cityOther || null,
+        location_full: locationDetail || location,
+        name,
+        email,
+        phone,
+        readiness_score: score
+      },
       name,
       email,
       phone,

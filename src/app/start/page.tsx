@@ -14,12 +14,34 @@ const STEPS = [
   { id: "contact", title: "Where should we send your strategy?" }
 ];
 
+const GHANA_REGIONS = [
+  "Greater Accra",
+  "Ashanti",
+  "Central",
+  "Eastern",
+  "Western",
+  "Western North",
+  "Volta",
+  "Oti",
+  "Bono",
+  "Bono East",
+  "Ahafo",
+  "Northern",
+  "Savannah",
+  "North East",
+  "Upper East",
+  "Upper West"
+];
+
 export default function StartApplicationPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     intent: "",
     audience: "",
     location: "Ghana",
+    region: "",
+    town: "",
+    city_other: "",
     name: "",
     email: "",
     phone: ""
@@ -160,27 +182,98 @@ export default function StartApplicationPage() {
             )}
 
             {currentStep === 2 && (
-              <div className="w-full">
-                <select
-                  value={formData.location}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
-                  className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors duration-300 hover:border-white/30 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
-                >
-                  <option value="Ghana" className="text-slate-900">
-                    Ghana
-                  </option>
-                  <option value="Nigeria" className="text-slate-900">
-                    Nigeria
-                  </option>
-                  <option value="UAE" className="text-slate-900">
-                    UAE (Dubai)
-                  </option>
-                  <option value="Other" className="text-slate-900">
-                    Other global location
-                  </option>
-                </select>
-                <div className="mt-8 flex items-center gap-4">
-                  <Button onClick={nextStep} className="h-14 flex-1 rounded-xl bg-bb-gold text-base font-bold text-bb-navy hover:bg-white">
+              <div className="w-full space-y-4">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Country
+                  </label>
+                  <select
+                    value={formData.location}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        location: e.target.value,
+                        region: e.target.value === "Ghana" ? prev.region : "",
+                        town: e.target.value === "Ghana" ? prev.town : "",
+                        city_other: e.target.value !== "Ghana" ? prev.city_other : ""
+                      }))
+                    }
+                    className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors duration-300 hover:border-white/30 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
+                  >
+                    <option value="Ghana" className="text-slate-900">
+                      Ghana
+                    </option>
+                    <option value="Nigeria" className="text-slate-900">
+                      Nigeria
+                    </option>
+                    <option value="UAE" className="text-slate-900">
+                      UAE (Dubai)
+                    </option>
+                    <option value="Other" className="text-slate-900">
+                      Other global location
+                    </option>
+                  </select>
+                </div>
+
+                {formData.location === "Ghana" ? (
+                  <>
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        Region in Ghana
+                      </label>
+                      <select
+                        value={formData.region}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, region: e.target.value }))}
+                        className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors duration-300 hover:border-white/30 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
+                      >
+                        <option value="" className="text-slate-900">
+                          Select a region…
+                        </option>
+                        {GHANA_REGIONS.map((region) => (
+                          <option key={region} value={region} className="text-slate-900">
+                            {region}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        Town / area (exact location)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.town}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, town: e.target.value }))}
+                        placeholder="e.g. Teshie, Accra or Kumasi – Adum"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors placeholder:text-slate-500 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      City / area
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.city_other}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, city_other: e.target.value }))}
+                      placeholder="e.g. Lagos, Dubai, London"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 p-5 text-lg text-white outline-none transition-colors placeholder:text-slate-500 focus:border-bb-gold focus:ring-1 focus:ring-bb-gold"
+                    />
+                  </div>
+                )}
+
+                <div className="pt-2 flex items-center gap-4">
+                  <Button
+                    onClick={nextStep}
+                    disabled={
+                      formData.location === "Ghana"
+                        ? !formData.region || formData.town.trim().length < 2
+                        : formData.city_other.trim().length < 2
+                    }
+                    className="h-14 flex-1 rounded-xl bg-bb-gold text-base font-bold text-bb-navy hover:bg-white disabled:opacity-40"
+                  >
                     Continue <ChevronRight className="ml-1 h-5 w-5" />
                   </Button>
                 </div>
@@ -192,6 +285,9 @@ export default function StartApplicationPage() {
                 <input type="hidden" name="intent" value={formData.intent} />
                 <input type="hidden" name="audience" value={formData.audience} />
                 <input type="hidden" name="location" value={formData.location} />
+                <input type="hidden" name="region" value={formData.region} />
+                <input type="hidden" name="town" value={formData.town} />
+                <input type="hidden" name="city_other" value={formData.city_other} />
                 {state?.error ? <p className="text-sm text-amber-200">{state.error}</p> : null}
                 <input
                   type="text"
