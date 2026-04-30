@@ -26,6 +26,7 @@ import {
   parseLineList,
   setTourActive,
   slugifyTour,
+  syncFeaturedToursFromMock,
   upsertTour
 } from "@/lib/tours/service";
 import { uploadTourImageToStorage } from "@/lib/tours/upload";
@@ -1253,6 +1254,27 @@ export async function upsertTourAction(formData: FormData): Promise<void> {
   revalidatePath("/admin/tours");
   revalidatePath("/tours");
   revalidatePath("/travel-deals");
+}
+
+export type SyncMockToursResult = { ok: true; message: string } | { ok: false; error: string };
+
+export async function syncFeaturedToursFromMockAction(): Promise<SyncMockToursResult> {
+  try {
+    const { count, slugs } = await syncFeaturedToursFromMock();
+    revalidatePath("/admin/tours");
+    revalidatePath("/tours");
+    revalidatePath("/travel-deals");
+    revalidatePath("/");
+    return {
+      ok: true,
+      message: `Synced ${count} tour(s). Slugs: ${slugs.join(", ")}.`
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Could not sync tours from mock catalogue."
+    };
+  }
 }
 
 export async function toggleTourActiveAction(formData: FormData): Promise<void> {

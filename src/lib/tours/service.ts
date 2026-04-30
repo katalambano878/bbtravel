@@ -1,3 +1,4 @@
+import { featuredTours } from "@/lib/mockData";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { requirePermission } from "@/lib/auth/policy";
@@ -286,6 +287,64 @@ export async function getPublicToursDb(): Promise<TourRow[]> {
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map((row) => normalizeRow(row as Record<string, unknown>));
+}
+
+function parseStartingPriceFromRange(priceRange: string): number {
+  const parts = priceRange.match(/[\d,]+(?:\.\d+)?/g);
+  if (!parts || parts.length === 0) return 0;
+  const n = Number(parts[0].replace(/,/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Upsert each entry in `featuredTours` (see `src/lib/mockData.ts`) by slug.
+ * Creates new rows or overwrites existing catalogue content; images stay as
+ * URLs from the mock (Supabase uploads are unchanged until re-saved in admin).
+ */
+export async function syncFeaturedToursFromMock(): Promise<{ count: number; slugs: string[] }> {
+  await requirePermission("tours.manage");
+  const admin = createAdminClient();
+  const slugs: string[] = [];
+
+  for (let i = 0; i < featuredTours.length; i++) {
+    const t = featuredTours[i];
+    const slug = slugify(String(t.slug ?? ""));
+    if (!slug) throw new Error(`Featured tour at index ${i} is missing a slug.`);
+
+    const { data: existing } = await admin.from("tours").select("id").eq("slug", slug).maybeSingle();
+
+    const itinerary: TourItineraryItem[] = (t.itinerary ?? []).map((row) => ({
+      day: Number(row.day ?? 0),
+      title: String(row.title ?? ""),
+      description: String(row.description ?? "")
+    }));
+
+    const imageUrl = String(t.image ?? "").trim();
+    await upsertTour({
+      id: (existing as { id?: string } | null)?.id,
+      title: t.title,
+      slug: t.slug,
+      destination: t.destination,
+      durationDays: t.durationDays,
+      durationLabel: `${t.durationDays} days`,
+      price: parseStartingPriceFromRange(t.priceRange),
+      priceRange: t.priceRange,
+      coverImage: imageUrl,
+      images: imageUrl ? [imageUrl] : [],
+      shortDescription: t.shortDescription,
+      overview: t.overview,
+      highlights: t.highlights ?? [],
+      inclusions: t.included ?? [],
+      exclusions: t.excluded ?? [],
+      itinerary,
+      isActive: true,
+      sortOrder: i
+    });
+
+    slugs.push(slug);
+  }
+
+  return { count: slugs.length, slugs };
 }
 
 export { parseLines as parseLineList, parseItinerary as parseItineraryText, slugify as slugifyTour };

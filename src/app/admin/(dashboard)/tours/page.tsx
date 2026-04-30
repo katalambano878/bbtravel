@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { adminTable } from "@/components/admin/table-styles";
 import { toggleTourActiveAction } from "@/app/actions";
 import { DeleteTourButton } from "@/components/admin/tour-row-actions";
+import { SyncMockToursButton } from "@/components/admin/sync-mock-tours-button";
 
 export const metadata: Metadata = {
   title: "Tours — B.B. Admin"
@@ -52,12 +53,15 @@ export default async function AdminToursPage() {
             individual detail pages on the public site.
           </p>
         </div>
-        <Link
-          href="/admin/tours/new"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-bb-navy px-4 py-2 text-xs font-semibold text-white hover:bg-bb-navy/90"
-        >
-          <Plus className="h-3.5 w-3.5" /> New tour
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <SyncMockToursButton />
+          <Link
+            href="/admin/tours/new"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-bb-navy px-4 py-2 text-xs font-semibold text-white hover:bg-bb-navy/90"
+          >
+            <Plus className="h-3.5 w-3.5" /> New tour
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
