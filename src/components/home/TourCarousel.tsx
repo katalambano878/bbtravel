@@ -5,12 +5,13 @@ import { ArrowRight, MapPin, Clock } from "lucide-react";
 
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
-import { featuredTours } from "@/lib/mockData";
+import type { PublicTour } from "@/lib/tours/public";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { cn } from "@/lib/utils/cn";
 
-export function TourCarousel() {
+type Props = { tours: PublicTour[] };
+
+export function TourCarousel({ tours }: Props) {
   return (
     <Section variant="white" className="overflow-hidden">
       <Container>
@@ -29,7 +30,7 @@ export function TourCarousel() {
 
         {/* Grid Container */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 pb-12">
-          {featuredTours.map((tour, idx) => (
+          {tours.map((tour, idx) => (
             <motion.div
               key={tour.id}
               initial={{ opacity: 0, y: 30 }}

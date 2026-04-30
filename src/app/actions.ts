@@ -25,8 +25,10 @@ import {
   parseItineraryText,
   parseLineList,
   setTourActive,
+  slugifyTour,
   upsertTour
 } from "@/lib/tours/service";
+import { uploadTourImageToStorage } from "@/lib/tours/upload";
 import { createAppointment, updateAppointmentStatus } from "@/lib/appointments/service";
 import { logWhatsappSend } from "@/lib/whatsapp/service";
 import { createScheduledReport, queueReportExport, saveReportView } from "@/lib/reports/service";
@@ -1196,6 +1198,7 @@ export async function upsertTourAction(formData: FormData): Promise<void> {
   const title = String(formData.get("title") || "").trim();
   if (!title) throw new Error("Title is required.");
   const slug = String(formData.get("slug") || "").trim();
+  const slugFolder = slug ? slugifyTour(slug) : slugifyTour(title);
   const destination = String(formData.get("destination") || "").trim();
   const durationDaysRaw = String(formData.get("duration_days") || "").trim();
   const durationDays = durationDaysRaw ? Number(durationDaysRaw) : undefined;
@@ -1203,8 +1206,19 @@ export async function upsertTourAction(formData: FormData): Promise<void> {
   const priceRaw = String(formData.get("price") || "").trim();
   const price = priceRaw ? Number(priceRaw) : undefined;
   const priceRange = String(formData.get("price_range") || "").trim();
-  const coverImage = String(formData.get("cover_image") || "").trim();
+  let coverImage = String(formData.get("cover_image") || "").trim();
+  const coverFile = formData.get("cover_file");
+  if (coverFile instanceof File && coverFile.size > 0) {
+    coverImage = await uploadTourImageToStorage(coverFile, slugFolder);
+  }
+
   const images = parseLineList(formData.get("images"));
+  const galleryFiles = formData.getAll("gallery_files");
+  for (const entry of galleryFiles) {
+    if (entry instanceof File && entry.size > 0) {
+      images.push(await uploadTourImageToStorage(entry, slugFolder));
+    }
+  }
   const shortDescription = String(formData.get("short_description") || "").trim();
   const overview = String(formData.get("overview") || "").trim();
   const highlights = parseLineList(formData.get("highlights"));

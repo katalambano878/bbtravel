@@ -7,14 +7,17 @@ import { CaseStudies } from "@/components/home/CaseStudies";
 import { InsightsFaq } from "@/components/home/InsightsFaq";
 import { FinalCTA } from "@/components/home/FinalCTA";
 
-export default function Home() {
+import { getPublishedTours } from "@/lib/tours/public";
+
+export default async function Home() {
+  const tours = await getPublishedTours();
   return (
     <div className="flex flex-col min-h-screen">
       <HeroJourney />
       <ChoosePathCards />
       <TransparencyTimeline />
       <ProofWall />
-      <TourCarousel />
+      <TourCarousel tours={tours} />
       <CaseStudies />
       <InsightsFaq />
       <FinalCTA />

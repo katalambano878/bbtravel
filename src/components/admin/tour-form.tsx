@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import type { TourRow } from "@/lib/tours/service";
@@ -37,6 +37,21 @@ export function TourForm({ initial }: TourFormProps) {
   const [slugEdited, setSlugEdited] = useState(Boolean(initial?.slug));
 
   const previewSlug = useMemo(() => (slug ? slug : slugify(title)), [slug, title]);
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    setGalleryUrls((initial?.images ?? []).filter(Boolean));
+    setCoverPreview(null);
+  }, [initial?.id]);
+
+  useEffect(() => {
+    return () => {
+      if (coverPreview && coverPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(coverPreview);
+      }
+    };
+  }, [coverPreview]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -160,22 +175,74 @@ export function TourForm({ initial }: TourFormProps) {
         <CardContent className="p-5">
           <h2 className="mb-4 text-sm font-bold text-bb-navy">Hero & story</h2>
           <div className="grid gap-3">
-            <Field label="Cover image URL" hint="Shown on the hero band and card">
-              <input
-                name="cover_image"
-                defaultValue={initial?.cover_image ?? ""}
-                placeholder="https://... or /images/tours/your-tour.webp"
-                className="input"
-              />
+            <Field
+              label="Cover image"
+              hint="Upload a hero image for the card and tour page. Stored in Supabase (tour-media)."
+            >
+              <input type="hidden" name="cover_image" value={initial?.cover_image ?? ""} />
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                <div className="min-h-[120px] flex-1 overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50">
+                  {(coverPreview || initial?.cover_image) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={coverPreview || initial?.cover_image || ""}
+                      alt=""
+                      className="h-32 w-full object-cover sm:h-40"
+                    />
+                  )}
+                </div>
+                <input
+                  type="file"
+                  name="cover_file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="input text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-bb-navy file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      setCoverPreview(null);
+                      return;
+                    }
+                    setCoverPreview(URL.createObjectURL(file));
+                  }}
+                />
+              </div>
             </Field>
-            <Field label="Gallery image URLs" hint="One URL per line (optional)">
-              <textarea
-                name="images"
-                rows={3}
-                defaultValue={(initial?.images ?? []).join("\n")}
-                placeholder={"https://example.com/gallery-1.jpg\nhttps://example.com/gallery-2.jpg"}
-                className="input font-mono text-xs"
+            <Field
+              label="Gallery images"
+              hint="Add more photos (optional). Remove rows below to drop them from the gallery."
+            >
+              <input type="hidden" name="images" value={galleryUrls.join("\n")} readOnly />
+              <input
+                type="file"
+                name="gallery_files"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+                className="input mb-3 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-bb-navy"
               />
+              {galleryUrls.length > 0 ? (
+                <ul className="space-y-2 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
+                  {galleryUrls.map((url, index) => (
+                    <li
+                      key={`${url}-${index}`}
+                      className="flex items-center gap-2 rounded-lg border border-white bg-white p-2 text-xs shadow-sm"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt="" className="h-10 w-14 shrink-0 rounded object-cover" />
+                      <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-slate-600">{url}</span>
+                      <button
+                        type="button"
+                        onClick={() => setGalleryUrls((prev) => prev.filter((_, i) => i !== index))}
+                        className="shrink-0 rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                        aria-label="Remove image"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-[11px] text-slate-400">No gallery images yet — upload files above or save with cover only.</p>
+              )}
             </Field>
             <Field label="Short description" hint="One line under the hero. Two sentences maximum.">
               <textarea
