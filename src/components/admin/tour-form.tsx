@@ -2,12 +2,31 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X, UploadCloud } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import type { TourRow } from "@/lib/tours/service";
 import { upsertTourAction } from "@/app/actions";
 import { Card, CardContent } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/client";
+
+const MAX_BYTES = 8 * 1024 * 1024;
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
+function extFromFile(file: File): string {
+  const fromName = file.name.includes(".")
+    ? file.name.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
+    : "";
+  if (["jpg", "jpeg", "png", "webp", "gif"].includes(fromName)) {
+    return fromName === "jpeg" ? "jpg" : fromName;
+  }
+  const mime = (file.type || "").toLowerCase();
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  if (mime === "image/gif") return "gif";
+  return "jpg";
+}
 
 interface TourFormProps {
   initial?: TourRow | null;
@@ -38,26 +57,88 @@ export function TourForm({ initial }: TourFormProps) {
 
   const previewSlug = useMemo(() => (slug ? slug : slugify(title)), [slug, title]);
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverUrl, setCoverUrl] = useState<string>(initial?.cover_image ?? "");
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   useEffect(() => {
     setGalleryUrls((initial?.images ?? []).filter(Boolean));
-    setCoverPreview(null);
-  }, [initial?.id]);
+    setCoverUrl(initial?.cover_image ?? "");
+  }, [initial?.id, initial?.cover_image, initial?.images]);
 
-  useEffect(() => {
-    return () => {
-      if (coverPreview && coverPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(coverPreview);
+  async function uploadToStorage(file: File): Promise<string> {
+    if (!ALLOWED_TYPES.has((file.type || "").toLowerCase())) {
+      throw new Error("Please use JPG, PNG, WebP, or GIF.");
+    }
+    if (file.size > MAX_BYTES) throw new Error("Each image must be 8MB or smaller.");
+    const folder =
+      (previewSlug || "tours")
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 72) || "tours";
+    const ext = extFromFile(file);
+    const rand =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2);
+    const path = `${folder}/${Date.now()}-${rand}.${ext}`;
+    const supabase = createClient();
+    const { error: upErr } = await supabase.storage.from("tour-media").upload(path, file, {
+      cacheControl: "31536000",
+      contentType: file.type || undefined,
+      upsert: false
+    });
+    if (upErr) throw new Error(upErr.message);
+    const { data } = supabase.storage.from("tour-media").getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  async function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setCoverUploading(true);
+    setError(null);
+    try {
+      const url = await uploadToStorage(file);
+      setCoverUrl(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Cover upload failed.");
+    } finally {
+      setCoverUploading(false);
+    }
+  }
+
+  async function handleGalleryFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (files.length === 0) return;
+    setGalleryUploading(true);
+    setError(null);
+    try {
+      const urls: string[] = [];
+      for (const file of files) {
+        urls.push(await uploadToStorage(file));
       }
-    };
-  }, [coverPreview]);
+      setGalleryUrls((prev) => [...prev, ...urls]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gallery upload failed.");
+    } finally {
+      setGalleryUploading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
     if (!data.get("slug")) data.set("slug", previewSlug);
+    data.delete("cover_file");
+    data.delete("gallery_files");
+    data.set("cover_image", coverUrl);
+    data.set("images", galleryUrls.join("\n"));
     setSubmitting(true);
     setError(null);
     try {
@@ -179,46 +260,62 @@ export function TourForm({ initial }: TourFormProps) {
               label="Cover image"
               hint="Upload a hero image for the card and tour page. Stored in Supabase (tour-media)."
             >
-              <input type="hidden" name="cover_image" value={initial?.cover_image ?? ""} />
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                <div className="min-h-[120px] flex-1 overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50">
-                  {(coverPreview || initial?.cover_image) && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={coverPreview || initial?.cover_image || ""}
-                      alt=""
-                      className="h-32 w-full object-cover sm:h-40"
-                    />
+                <div className="relative min-h-[120px] flex-1 overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50">
+                  {coverUrl ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={coverUrl} alt="" className="h-32 w-full object-cover sm:h-40" />
+                      <button
+                        type="button"
+                        onClick={() => setCoverUrl("")}
+                        className="absolute right-2 top-2 rounded-full bg-white/90 p-1 text-slate-500 shadow hover:bg-rose-50 hover:text-rose-600"
+                        aria-label="Remove cover image"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex h-32 w-full items-center justify-center sm:h-40">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
+                        <UploadCloud className="h-3.5 w-3.5" /> No image yet
+                      </span>
+                    </div>
                   )}
                 </div>
-                <input
-                  type="file"
-                  name="cover_file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="input text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-bb-navy file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) {
-                      setCoverPreview(null);
-                      return;
-                    }
-                    setCoverPreview(URL.createObjectURL(file));
-                  }}
-                />
+                <div className="flex flex-1 flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={handleCoverFile}
+                    disabled={coverUploading}
+                    className="input text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-bb-navy file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white disabled:opacity-50"
+                  />
+                  {coverUploading ? (
+                    <p className="inline-flex items-center gap-1.5 text-[11px] text-slate-500">
+                      <Loader2 className="h-3 w-3 animate-spin" /> Uploading…
+                    </p>
+                  ) : null}
+                </div>
               </div>
             </Field>
             <Field
               label="Gallery images"
-              hint="Add more photos (optional). Remove rows below to drop them from the gallery."
+              hint="Add more photos (optional). Remove items below to drop them from the gallery."
             >
-              <input type="hidden" name="images" value={galleryUrls.join("\n")} readOnly />
               <input
                 type="file"
-                name="gallery_files"
                 accept="image/jpeg,image/png,image/webp,image/gif"
                 multiple
-                className="input mb-3 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-bb-navy"
+                onChange={handleGalleryFiles}
+                disabled={galleryUploading}
+                className="input mb-3 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-bb-navy disabled:opacity-50"
               />
+              {galleryUploading ? (
+                <p className="mb-2 inline-flex items-center gap-1.5 text-[11px] text-slate-500">
+                  <Loader2 className="h-3 w-3 animate-spin" /> Uploading…
+                </p>
+              ) : null}
               {galleryUrls.length > 0 ? (
                 <ul className="space-y-2 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
                   {galleryUrls.map((url, index) => (
@@ -344,12 +441,16 @@ export function TourForm({ initial }: TourFormProps) {
         </button>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || coverUploading || galleryUploading}
           className="inline-flex items-center gap-1.5 rounded-lg bg-bb-navy px-4 py-2 text-xs font-semibold text-white hover:bg-bb-navy/90 disabled:opacity-50"
         >
           {submitting ? (
             <>
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…
+            </>
+          ) : coverUploading || galleryUploading ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading…
             </>
           ) : initial?.id ? (
             "Save changes"
