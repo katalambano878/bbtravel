@@ -477,7 +477,10 @@ export async function getStaffAccessContext() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  // Use service role for the profile lookup: RLS policies reference
+  // is_super_admin(), which authenticated users cannot execute directly.
+  const admin = createAdminClient();
+  const { data: profile } = await admin
     .from("staff_profiles")
     .select("role, full_name, department, manager_user_id, is_active, custom_title")
     .eq("user_id", user.id)

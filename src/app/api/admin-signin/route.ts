@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,8 +60,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(url, { status: 303 });
   }
 
-  // Verify the user is a staff member with an active profile.
-  const { data: profile } = await supabase
+  // Verify staff membership with the service-role client. The anon/authenticated
+  // client can sign in before auth.uid() is visible to RLS on the same request,
+  // which incorrectly returns not_staff even for valid admin accounts.
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const url = new URL("/admin/login", request.url);
+    url.searchParams.set("error", "config");
+    return NextResponse.redirect(url, { status: 303 });
+  }
+
+  const admin = createAdminClient();
+  const { data: profile } = await admin
     .from("staff_profiles")
     .select("user_id, is_active")
     .eq("user_id", data.user.id)
@@ -74,19 +84,13 @@ export async function POST(request: NextRequest) {
   }
 
   // Best-effort: stamp last_login_at. Never block login if this fails.
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    try {
-      const { createClient } = await import("@supabase/supabase-js");
-      const admin = createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, {
-        auth: { persistSession: false }
-      });
-      await admin
-        .from("staff_profiles")
-        .update({ last_login_at: new Date().toISOString() })
-        .eq("user_id", data.user.id);
-    } catch {
-      // ignore
-    }
+  try {
+    await admin
+      .from("staff_profiles")
+      .update({ last_login_at: new Date().toISOString() })
+      .eq("user_id", data.user.id);
+  } catch {
+    // ignore
   }
 
   return response;
