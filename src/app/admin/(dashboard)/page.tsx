@@ -89,13 +89,13 @@ export default async function AdminTodayPage() {
             <UserPlus className="h-3.5 w-3.5" /> New lead
           </Link>
           <Link
-            href="/admin/finance?tab=invoice"
+            href="/admin/finance?tab=invoices"
             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-bb-navy hover:border-bb-navy/30"
           >
             <ReceiptText className="h-3.5 w-3.5" /> Raise invoice
           </Link>
           <Link
-            href="/admin/finance?tab=petty-cash"
+            href="/admin/finance?tab=petty_cash"
             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-bb-navy hover:border-bb-navy/30"
           >
             <Banknote className="h-3.5 w-3.5" /> Log cash movement

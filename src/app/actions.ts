@@ -656,9 +656,11 @@ export async function assignLeadAction(formData: FormData) {
 }
 
 export async function addLeadActivityAction(formData: FormData) {
+  const note = String(formData.get("activity_note") || formData.get("note") || "").trim();
+  if (!note) return;
   await addLeadActivity({
     leadId: String(formData.get("lead_id") || ""),
-    type: String(formData.get("activity_type") || "NOTE") as
+    type: String(formData.get("activity_type") || formData.get("type") || "NOTE") as
       | "NOTE"
       | "CALL"
       | "EMAIL"
@@ -666,12 +668,13 @@ export async function addLeadActivityAction(formData: FormData) {
       | "TASK"
       | "STATUS_CHANGE"
       | "ASSIGNMENT",
-    note: String(formData.get("activity_note") || ""),
+    note,
     meta: {
       next_action_date: String(formData.get("next_action_date") || "")
     }
   });
-  revalidatePath("/admin/crm");
+  revalidatePath("/admin/pipeline");
+  revalidatePath("/admin/clients");
 }
 
 export async function convertLeadAction(formData: FormData) {
@@ -690,7 +693,7 @@ export async function createCaseTaskAction(formData: FormData) {
     description: String(formData.get("description") || ""),
     priority: String(formData.get("priority") || "MEDIUM") as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
     dueAt: String(formData.get("due_at") || ""),
-    assignedTo: String(formData.get("assigned_to") || "")
+    assignedTo: String(formData.get("assigned_to") || "") || undefined
   });
   revalidatePath("/admin/cases");
 }
@@ -740,7 +743,7 @@ export async function createNotificationAction(formData: FormData) {
     body: String(formData.get("body") || ""),
     channel: String(formData.get("channel") || "IN_APP") as "IN_APP" | "EMAIL" | "WHATSAPP" | "SMS",
     entityType: String(formData.get("entity_type") || ""),
-    entityId: String(formData.get("entity_id") || "")
+    entityId: String(formData.get("entity_id") || "") || undefined
   });
   revalidatePath("/admin/notifications");
 }
@@ -749,11 +752,11 @@ export async function createSystemTaskAction(formData: FormData) {
   await createSystemTask({
     title: String(formData.get("title") || ""),
     description: String(formData.get("description") || ""),
-    assignedTo: String(formData.get("assigned_to") || ""),
+    assignedTo: String(formData.get("assigned_to") || "") || undefined,
     dueAt: String(formData.get("due_at") || ""),
     priority: String(formData.get("priority") || "MEDIUM") as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
     entityType: String(formData.get("entity_type") || ""),
-    entityId: String(formData.get("entity_id") || "")
+    entityId: String(formData.get("entity_id") || "") || undefined
   });
   revalidatePath("/admin/notifications");
 }
@@ -761,7 +764,7 @@ export async function createSystemTaskAction(formData: FormData) {
 export async function upsertEmployeeRecordAction(formData: FormData) {
   await upsertEmployeeRecord({
     employeeCode: String(formData.get("employee_code") || ""),
-    userId: String(formData.get("user_id") || ""),
+    userId: String(formData.get("user_id") || "") || undefined,
     jobTitle: String(formData.get("job_title") || ""),
     departmentId: String(formData.get("department_id") || ""),
     teamId: String(formData.get("team_id") || ""),
@@ -813,7 +816,7 @@ export async function createInvoiceAction(formData: FormData) {
   const itemUnitPrice = Number(formData.get("item_unit_price") || 0);
   await createInvoice({
     clientId: String(formData.get("client_id") || ""),
-    caseId: String(formData.get("case_id") || ""),
+    caseId: String(formData.get("case_id") || "") || undefined,
     dueDate: String(formData.get("due_date") || ""),
     taxAmount: Number(formData.get("tax_amount") || 0),
     discountAmount: Number(formData.get("discount_amount") || 0),
@@ -855,7 +858,7 @@ export async function decideExpenseAction(formData: FormData) {
 export async function processRefundAction(formData: FormData) {
   await processRefund({
     invoiceId: String(formData.get("invoice_id") || ""),
-    paymentId: String(formData.get("payment_id") || ""),
+    paymentId: String(formData.get("payment_id") || "") || undefined,
     refundAmount: Number(formData.get("refund_amount") || 0),
     reason: String(formData.get("reason") || "")
   });
