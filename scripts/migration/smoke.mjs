@@ -87,11 +87,12 @@ async function adminSignIn(email, password) {
 }
 {
   const bad = await adminSignIn(accounts.QA_ADMIN_EMAIL, "definitely-wrong-password");
-  if (bad.location.includes("error=credentials") && !bad.cookie.startsWith("bb_session=")) ok("admin sign-in rejects a wrong password");
+  if (bad.location === "/admin/login?error=credentials" && !bad.cookie.startsWith("bb_session=")) ok("admin sign-in rejects a wrong password");
   else fail(`wrong password: location=${bad.location}`);
 }
 const signedIn = await adminSignIn(accounts.QA_ADMIN_EMAIL, accounts.QA_ADMIN_PASSWORD);
-if (!signedIn.location.endsWith("/admin") || !signedIn.cookie.startsWith("bb_session=")) {
+// Must stay on this site: behind the proxy an absolute URL would point at localhost.
+if (signedIn.location !== "/admin" || !signedIn.cookie.startsWith("bb_session=")) {
   fail(`admin sign-in failed: location=${signedIn.location}`);
   process.exit(1);
 }
@@ -155,7 +156,7 @@ console.log(`visited ${visited.size} admin URLs`);
 {
   const res = await fetch(`${base}/api/admin-signout`, { method: "POST", headers: { cookie }, redirect: "manual" });
   const cleared = (res.headers.get("set-cookie") || "").startsWith("bb_session=;");
-  if (res.status === 303 && cleared) ok("admin sign-out clears the session cookie");
+  if (res.status === 303 && cleared && res.headers.get("location") === "/admin/login") ok("admin sign-out clears the session cookie");
   else fail(`sign-out -> ${res.status} ${res.headers.get("set-cookie")}`);
 }
 

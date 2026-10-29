@@ -1,11 +1,11 @@
-import { NextResponse, type NextRequest } from "next/server";
 import { clearedSessionCookie } from "@/lib/auth/session";
+import { redirectTo } from "@/lib/utils/redirect";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/admin/login", request.url), { status: 303 });
+export async function POST() {
+  const response = redirectTo("/admin/login");
   response.cookies.set(clearedSessionCookie.name, "", clearedSessionCookie.options);
   return response;
 }

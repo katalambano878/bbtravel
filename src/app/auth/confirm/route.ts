@@ -1,5 +1,6 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { AuthError, confirmEmail, createSessionCookie } from "@/lib/auth/session";
+import { redirectTo } from "@/lib/utils/redirect";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,14 +10,12 @@ export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token") ?? "";
   try {
     const row = await confirmEmail(token);
-    const response = NextResponse.redirect(new URL("/portal", request.url), { status: 303 });
+    const response = redirectTo("/portal");
     const cookie = await createSessionCookie(row);
     response.cookies.set(cookie.name, cookie.value, cookie.options);
     return response;
   } catch (error) {
     if (!(error instanceof AuthError)) console.error("[auth/confirm]", error);
-    const url = new URL("/portal/login", request.url);
-    url.searchParams.set("error", error instanceof AuthError ? error.code : "unknown");
-    return NextResponse.redirect(url, { status: 303 });
+    return redirectTo(`/portal/login?error=${error instanceof AuthError ? error.code : "unknown"}`);
   }
 }

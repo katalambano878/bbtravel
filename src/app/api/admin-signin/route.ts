@@ -1,14 +1,13 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/db/admin";
 import { AuthError, createSessionCookie, verifyPassword } from "@/lib/auth/session";
+import { redirectTo } from "@/lib/utils/redirect";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function loginError(request: NextRequest, code: string) {
-  const url = new URL("/admin/login", request.url);
-  url.searchParams.set("error", code);
-  return NextResponse.redirect(url, { status: 303 });
+function loginError(code: string) {
+  return redirectTo(`/admin/login?error=${encodeURIComponent(code)}`);
 }
 
 export async function POST(request: NextRequest) {
@@ -16,15 +15,15 @@ export async function POST(request: NextRequest) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  if (!email || !password) return loginError(request, "missing");
+  if (!email || !password) return loginError("missing");
 
   let signedIn: Awaited<ReturnType<typeof verifyPassword>>;
   try {
     signedIn = await verifyPassword(email, password);
   } catch (error) {
-    if (error instanceof AuthError) return loginError(request, "credentials");
+    if (error instanceof AuthError) return loginError("credentials");
     console.error("[admin-signin]", error);
-    return loginError(request, "unknown");
+    return loginError("unknown");
   }
 
   const admin = createAdminClient();
@@ -34,7 +33,7 @@ export async function POST(request: NextRequest) {
     .eq("user_id", signedIn.user.id)
     .maybeSingle();
 
-  if (!profile || profile.is_active === false) return loginError(request, "not_staff");
+  if (!profile || profile.is_active === false) return loginError("not_staff");
 
   // Best-effort: stamp last_login_at. Never block login if this fails.
   try {
@@ -46,7 +45,7 @@ export async function POST(request: NextRequest) {
     // ignore
   }
 
-  const response = NextResponse.redirect(new URL("/admin", request.url), { status: 303 });
+  const response = redirectTo("/admin");
   const cookie = await createSessionCookie(signedIn.row);
   response.cookies.set(cookie.name, cookie.value, cookie.options);
   return response;
