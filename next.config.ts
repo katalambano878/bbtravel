@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**" }
     ]
   },
+  async headers() {
+    if (process.env.SITE_NOINDEX !== "true") return [];
+    return [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "25mb"
