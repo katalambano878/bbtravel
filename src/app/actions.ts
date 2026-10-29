@@ -474,7 +474,8 @@ export async function signUpAction(formData: FormData) {
 
 export async function signInAction(formData: FormData) {
   const admin = createAdminClient();
-  const email = String(formData.get("email") || "");
+  // Normalised so the lockout counter can't be dodged by changing letter case.
+  const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
   const requestHeaders = await headers();
   const userAgent = requestHeaders.get("user-agent");
