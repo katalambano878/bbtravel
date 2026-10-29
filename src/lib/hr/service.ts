@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { requirePermission } from "@/lib/auth/policy";
 import { writeAuditEvent } from "@/lib/audit/events";
 
@@ -144,7 +144,7 @@ export async function getHrSnapshot() {
     admin.from("teams").select("*").order("name"),
     admin.from("employee_records").select("*").order("created_at", { ascending: false }).limit(200),
     admin.from("attendance_records").select("*").order("attendance_date", { ascending: false }).limit(200),
-    admin.from("leave_requests").select("*").order("created_at", { ascending: false }).limit(200),
+    admin.from("leave_requests").select("*, leave_types(leave_name)").order("created_at", { ascending: false }).limit(200),
     admin.from("payroll_periods").select("*").order("period_start", { ascending: false }).limit(12),
     admin.from("payroll_inputs").select("*").order("created_at", { ascending: false }).limit(300),
     admin.from("performance_reviews").select("*").order("created_at", { ascending: false }).limit(200),

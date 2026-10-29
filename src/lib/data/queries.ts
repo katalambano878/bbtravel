@@ -1,37 +1,46 @@
-import { createClient as createServerClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
+import { getSessionUser } from "@/lib/auth/session";
 
 export async function getCurrentUser() {
-  const supabase = await createServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  return user;
+  return getSessionUser();
+}
+
+/** Client record linked to the signed-in portal user, if any. */
+async function getOwnClientId(): Promise<string | null> {
+  const user = await getSessionUser();
+  if (!user) return null;
+  const admin = createAdminClient();
+  const { data: client } = await admin.from("clients").select("id").eq("user_id", user.id).maybeSingle();
+  return (client?.id as string | undefined) ?? null;
+}
+
+/** True when the case belongs to the signed-in portal user (the old `is_case_owner` RLS rule). */
+export async function isOwnCase(caseId: string): Promise<boolean> {
+  const clientId = await getOwnClientId();
+  if (!clientId || !caseId) return false;
+  const admin = createAdminClient();
+  const { data } = await admin.from("cases").select("id").eq("id", caseId).eq("client_id", clientId).maybeSingle();
+  return !!data;
 }
 
 export async function getClientCases() {
-  const supabase = await createServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const clientId = await getOwnClientId();
+  if (!clientId) return [];
 
-  if (!user) return [];
-
-  const { data: client } = await supabase.from("clients").select("id").eq("user_id", user.id).maybeSingle();
-  if (!client) return [];
-
-  const { data: cases } = await supabase
+  const admin = createAdminClient();
+  const { data: cases } = await admin
     .from("cases")
     .select("id, case_type, status, created_at, updated_at, meta, assigned_to")
-    .eq("client_id", client.id)
+    .eq("client_id", clientId)
     .order("created_at", { ascending: false });
 
   return cases ?? [];
 }
 
 export async function getCaseDocuments(caseId: string) {
-  const supabase = await createServerClient();
-  const { data } = await supabase
+  if (!(await isOwnCase(caseId))) return [];
+  const admin = createAdminClient();
+  const { data } = await admin
     .from("documents")
     .select("id, doc_type, file_url, status, reviewer_notes, created_at")
     .eq("case_id", caseId)
@@ -40,14 +49,16 @@ export async function getCaseDocuments(caseId: string) {
 }
 
 export async function getCaseSteps(caseId: string) {
-  const supabase = await createServerClient();
-  const { data } = await supabase.from("case_steps").select("id, title, status, due_date").eq("case_id", caseId);
+  if (!(await isOwnCase(caseId))) return [];
+  const admin = createAdminClient();
+  const { data } = await admin.from("case_steps").select("id, title, status, due_date").eq("case_id", caseId);
   return data ?? [];
 }
 
 export async function getPortalMessages(caseId: string) {
-  const supabase = await createServerClient();
-  const { data } = await supabase
+  if (!(await isOwnCase(caseId))) return [];
+  const admin = createAdminClient();
+  const { data } = await admin
     .from("case_messages")
     .select("id, message, is_internal, created_at")
     .eq("case_id", caseId)
@@ -57,8 +68,9 @@ export async function getPortalMessages(caseId: string) {
 }
 
 export async function getCaseAppointments(caseId: string) {
-  const supabase = await createServerClient();
-  const { data } = await supabase
+  if (!(await isOwnCase(caseId))) return [];
+  const admin = createAdminClient();
+  const { data } = await admin
     .from("appointments")
     .select("id, scheduled_at, location, notes")
     .eq("case_id", caseId)
@@ -338,7 +350,7 @@ export async function getTodayInbox() {
       .limit(15),
     admin
       .from("leave_requests")
-      .select("id, employee_id, leave_type, start_date, end_date, status")
+      .select("id, employee_id, start_date, end_date, status, leave_types(leave_name)")
       .eq("status", "PENDING")
       .order("start_date", { ascending: true })
       .limit(15)
@@ -471,14 +483,9 @@ export async function getClientDetail(clientId: string) {
 }
 
 export async function getStaffAccessContext() {
-  const supabase = await createServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
   if (!user) return null;
 
-  // Use service role for the profile lookup: RLS policies reference
-  // is_super_admin(), which authenticated users cannot execute directly.
   const admin = createAdminClient();
   const { data: profile } = await admin
     .from("staff_profiles")
@@ -488,14 +495,14 @@ export async function getStaffAccessContext() {
   if (!profile) return null;
   if (profile.is_active === false) return null;
 
-  const { data: role } = await supabase.from("roles").select("id, role_key").eq("role_key", profile.role).maybeSingle();
+  const { data: role } = await admin.from("roles").select("id, role_key").eq("role_key", profile.role).maybeSingle();
   let permissions: { permission_key: string }[] = [];
   if (role?.id) {
-    const { data } = await supabase
+    const { data } = await admin
       .from("role_permissions")
       .select("permissions(permission_key)")
       .eq("role_id", role.id);
-    // Supabase returns the related row as either an object or an array depending
+    // An embedded relation can come back as an object or an array depending
     // on the inferred relationship cardinality. Handle both shapes safely.
     type PermRow = { permissions?: { permission_key?: string } | { permission_key?: string }[] | null };
     permissions = (data ?? []).flatMap((row: PermRow) => {

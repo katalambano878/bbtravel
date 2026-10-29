@@ -11,19 +11,20 @@ export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return { title: "Insight Not Found" };
   return {
     title: `${post.title} | Insights`,
     description: post.excerpt,
     alternates: {
-      canonical: `/blog/${params.slug}`
+      canonical: `/blog/${slug}`
     },
     openGraph: {
       title: `${post.title} | Insights`,
       description: post.excerpt,
-      url: `/blog/${params.slug}`,
+      url: `/blog/${slug}`,
       images: [{ url: "/seo/og-image.png", width: 1024, height: 1024, alt: "B.B. Travel Consult" }]
     },
     twitter: {
@@ -35,8 +36,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
   if (!post) notFound();
 
   return (

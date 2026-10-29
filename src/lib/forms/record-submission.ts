@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { getStaffAccessContext } from "@/lib/data/queries";
 import { sendAdminFormEmail } from "@/lib/email/resend";
 

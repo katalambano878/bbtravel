@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getPublicBlogPosts, getPublicTours } from "@/lib/data/public-content";
+import { getPublicTours } from "@/lib/data/public-content";
 import { services, featuredTours, blogPosts } from "@/lib/mockData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -23,14 +23,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
     "/start-application"
   ];
-  const [dealsTours, cmsPosts] = await Promise.all([getPublicTours(), getPublicBlogPosts()]);
+  const dealsTours = await getPublicTours();
 
   const dynamicRoutes = Array.from(
     new Set([
       ...services.map((service) => `/services/${service.slug}`),
       ...featuredTours.map((tour) => `/tours/${tour.slug}`),
       ...dealsTours.map((tour) => `/travel-deals/${tour.slug}`),
-      ...cmsPosts.map((post) => `/blog/${post.slug}`),
       ...blogPosts.map((post) => `/blog/${post.slug}`)
     ])
   );

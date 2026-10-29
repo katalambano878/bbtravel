@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { UploadCloud } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -16,7 +16,8 @@ const docTypes = [
   { label: "Other supporting doc", value: "other" }
 ];
 
-export function DocumentUploadForm({ caseId, userId }: { caseId: string; userId: string }) {
+export function DocumentUploadForm({ caseId }: { caseId: string }) {
+  const router = useRouter();
   const [docType, setDocType] = useState("passport");
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<string>("");
@@ -26,22 +27,17 @@ export function DocumentUploadForm({ caseId, userId }: { caseId: string; userId:
     setStatus("");
     try {
       const file = formData.get("file") as File | null;
-      if (!file) throw new Error("Select a file first");
+      if (!file || file.size === 0) throw new Error("Select a file first");
 
-      const supabase = createClient();
-      const filePath = `${userId}/${caseId}/${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
-      const { error: storageError } = await supabase.storage.from("client-documents").upload(filePath, file);
-      if (storageError) throw storageError;
-
-      const { error: insertError } = await supabase.from("documents").insert({
-        case_id: caseId,
-        doc_type: docType,
-        file_url: filePath,
-        status: "PENDING",
-        uploaded_by: userId
-      });
-      if (insertError) throw insertError;
+      const body = new FormData();
+      body.set("file", file);
+      body.set("case_id", caseId);
+      body.set("doc_type", docType);
+      const res = await fetch("/api/portal/documents", { method: "POST", body });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) throw new Error(json.error || "Upload failed");
       setStatus("Document uploaded successfully.");
+      router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : "Upload failed";
       setStatus(message);

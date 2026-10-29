@@ -1,35 +1,19 @@
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/db/admin";
 import { blogPosts as fallbackPosts, testimonials as fallbackTestimonials, tours as fallbackTours } from "@/lib/data/content";
 
+/**
+ * Travel deals (/travel-deals) are the curated list in `content.ts`. That is
+ * what the live site has always served, so their URLs stay stable. Tours
+ * managed in admin are published under /tours and the home carousel instead.
+ */
 export async function getPublicTours() {
-  try {
-    const supabase = await createServerClient();
-    const { data } = await supabase
-      .from("tours")
-      .select("id, title, slug, price, duration, itinerary, images, is_active")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
-    if (!data || data.length === 0) return fallbackTours;
-    return data.map((tour) => ({
-      id: tour.id,
-      title: tour.title,
-      slug: tour.slug,
-      price: Number(tour.price),
-      duration: tour.duration,
-      summary: "Premium curated package designed for comfort and transparency.",
-      destination: "International Destination",
-      cover: Array.isArray(tour.images) && tour.images.length > 0 ? String(tour.images[0]) : fallbackTours[0].cover,
-      itinerary: Array.isArray(tour.itinerary) ? tour.itinerary.map(String) : []
-    }));
-  } catch {
-    return fallbackTours;
-  }
+  return fallbackTours;
 }
 
 export async function getPublicBlogPosts() {
   try {
-    const supabase = await createServerClient();
-    const { data } = await supabase
+    const db = createAdminClient();
+    const { data } = await db
       .from("blog_posts")
       .select("id, title, slug, excerpt, content, cover_image_url, is_published, published_at")
       .eq("is_published", true)
@@ -51,8 +35,8 @@ export async function getPublicBlogPosts() {
 
 export async function getPublicTestimonials() {
   try {
-    const supabase = await createServerClient();
-    const { data } = await supabase.from("testimonials").select("name, quote, rating").eq("is_active", true);
+    const db = createAdminClient();
+    const { data } = await db.from("testimonials").select("name, quote, rating").eq("is_active", true);
     if (!data || data.length === 0) return fallbackTestimonials;
     return data.map((item) => ({ ...item, service: "Client Experience" }));
   } catch {

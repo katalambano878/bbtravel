@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { requirePermission } from "@/lib/auth/policy";
 import { normalizeGhanaPhone } from "./client";
 

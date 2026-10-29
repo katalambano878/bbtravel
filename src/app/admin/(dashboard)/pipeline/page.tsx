@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus, UserPlus, Mail, Phone } from "lucide-react";
 
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { getStaffAccessContext } from "@/lib/data/queries";
 import { getCrmSnapshot } from "@/lib/crm/service";
 import { Card, CardContent } from "@/components/ui/card";

@@ -1,13 +1,15 @@
 # B.B. Travel Consult Platform
 
-Premium travel + visa + recruitment + tours + business export platform built with Next.js App Router and Supabase.
+Premium travel + visa + recruitment + tours + business export platform built with Next.js App Router and plain Postgres.
 
 ## Stack
 
 - Next.js (App Router) + TypeScript
 - TailwindCSS + shadcn-style component primitives
 - Framer Motion (subtle interaction motion)
-- Supabase (Auth, Postgres, Storage, Realtime)
+- PostgreSQL via `pg` (in-process query builder in `src/lib/db`)
+- Email + password auth on `auth.users` (bcrypt, signed httpOnly session cookie) in `src/lib/auth/session.ts`
+- File storage on a persistent volume (`STORAGE_ROOT`) in `src/lib/storage/local.ts`
 - Resend email abstraction
 
 ## Environment
@@ -20,10 +22,10 @@ cp .env.example .env.local
 
 Fill:
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `RESEND_API_KEY`
+- `DATABASE_URL`
+- `AUTH_JWT_SECRET`
+- `STORAGE_ROOT`
+- `RESEND_API_KEY` / `RESEND_FROM`
 - `APP_BASE_URL`
 
 ## Local development
@@ -33,49 +35,32 @@ npm install
 npm run dev
 ```
 
-## Supabase setup
+## Database
 
-1. Run SQL migration in `supabase/migrations/001_initial_schema.sql`
-2. Run seed script in `supabase/seed.sql`
-3. Ensure storage buckets exist:
-   - `client-documents` (private)
-   - `site-media` (public)
-   - `tour-media` (public)
-   - `blog-covers` (public)
+The schema was migrated from Supabase on 2026-10-29 (see `scripts/migration/`).
+`supabase/migrations/` is kept as history only; the live schema is the
+`store_bbconsult` database on big-vps.
+
+Storage buckets are folders under `STORAGE_ROOT`:
+- `client-documents` (private, served via `/api/documents/<id>/file`)
+- `site-media`, `tour-media`, `blog-covers` (public, served at `/storage/v1/object/public/<bucket>/...`)
 
 ## Deployment
 
-### Vercel
-
-1. Import repository into Vercel.
-2. Set environment variables from `.env.example`.
-3. Build command: `npm run build`
-4. Output: default Next.js
-
-### VPS / Coolify
-
-1. Build image or Node app with:
-   - Install: `npm ci`
-   - Build: `npm run build`
-   - Start: `npm run start`
-2. Set reverse proxy to app port.
-3. Add same environment variables.
-4. Ensure Supabase egress and DNS are reachable from VPS.
+Coolify on big-vps (Nixpacks: `npm ci`, `npm run build`, `npm run start`).
+Mount a persistent volume at `STORAGE_ROOT` and set `DATABASE_URL` as a
+build-time variable too (static pages read tours during the build).
 
 ## Security model
 
-- RLS enabled on application tables.
-- Helper functions:
-  - `is_super_admin()`
-  - `has_permission(key)`
-  - `is_case_assignee(case_id)`
-- Client access limited to own cases/documents.
-- Staff access enforced by role-permission mapping and assignment.
+- The database is reached only from the app server; there is no public database API.
+- Staff access is enforced in code by role-permission mapping (`requirePermission`).
+- Portal clients only see their own cases and documents (`isOwnCase`).
 
 ## Feature highlights
 
 - High-conversion premium public site
 - Smart onboarding wizard with readiness scoring
-- Client portal with timeline, docs, and realtime updates
+- Client portal with timeline, docs, and live updates (polling)
 - Admin operations dashboard with RBAC
 - Tours and blog SEO routes with sitemap/robots

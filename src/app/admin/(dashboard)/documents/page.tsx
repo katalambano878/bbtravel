@@ -81,7 +81,7 @@ function DocsRow({ doc }: { doc: DocumentRow }) {
         <div className="flex flex-wrap items-center justify-end gap-1.5">
           {doc.file_url ? (
             <a
-              href={doc.file_url as string}
+              href={`/api/documents/${doc.id as string}/file`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50"

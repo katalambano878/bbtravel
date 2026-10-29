@@ -1,4 +1,4 @@
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/db/admin";
 import { featuredTours } from "@/lib/mockData";
 
 export interface PublicTourItinerary {
@@ -106,13 +106,13 @@ function mapRow(row: Record<string, unknown>): PublicTour {
 }
 
 /**
- * Returns published tours from Supabase. Falls back to the curated seed
+ * Returns published tours from the database. Falls back to the curated seed
  * list so the marketing site never renders an empty catalogue.
  */
 export async function getPublishedTours(): Promise<PublicTour[]> {
   try {
-    const supabase = await createServerClient();
-    const { data, error } = await supabase
+    const db = createAdminClient();
+    const { data, error } = await db
       .from("tours")
       .select(
         "id, title, slug, destination, duration, duration_days, price, price_range, cover_image, images, short_description, overview, highlights, inclusions, exclusions, itinerary, sort_order, created_at"

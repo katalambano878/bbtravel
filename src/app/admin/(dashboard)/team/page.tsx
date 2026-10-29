@@ -11,7 +11,7 @@ import {
 } from "@/app/actions";
 import { getStaffAccessContext } from "@/lib/data/queries";
 import { getHrSnapshot } from "@/lib/hr/service";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "Team — B.B. Admin" };
@@ -259,7 +259,7 @@ export default async function AdminTeamPage({
                   {snapshot.leaveRequests.map((lr) => (
                     <tr key={lr.id as string}>
                       <td className="px-4 py-2 text-[12px] text-bb-navy">{String(lr.employee_id).slice(0, 8)}…</td>
-                      <td className="px-4 py-2 text-[11px] uppercase text-slate-500">{lr.leave_type}</td>
+                      <td className="px-4 py-2 text-[11px] uppercase text-slate-500">{lr.leave_types?.leave_name ?? "—"}</td>
                       <td className="px-4 py-2 text-[12px] text-slate-600">{formatDate(lr.start_date as string)}</td>
                       <td className="px-4 py-2 text-[12px] text-slate-600">{formatDate(lr.end_date as string)}</td>
                       <td className="px-4 py-2 text-[12px]">{lr.status}</td>

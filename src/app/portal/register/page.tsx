@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AuthHeader } from "@/components/portal/auth-header";
+import { AuthNotice } from "@/components/portal/auth-notice";
 
 export const metadata: Metadata = {
   title: "Portal Registration",
@@ -15,7 +16,13 @@ export const metadata: Metadata = {
   }
 };
 
-export default function PortalRegisterPage() {
+export default async function PortalRegisterPage({
+  searchParams
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+
   return (
     <>
       <PageHero
@@ -26,6 +33,7 @@ export default function PortalRegisterPage() {
       <section className="section-shell">
         <AuthHeader current="register" />
         <form action={signUpAction} className="mx-auto max-w-md space-y-5 rounded-3xl border border-slate-200 bg-white p-8">
+          <AuthNotice code={error} />
           <div>
             <Label htmlFor="full_name">Full Name</Label>
             <Input id="full_name" name="full_name" required />
@@ -36,7 +44,7 @@ export default function PortalRegisterPage() {
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" required minLength={6} />
+            <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={6} />
           </div>
           <Button type="submit" className="w-full">
             Register

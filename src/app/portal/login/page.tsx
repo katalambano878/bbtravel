@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AuthHeader } from "@/components/portal/auth-header";
+import { AuthNotice } from "@/components/portal/auth-notice";
 
 export const metadata: Metadata = {
   title: "Portal Login",
@@ -15,7 +16,14 @@ export const metadata: Metadata = {
   }
 };
 
-export default function PortalLoginPage() {
+export default async function PortalLoginPage({
+  searchParams
+}: {
+  searchParams: Promise<{ error?: string; registered?: string; reset?: string }>;
+}) {
+  const params = await searchParams;
+  const notice = params.error ?? (params.registered ? "registered" : params.reset ? "reset" : null);
+
   return (
     <>
       <PageHero
@@ -26,13 +34,14 @@ export default function PortalLoginPage() {
       <section className="section-shell">
         <AuthHeader current="login" />
         <form action={signInAction} className="mx-auto max-w-md space-y-5 rounded-3xl border border-slate-200 bg-white p-8">
+          <AuthNotice code={notice} />
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required />
+            <Input id="email" name="email" type="email" autoComplete="email" required />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" required />
+            <Input id="password" name="password" type="password" autoComplete="current-password" required />
           </div>
           <Button type="submit" className="w-full">
             Login

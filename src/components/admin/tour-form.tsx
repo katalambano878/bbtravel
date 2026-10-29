@@ -8,25 +8,9 @@ import { useRouter } from "next/navigation";
 import type { TourRow } from "@/lib/tours/service";
 import { upsertTourAction } from "@/app/actions";
 import { Card, CardContent } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-
-function extFromFile(file: File): string {
-  const fromName = file.name.includes(".")
-    ? file.name.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "")
-    : "";
-  if (["jpg", "jpeg", "png", "webp", "gif"].includes(fromName)) {
-    return fromName === "jpeg" ? "jpg" : fromName;
-  }
-  const mime = (file.type || "").toLowerCase();
-  if (mime === "image/jpeg") return "jpg";
-  if (mime === "image/png") return "png";
-  if (mime === "image/webp") return "webp";
-  if (mime === "image/gif") return "gif";
-  return "jpg";
-}
 
 interface TourFormProps {
   initial?: TourRow | null;
@@ -78,21 +62,13 @@ export function TourForm({ initial }: TourFormProps) {
         .replace(/-+/g, "-")
         .replace(/^-|-$/g, "")
         .slice(0, 72) || "tours";
-    const ext = extFromFile(file);
-    const rand =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : Math.random().toString(36).slice(2);
-    const path = `${folder}/${Date.now()}-${rand}.${ext}`;
-    const supabase = createClient();
-    const { error: upErr } = await supabase.storage.from("tour-media").upload(path, file, {
-      cacheControl: "31536000",
-      contentType: file.type || undefined,
-      upsert: false
-    });
-    if (upErr) throw new Error(upErr.message);
-    const { data } = supabase.storage.from("tour-media").getPublicUrl(path);
-    return data.publicUrl;
+    const body = new FormData();
+    body.set("file", file);
+    body.set("folder", folder);
+    const res = await fetch("/api/admin/tours/upload", { method: "POST", body });
+    const json = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+    if (!res.ok || !json.url) throw new Error(json.error || "Upload failed.");
+    return json.url;
   }
 
   async function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -258,7 +234,7 @@ export function TourForm({ initial }: TourFormProps) {
           <div className="grid gap-3">
             <Field
               label="Cover image"
-              hint="Upload a hero image for the card and tour page. Stored in Supabase (tour-media)."
+              hint="Upload a hero image for the card and tour page. Stored in the site media library."
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <div className="relative min-h-[120px] flex-1 overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50">

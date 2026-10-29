@@ -26,7 +26,7 @@ import {
 import { getStaffAccessContext } from "@/lib/data/queries";
 import { getFinanceSnapshot } from "@/lib/finance/service";
 import { getPettyCashSnapshot, PETTY_CASH_BOX_TYPES } from "@/lib/finance/petty-cash";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { Card, CardContent } from "@/components/ui/card";
 import { InvoiceComposer } from "@/components/admin/invoice-composer";
 import { EXPENSE_CATEGORIES } from "@/lib/finance/expense-categories";

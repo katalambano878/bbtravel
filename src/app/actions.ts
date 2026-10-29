@@ -4,8 +4,17 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { createClient as createServerClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
+import {
+  AuthError,
+  clearSessionCookie,
+  requestPasswordReset,
+  resetPasswordWithToken,
+  setSessionCookie,
+  signUpWithPassword,
+  verifyPassword,
+  type SessionUser
+} from "@/lib/auth/session";
 import { wizardSchema, type WizardPayload } from "@/lib/validators/wizard";
 import { calculateReadinessScore } from "@/lib/utils/readiness-score";
 import { requirePermission } from "@/lib/auth/policy";
@@ -434,39 +443,36 @@ export async function submitTourInquiryAction(
 }
 
 export async function signUpAction(formData: FormData) {
-  const supabase = await createServerClient();
-  const email = String(formData.get("email") || "");
+  const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
-  const fullName = String(formData.get("full_name") || "");
+  const fullName = String(formData.get("full_name") || "").trim();
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName },
-      emailRedirectTo: `${process.env.APP_BASE_URL}/portal`
-    }
-  });
+  let user: SessionUser | null;
+  try {
+    ({ user } = await signUpWithPassword({ email, password, fullName }));
+  } catch (error) {
+    if (error instanceof AuthError) redirect(`/portal/register?error=${error.code}`);
+    throw error;
+  }
 
-  if (error) throw error;
-
-  if (data.user) {
+  if (user) {
     const admin = createAdminClient();
-    await admin.from("clients").upsert(
+    const { error } = await admin.from("clients").upsert(
       {
-        user_id: data.user.id,
+        user_id: user.id,
         name: fullName,
-        email
+        email: user.email
       },
       { onConflict: "user_id" }
     );
+    // 23505 on clients.email: a website lead already holds this email; staff link it.
+    if (error && error.code !== "23505") console.error("[signup] client record", error);
   }
 
   redirect("/portal/login?registered=true");
 }
 
 export async function signInAction(formData: FormData) {
-  const supabase = await createServerClient();
   const admin = createAdminClient();
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
@@ -487,21 +493,27 @@ export async function signInAction(formData: FormData) {
       login_status: "LOCKED",
       failure_reason: "LOCKOUT_ACTIVE"
     });
-    throw new Error("Account temporarily locked due to repeated failed login attempts.");
+    redirect("/portal/login?error=locked");
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
+  let signedIn: Awaited<ReturnType<typeof verifyPassword>>;
+  try {
+    signedIn = await verifyPassword(email, password);
+  } catch (error) {
+    if (!(error instanceof AuthError)) throw error;
     const failedAttempts = (loginAttempt?.failed_attempts ?? 0) + 1;
     const shouldLock = failedAttempts >= maxFailedAttempts;
     const lockedUntil = shouldLock ? new Date(Date.now() + lockoutMinutes * 60 * 1000).toISOString() : null;
 
-    await admin.from("staff_login_attempts").upsert({
-      email,
-      failed_attempts: failedAttempts,
-      last_attempt_at: new Date().toISOString(),
-      locked_until: lockedUntil
-    });
+    await admin.from("staff_login_attempts").upsert(
+      {
+        email,
+        failed_attempts: failedAttempts,
+        last_attempt_at: new Date().toISOString(),
+        locked_until: lockedUntil
+      },
+      { onConflict: "email" }
+    );
     await admin.from("staff_login_events").insert({
       email,
       ip_address: ipAddress,
@@ -509,120 +521,62 @@ export async function signInAction(formData: FormData) {
       login_status: shouldLock ? "LOCKED" : "FAILED",
       failure_reason: error.message
     });
-    throw error;
+    redirect(`/portal/login?error=${shouldLock ? "locked" : error.code}`);
   }
 
-  await admin.from("staff_login_attempts").upsert({
-    email,
-    failed_attempts: 0,
-    last_attempt_at: new Date().toISOString(),
-    locked_until: null
-  });
+  await setSessionCookie(signedIn.row);
+  await admin.from("staff_login_attempts").upsert(
+    {
+      email,
+      failed_attempts: 0,
+      last_attempt_at: new Date().toISOString(),
+      locked_until: null
+    },
+    { onConflict: "email" }
+  );
   await admin.from("staff_login_events").insert({
-    user_id: data.user?.id ?? null,
+    user_id: signedIn.user.id,
     email,
     ip_address: ipAddress,
     user_agent: userAgent,
     login_status: "SUCCESS"
   });
 
-  if (data.user?.id) {
-    await admin.from("staff_profiles").update({ last_login_at: new Date().toISOString() }).eq("user_id", data.user.id);
-  }
+  await admin.from("staff_profiles").update({ last_login_at: new Date().toISOString() }).eq("user_id", signedIn.user.id);
   redirect("/portal");
 }
 
-export async function adminSignInAction(
-  _prevState: { error?: string; success?: boolean } | null,
-  formData: FormData
-): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createServerClient();
-  const admin = createAdminClient();
-  const email = String(formData.get("email") || "");
-  const password = String(formData.get("password") || "");
-  const requestHeaders = await headers();
-  const userAgent = requestHeaders.get("user-agent");
-  const ipAddress = requestHeaders.get("x-forwarded-for") ?? requestHeaders.get("x-real-ip");
-
-  const { data: policy } = await admin.from("auth_security_policies").select("*").eq("id", 1).maybeSingle();
-  const maxFailedAttempts = policy?.max_failed_attempts ?? 5;
-  const lockoutMinutes = policy?.lockout_minutes ?? 15;
-
-  const { data: loginAttempt } = await admin.from("staff_login_attempts").select("*").eq("email", email).maybeSingle();
-  if (loginAttempt?.locked_until && new Date(loginAttempt.locked_until) > new Date()) {
-    await admin.from("staff_login_events").insert({
-      email,
-      ip_address: ipAddress,
-      user_agent: userAgent,
-      login_status: "LOCKED",
-      failure_reason: "LOCKOUT_ACTIVE"
-    });
-    return { error: "Account temporarily locked due to repeated failed login attempts." };
-  }
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    const failedAttempts = (loginAttempt?.failed_attempts ?? 0) + 1;
-    const shouldLock = failedAttempts >= maxFailedAttempts;
-    const lockedUntil = shouldLock ? new Date(Date.now() + lockoutMinutes * 60 * 1000).toISOString() : null;
-
-    await admin.from("staff_login_attempts").upsert({
-      email,
-      failed_attempts: failedAttempts,
-      last_attempt_at: new Date().toISOString(),
-      locked_until: lockedUntil
-    });
-    await admin.from("staff_login_events").insert({
-      email,
-      ip_address: ipAddress,
-      user_agent: userAgent,
-      login_status: shouldLock ? "LOCKED" : "FAILED",
-      failure_reason: error.message
-    });
-    return { error: "Invalid email or password." };
-  }
-
-  const { data: staffProfile } = await admin
-    .from("staff_profiles")
-    .select("role")
-    .eq("user_id", data.user.id)
-    .maybeSingle();
-
-  if (!staffProfile) {
-    await supabase.auth.signOut();
-    return { error: "Access denied. This login is for authorised staff only." };
-  }
-
-  await admin.from("staff_login_attempts").upsert({
-    email,
-    failed_attempts: 0,
-    last_attempt_at: new Date().toISOString(),
-    locked_until: null
-  });
-  await admin.from("staff_login_events").insert({
-    user_id: data.user.id,
-    email,
-    ip_address: ipAddress,
-    user_agent: userAgent,
-    login_status: "SUCCESS"
-  });
-  await admin.from("staff_profiles").update({ last_login_at: new Date().toISOString() }).eq("user_id", data.user.id);
-
-  return { success: true };
-}
-
 export async function resetPasswordAction(formData: FormData) {
-  const supabase = await createServerClient();
   const email = String(formData.get("email") || "");
-  await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.APP_BASE_URL}/portal/reset-password`
-  });
+  await requestPasswordReset(email);
   redirect("/portal/login?reset=true");
 }
 
+export async function completePasswordResetAction(
+  _prevState: { error?: string } | null,
+  formData: FormData
+): Promise<{ error?: string }> {
+  const token = String(formData.get("token") || "");
+  const password = String(formData.get("password") || "");
+  const confirm = String(formData.get("confirm_password") || "");
+  if (password !== confirm) return { error: "Passwords do not match." };
+
+  let row: Awaited<ReturnType<typeof resetPasswordWithToken>>;
+  try {
+    row = await resetPasswordWithToken(token, password);
+  } catch (error) {
+    if (error instanceof AuthError) return { error: error.message };
+    throw error;
+  }
+  await setSessionCookie(row);
+
+  const admin = createAdminClient();
+  const { data: staff } = await admin.from("staff_profiles").select("user_id").eq("user_id", row.id).maybeSingle();
+  redirect(staff ? "/admin" : "/portal");
+}
+
 export async function signOutAction() {
-  const supabase = await createServerClient();
-  await supabase.auth.signOut();
+  await clearSessionCookie();
   redirect("/portal/login");
 }
 
@@ -1254,6 +1208,7 @@ export async function upsertTourAction(formData: FormData): Promise<void> {
   revalidatePath("/admin/tours");
   revalidatePath("/tours");
   revalidatePath("/travel-deals");
+  revalidatePath("/");
 }
 
 export type SyncMockToursResult = { ok: true; message: string } | { ok: false; error: string };
@@ -1285,6 +1240,7 @@ export async function toggleTourActiveAction(formData: FormData): Promise<void> 
   revalidatePath("/admin/tours");
   revalidatePath("/tours");
   revalidatePath("/travel-deals");
+  revalidatePath("/");
 }
 
 export async function deleteTourAction(formData: FormData): Promise<void> {
@@ -1294,4 +1250,5 @@ export async function deleteTourAction(formData: FormData): Promise<void> {
   revalidatePath("/admin/tours");
   revalidatePath("/tours");
   revalidatePath("/travel-deals");
+  revalidatePath("/");
 }

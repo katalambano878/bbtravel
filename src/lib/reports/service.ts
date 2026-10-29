@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/db/admin";
 import { requirePermission } from "@/lib/auth/policy";
 import { writeAuditEvent } from "@/lib/audit/events";
 import { publishEvent } from "@/lib/events/bus";

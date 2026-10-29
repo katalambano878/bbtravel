@@ -2,29 +2,44 @@
 
 import { useEffect, useState } from "react";
 import { BellDot } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+
+const POLL_MS = 20_000;
+
+type Snapshot = { case: string | null; documents: Record<string, string> };
 
 export function RealtimeCaseFeed({ caseId }: { caseId: string }) {
   const [events, setEvents] = useState<string[]>([]);
 
   useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel(`case-updates-${caseId}`)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "cases", filter: `id=eq.${caseId}` }, () => {
-        setEvents((prev) => [`${new Date().toLocaleTimeString()} - Case status updated`, ...prev].slice(0, 8));
-      })
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "documents", filter: `case_id=eq.${caseId}` },
-        () => {
-          setEvents((prev) => [`${new Date().toLocaleTimeString()} - Document decision received`, ...prev].slice(0, 8));
-        }
-      )
-      .subscribe();
+    let previous: Snapshot | null = null;
+    let cancelled = false;
 
+    async function poll() {
+      if (document.visibilityState === "hidden") return;
+      try {
+        const res = await fetch(`/api/portal/case-updates?caseId=${encodeURIComponent(caseId)}`, { cache: "no-store" });
+        if (!res.ok || cancelled) return;
+        const next = (await res.json()) as Snapshot;
+        if (previous) {
+          const found: string[] = [];
+          const time = new Date().toLocaleTimeString();
+          if (next.case !== previous.case) found.push(`${time} - Case status updated`);
+          const prevDocs = previous.documents;
+          const docChanged = Object.entries(next.documents).some(([id, value]) => id in prevDocs && prevDocs[id] !== value);
+          if (docChanged) found.push(`${time} - Document decision received`);
+          if (found.length) setEvents((prev) => [...found, ...prev].slice(0, 8));
+        }
+        previous = next;
+      } catch {
+        // offline or navigating away: try again on the next tick
+      }
+    }
+
+    poll();
+    const timer = window.setInterval(poll, POLL_MS);
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      window.clearInterval(timer);
     };
   }, [caseId]);
 

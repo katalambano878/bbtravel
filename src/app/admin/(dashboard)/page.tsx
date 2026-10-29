@@ -534,7 +534,7 @@ export default async function AdminTodayPage() {
                       <li key={lr.id} className="flex items-center gap-2 text-xs text-slate-700">
                         <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
                         <span className="flex-1 truncate">
-                          {lr.leave_type} — {formatDate(lr.start_date)} → {formatDate(lr.end_date)}
+                          {lr.leave_types?.leave_name ?? "Leave"} — {formatDate(lr.start_date)} → {formatDate(lr.end_date)}
                         </span>
                         <Link
                           href="/admin/team"

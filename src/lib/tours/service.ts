@@ -1,6 +1,5 @@
 import { featuredTours } from "@/lib/mockData";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/db/admin";
 import { requirePermission } from "@/lib/auth/policy";
 import { writeAuditEvent } from "@/lib/audit/events";
 
@@ -278,8 +277,8 @@ export async function deleteTour(id: string): Promise<void> {
  * standard server client (anon) so RLS applies.
  */
 export async function getPublicToursDb(): Promise<TourRow[]> {
-  const supabase = await createServerClient();
-  const { data, error } = await supabase
+  const db = createAdminClient();
+  const { data, error } = await db
     .from("tours")
     .select(TOUR_COLUMNS)
     .eq("is_active", true)
@@ -299,7 +298,7 @@ function parseStartingPriceFromRange(priceRange: string): number {
 /**
  * Upsert each entry in `featuredTours` (see `src/lib/mockData.ts`) by slug.
  * Creates new rows or overwrites existing catalogue content; images stay as
- * URLs from the mock (Supabase uploads are unchanged until re-saved in admin).
+ * URLs from the mock (uploaded images are unchanged until re-saved in admin).
  */
 export async function syncFeaturedToursFromMock(): Promise<{ count: number; slugs: string[] }> {
   await requirePermission("tours.manage");

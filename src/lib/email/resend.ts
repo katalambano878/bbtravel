@@ -22,6 +22,7 @@ export function getAdminNotifyRecipients(): string[] {
   return [brand.email].filter(Boolean);
 }
 
+/** Returns true when Resend accepted the message. */
 export async function sendTransactionalEmail({
   to,
   subject,
@@ -30,20 +31,28 @@ export async function sendTransactionalEmail({
   to: string | string[];
   subject: string;
   html: string;
-}) {
+}): Promise<boolean> {
   if (!resend || !process.env.RESEND_API_KEY) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("[email] RESEND_API_KEY not set; skipping:", subject);
-    }
-    return;
+    console.warn("[email] RESEND_API_KEY not set; skipping:", subject);
+    return false;
   }
   const list = Array.isArray(to) ? to : [to];
-  await resend.emails.send({
-    from: defaultFrom(),
-    to: list,
-    subject,
-    html
-  });
+  try {
+    const { error } = await resend.emails.send({
+      from: defaultFrom(),
+      to: list,
+      subject,
+      html
+    });
+    if (error) {
+      console.error("[email] Resend rejected:", subject, error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[email] send failed:", subject, err);
+    return false;
+  }
 }
 
 function escapeHtml(s: string) {

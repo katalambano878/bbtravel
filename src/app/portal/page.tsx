@@ -112,7 +112,7 @@ export default async function PortalDashboardPage() {
                     ))
                   )}
                 </ul>
-                <DocumentUploadForm caseId={activeCase.id} userId={user.id} />
+                <DocumentUploadForm caseId={activeCase.id} />
                 <div className="rounded-xl bg-slate-50 p-3">
                   <p className="text-xs font-semibold text-bb-navy">Templates Library</p>
                   <ul className="mt-2 space-y-1 text-xs text-slate-600">

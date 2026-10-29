@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { clearedSessionCookie } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/admin/login", request.url), { status: 303 });
+  const response = NextResponse.redirect(new URL("/admin/login", request.url), { status: 303 });
+  response.cookies.set(clearedSessionCookie.name, "", clearedSessionCookie.options);
+  return response;
 }
