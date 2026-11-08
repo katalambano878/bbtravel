@@ -123,6 +123,12 @@ export function Footer() {
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <span>&copy; {new Date().getFullYear()} {brand.name}.</span>
+            <span>
+              Powered by{" "}
+              <a href="https://doctorbarns.com" target="_blank" rel="noopener" className="hover:text-white hover:underline transition-colors">
+                Doctor Barns Tech
+              </a>
+            </span>
           </div>
         </div>
       </Container>
