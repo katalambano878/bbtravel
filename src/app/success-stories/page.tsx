@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   }
 };
 
+// Reads the database, so it renders per request: the build has no database access.
+export const dynamic = "force-dynamic";
+
 export default async function SuccessStoriesPage() {
   const testimonials = await getPublicTestimonials();
 

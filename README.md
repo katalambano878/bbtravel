@@ -47,9 +47,11 @@ Storage buckets are folders under `STORAGE_ROOT`:
 
 ## Deployment
 
-Coolify on big-vps (Nixpacks: `npm ci`, `npm run build`, `npm run start`).
-Mount a persistent volume at `STORAGE_ROOT` and set `DATABASE_URL` as a
-build-time variable too (static pages read tours during the build).
+Coolify on big-vps, Dockerfile build pack (house template: `Dockerfile` +
+`.dockerignore`, `output: "standalone"`, port 3000). The build does not touch
+the database: pages that read it (home, tours, success stories) render per
+request. Mount the persistent volume `/data/fleet/storage/bbtravel` (owned by
+uid 100, the image's `app` user) at `STORAGE_ROOT=/app/storage`.
 
 ## Security model
 

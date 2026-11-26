@@ -4,18 +4,14 @@ import Link from "next/link";
 import { ArrowLeft, Clock, MapPin, CheckCircle2, XCircle, Calendar, ArrowRight } from "lucide-react";
 
 import { brand } from "@/lib/mockData";
-import { getPublishedTours, getPublishedTourBySlug } from "@/lib/tours/public";
+import { getPublishedTourBySlug } from "@/lib/tours/public";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { Button } from "@/components/ui/button";
 import { CtaBanner } from "@/components/shared/cta-banner";
 
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  const tours = await getPublishedTours();
-  return tours.map((t) => ({ slug: t.slug }));
-}
+// Reads the database, so it renders per request: the build has no database access.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;

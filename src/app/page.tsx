@@ -9,8 +9,8 @@ import { FinalCTA } from "@/components/home/FinalCTA";
 
 import { getPublishedTours } from "@/lib/tours/public";
 
-// Tours come from the database; refresh at most every minute (admin edits also revalidate).
-export const revalidate = 60;
+// Tours come from the database, which the build cannot reach: render per request.
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const tours = await getPublishedTours();

@@ -33,8 +33,9 @@ function resolveObject(bucket: string, objectPath: string): string | null {
   if (!objectPath || objectPath.includes("\0") || objectPath.includes("\\")) return null;
   const segments = objectPath.split("/");
   if (segments.some((s) => s === "" || s === "." || s === "..")) return null;
-  const bucketDir = path.join(storageRoot(), bucket);
-  const full = path.join(bucketDir, ...segments);
+  // Runtime volume path: keep the build tracer from pulling the whole project into the image.
+  const bucketDir = path.join(/*turbopackIgnore: true*/ storageRoot(), bucket);
+  const full = path.join(/*turbopackIgnore: true*/ bucketDir, ...segments);
   if (!full.startsWith(bucketDir + path.sep)) return null;
   if (full.endsWith(".meta.json")) return null;
   return full;
@@ -48,10 +49,10 @@ export async function putObject(
 ): Promise<void> {
   const full = resolveObject(bucket, objectPath);
   if (!full) throw new Error("Invalid storage path.");
-  await mkdir(path.dirname(full), { recursive: true });
+  await mkdir(/*turbopackIgnore: true*/ path.dirname(full), { recursive: true });
   // `wx` refuses to overwrite, matching Supabase's upsert: false.
-  await writeFile(full, bytes, { flag: "wx" });
-  await writeFile(`${full}.meta.json`, JSON.stringify({ contentType, size: bytes.length }), { flag: "w" });
+  await writeFile(/*turbopackIgnore: true*/ full, bytes, { flag: "wx" });
+  await writeFile(/*turbopackIgnore: true*/ `${full}.meta.json`, JSON.stringify({ contentType, size: bytes.length }), { flag: "w" });
 }
 
 export async function openObject(
@@ -62,7 +63,7 @@ export async function openObject(
   if (!full) return null;
   let size: number;
   try {
-    const info = await stat(full);
+    const info = await stat(/*turbopackIgnore: true*/ full);
     if (!info.isFile()) return null;
     size = info.size;
   } catch {
@@ -70,12 +71,12 @@ export async function openObject(
   }
   let contentType = "application/octet-stream";
   try {
-    const meta = JSON.parse(await readFile(`${full}.meta.json`, "utf8")) as { contentType?: string };
+    const meta = JSON.parse(await readFile(/*turbopackIgnore: true*/ `${full}.meta.json`, "utf8")) as { contentType?: string };
     if (meta.contentType) contentType = meta.contentType;
   } catch {
     // no sidecar: serve as octet-stream
   }
-  const stream = Readable.toWeb(createReadStream(full)) as ReadableStream;
+  const stream = Readable.toWeb(createReadStream(/*turbopackIgnore: true*/ full)) as ReadableStream;
   return { stream, contentType, size };
 }
 
