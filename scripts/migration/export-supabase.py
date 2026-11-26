@@ -3,6 +3,9 @@
 
     python3 scripts/migration/export-supabase.py
 
+NOTE (2026-11-26): the Supabase project no longer exists, so this cannot run
+again. Production is rebuilt from the 2026-10-29 snapshot by cutover.sh.
+
 Writes to migration-artifacts/dumps/ (git-ignored, contains customer data and
 password hashes): _catalog.json, data.json, _source_counts.json, then builds
 schema.sql / data.sql / checksum.sql / verify.sql and src/lib/db/schema-map.ts,
