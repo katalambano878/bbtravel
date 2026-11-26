@@ -25,8 +25,9 @@ UTC and 2026-11-26). They include 3 QA auth users with passwords
 (`qa.admin@`, `qa.customer@`, `qa.other@bbtravelconsult.test`), the passwordless QA admin
 `qa-admin@bbtravel.test`, QA leads/clients/cases/form submissions (`qa*@bbtravel*.test`),
 test invoices/payments/expenses/petty cash/vendors/refunds/payroll, audit and login
-events, and edits to real rows (petty-cash balances, one employee salary, partner and
-settings `updated_at`). Full per-row list: `/root/bbtravel-migration/qa-rows-2026-11-26.txt`.
+events, and edits to real rows (one petty-cash box balance 0 → 100, numeric rewrites of
+other petty-cash boxes and one salary, partner and settings `updated_at`). As of
+2026-11-26: 143 QA inserts + 8 QA edits across 35 tables. Full per-row list: `/root/bbtravel-migration/qa-rows-2026-11-26.txt`.
 
 Deleting them one by one would not undo the edits to real rows, so **the cutover rebuilds
 production from the snapshot** instead: every QA row and QA edit disappears, and parity
